@@ -1,14 +1,15 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import Database from "better-sqlite3";
-import { BASE_E2E } from "./base";
 
 // Sans Caddy devant le serveur de test, chaque test se présente avec sa propre adresse pour ne
 // pas partager la limite d'envois.
 test.use({ extraHTTPHeaders: { "X-Client-IP": `192.0.2.${Math.floor(Math.random() * 250) + 1}` } });
 
 function messagesEnFile(repere: string): string[] {
-  const db = new Database(BASE_E2E, { readonly: true, fileMustExist: true });
+  const chemin = process.env.ESPACE_BASE_E2E;
+  if (!chemin) throw new Error("ESPACE_BASE_E2E manque : voir playwright.config.ts.");
+  const db = new Database(chemin, { readonly: true, fileMustExist: true });
   try {
     const lignes = db.prepare("SELECT donnees FROM courriels WHERE modele = 'contact'").all() as {
       donnees: string;

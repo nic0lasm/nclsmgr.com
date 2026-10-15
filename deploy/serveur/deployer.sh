@@ -29,6 +29,10 @@ done
 
 cd "$DOSSIER"
 printf 'IMAGE_TAG=%s\n' "$TAG" > .env
+# Le service courrier ne démarre qu'une fois son secret SMTP en place.
+if [ -f /etc/nclsmgr/smtp.json ]; then
+  echo "COMPOSE_PROFILES=courrier" >> .env
+fi
 docker compose pull --quiet
 docker compose up -d --remove-orphans --wait --wait-timeout 120
 docker image prune -f > /dev/null

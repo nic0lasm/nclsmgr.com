@@ -30,6 +30,7 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+      - run: pnpm build:courrier
       - name: Préparer le serveur autonome
         run: cp -r .next/static .next/standalone/.next/
       - run: pnpm exec playwright install --with-deps chromium
@@ -84,6 +85,10 @@ jobs:
           done
           docker logs essai
           exit 1
+      - name: Service courrier présent et base SQLite chargeable
+        run: |
+          docker run --rm --read-only --cap-drop ALL nclsmgr:ci node -e \
+            "require('fs').accessSync('courrier.cjs'); new (require('better-sqlite3'))(':memory:').prepare('select 1').get()"
       - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: nclsmgr:ci

@@ -7,6 +7,15 @@
     "meContacter": "Me contacter",
     "chiffresCles": "En bref"
   },
+  "portfolio": {
+    "titre": "Portfolio",
+    "contexte": "Contexte",
+    "role": "Mon rôle",
+    "enjeux": "Enjeux",
+    "actions": "Ce que j'ai fait",
+    "resultats": "Résultats",
+    "etudes": "Études de cas"
+  },
   "cv": {
     "titre": "Curriculum vitae",
     "experiences": "Expériences",

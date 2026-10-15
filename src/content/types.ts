@@ -65,6 +65,27 @@ export interface Competences extends Fichier {
   domaines: { id: string; libelle: string; elements: string[] }[];
 }
 
+export interface EtudeDeCas {
+  id: string;
+  titre: string;
+  organisation: string;
+  debut: Mois;
+  fin: Mois | null;
+  contexte: string;
+  role: string;
+  enjeux: string[];
+  actions: string[];
+  resultats: string[];
+  note: string | null;
+  liens: { libelle: string; url: string }[];
+}
+
+export interface Portfolio extends Fichier {
+  intro: string;
+  etudes: EtudeDeCas[];
+  autres: { titre: string; texte: string; lien: { libelle: string; chemin: string } };
+}
+
 export const pagesSeo = [
   "accueil",
   "cv",
@@ -89,6 +110,15 @@ export interface Interface {
     voirCv: string;
     meContacter: string;
     chiffresCles: string;
+  };
+  portfolio: {
+    titre: string;
+    etudes: string;
+    contexte: string;
+    role: string;
+    enjeux: string;
+    actions: string;
+    resultats: string;
   };
   cv: {
     titre: string;
