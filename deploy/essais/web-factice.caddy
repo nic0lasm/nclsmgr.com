@@ -1,0 +1,10 @@
+# Remplace le service web pour l'essai des en-têtes : imite le proxy Next.js, qui pose une
+# CSP à nonce sauf sur les requêtes marquées prefetch.
+:3000 {
+	@normal {
+		not header Purpose prefetch
+		not header Next-Router-Prefetch *
+	}
+	header @normal Content-Security-Policy "default-src 'self'; script-src 'self' 'nonce-essai' 'strict-dynamic'"
+	respond "ok"
+}

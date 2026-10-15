@@ -47,6 +47,7 @@ jobs:
         run: |
           mkdir -p /tmp/certs
           openssl req -x509 -newkey rsa:2048 -nodes -days 1 -subj "/CN=nclsmgr.com" \
+            -addext "subjectAltName=DNS:nclsmgr.com,DNS:www.nclsmgr.com" \
             -keyout /tmp/certs/origin-key.pem -out /tmp/certs/origin.pem
           v4=$(curl -fsS https://www.cloudflare.com/ips-v4)
           v6=$(curl -fsS https://www.cloudflare.com/ips-v6)
@@ -57,6 +58,21 @@ jobs:
             -v "/tmp/cloudflare-ips.caddy:/etc/caddy/cloudflare-ips.caddy:ro" \
             -v /tmp/certs:/certs:ro \
             "$image" caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+      - name: Vérifier les politiques CSP servies
+        run: |
+          image=$(grep -oE 'image: caddy:[^ ]+' deploy/compose.yaml | cut -d' ' -f2)
+          docker network create essai
+          docker run -d --name web --network essai \
+            -v "$PWD/deploy/essais/web-factice.caddy:/etc/caddy/Caddyfile:ro" "$image"
+          docker run -d --name caddy --network essai -p 8443:443 \
+            -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
+            -v "/tmp/cloudflare-ips.caddy:/etc/caddy/cloudflare-ips.caddy:ro" \
+            -v /tmp/certs:/certs:ro "$image"
+          for _ in $(seq 30); do
+            curl -sk --resolve nclsmgr.com:8443:127.0.0.1 -o /dev/null https://nclsmgr.com:8443/fr && break
+            sleep 1
+          done
+          sh deploy/essais/verifier-en-tetes.sh 8443 || { docker logs caddy; exit 1; }
 
   image:
     name: Image et analyse de vulnérabilités
