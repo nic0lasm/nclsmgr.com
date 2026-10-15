@@ -29,7 +29,7 @@ Le site est disponible en français et en anglais.
 
 - **Surface d'attaque minimale** : pages publiques générées à l'avance, aucun script ni traceur tiers, aucune interface d'administration exposée.
 - **Durcissement du navigateur** : CSP stricte, HSTS, en-têtes de sécurité complets. Objectif A+ sur Mozilla Observatory et SSL Labs.
-- **Liens privés robustes** : jeton aléatoire de 128 bits conservé uniquement sous forme d'empreinte, échangé contre une session sécurisée, expirable et révocable, jamais indexé.
+- **Liens privés robustes** : jeton aléatoire de 256 bits conservé uniquement sous forme d'empreinte, échangé contre une session sécurisée, expirable et révocable, jamais indexé.
 - **Données maîtrisées** : statistiques auto-hébergées sans cookies, coordonnées réservées à l'espace privé, aucune donnée personnelle sensible dans ce dépôt.
 - **Chaîne de livraison surveillée** : dépendances suivies, analyse de code et des images à chaque build, aucun secret dans l'historique.
 - **Serveur durci** : accès SSH par clé uniquement, pare-feu, bannissement automatique, mises à jour de sécurité automatiques, sauvegardes chiffrées hors site.
