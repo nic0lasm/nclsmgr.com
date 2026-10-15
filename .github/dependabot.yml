@@ -2,6 +2,7 @@ version: 2
 updates:
   - package-ecosystem: npm
     directory: /
+    target-branch: main
     schedule:
       interval: weekly
     groups:
@@ -16,18 +17,25 @@ updates:
       prefix: chore
   - package-ecosystem: docker
     directory: /
+    target-branch: main
     schedule:
       interval: weekly
+    ignore:
+      # Rester sur la version LTS de Node : la montée de version majeure se fait à la main.
+      - dependency-name: node
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: chore
   - package-ecosystem: docker-compose
     directory: /deploy
+    target-branch: main
     schedule:
       interval: weekly
     commit-message:
       prefix: chore
   - package-ecosystem: github-actions
     directory: /
+    target-branch: main
     schedule:
       interval: weekly
     groups:
