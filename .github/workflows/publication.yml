@@ -16,8 +16,64 @@ env:
   IMAGE: ghcr.io/${{ github.repository }}
 
 jobs:
+  # Chaque architecture est construite sur un runner natif (l'émulation QEMU de l'arm64
+  # rendait la construction très lente), puis analysée avant d'être étiquetée.
   image:
-    name: Construire et publier l'image
+    name: Image ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      # Publiée par empreinte seulement : aucune étiquette n'est posée avant l'analyse.
+      - id: construction
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/${{ matrix.arch }}
+          provenance: true
+          sbom: true
+          outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=true
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        env:
+          # L'empreinte désigne un index (image et attestations) : préciser l'architecture.
+          TRIVY_PLATFORM: linux/${{ matrix.arch }}
+        with:
+          image-ref: ${{ env.IMAGE }}@${{ steps.construction.outputs.digest }}
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+      - name: Retenir l'empreinte
+        env:
+          EMPREINTE: ${{ steps.construction.outputs.digest }}
+        run: |
+          mkdir -p empreintes
+          touch "empreintes/${EMPREINTE#sha256:}"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: empreinte-${{ matrix.arch }}
+          path: empreintes/*
+          retention-days: 1
+
+  manifeste:
+    name: Étiqueter l'image multi-architecture
+    needs: image
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -25,38 +81,31 @@ jobs:
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - id: tag
         run: echo "tag=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
-      - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: empreinte-*
+          path: empreintes
+          merge-multiple: true
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          provenance: true
-          sbom: true
-          tags: |
-            ${{ env.IMAGE }}:${{ steps.tag.outputs.tag }}
-            ${{ env.IMAGE }}:latest
-      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
-        with:
-          image-ref: ${{ env.IMAGE }}:${{ steps.tag.outputs.tag }}
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
-          exit-code: "1"
+      - name: Créer le manifeste et poser les étiquettes
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+        working-directory: empreintes
+        run: |
+          docker buildx imagetools create -t "$IMAGE:$TAG" -t "$IMAGE:latest" \
+            $(printf "$IMAGE@sha256:%s " *)
+          docker buildx imagetools inspect "$IMAGE:$TAG"
 
   deploiement:
     name: Déployer sur le serveur
-    needs: image
+    needs: manifeste
     if: vars.DEPLOIEMENT_ACTIF == 'true'
     runs-on: ubuntu-24.04
     environment: production
@@ -76,7 +125,7 @@ jobs:
       - name: Envoyer la configuration et redémarrer
         env:
           HOST: ${{ secrets.DEPLOY_HOST }}
-          TAG: ${{ needs.image.outputs.tag }}
+          TAG: ${{ needs.manifeste.outputs.tag }}
         run: |
           # La clé n'autorise qu'une commande forcée sur le serveur (deploy/serveur/deployer.sh).
           tar -C deploy -cf - compose.yaml Caddyfile \
