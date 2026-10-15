@@ -16,6 +16,10 @@
 #
 # Hôte : alias « nclsmgr-liens » de ~/.ssh/config, ou la variable LIENS_HOTE.
 set -eu
+# Aucun développement de jokers (« --documents '*' » doit partir tel quel), et sed et awk
+# traitent les octets un à un, quelle que soit la locale du Mac.
+set -f
+export LC_ALL=C
 
 usage() {
   sed -n '7,16s/^# \{0,1\}//p' "$0" >&2
@@ -91,4 +95,4 @@ case $action in
   *) usage ;;
 esac
 
-printf '{"action":"%s"%s}\n' "$action" "$json" | ${LIENS_SSH:-ssh} -T "${LIENS_HOTE:-nclsmgr-liens}"
+printf '{"action":"%s"%s}\n' "$action" "$json" | ${LIENS_SSH:-ssh} -T -- "${LIENS_HOTE:-nclsmgr-liens}"

@@ -4,9 +4,10 @@ import type { MessageCourriel } from "@/lib/espace/courriels";
 import { JOUR, verifierJeton } from "@/lib/espace/liens";
 import { migrer } from "@/lib/espace/migrations";
 import { lireSession, ouvrirSession } from "@/lib/espace/sessions";
-import { ErreurCommande, executer, type Contexte } from "./commande";
+import { ErreurCommande, executer, MAX_CREATIONS_PAR_HEURE, type Contexte } from "./commande";
 
 const T0 = Date.UTC(2026, 9, 15, 12, 0);
+const HEURE = 3_600_000;
 
 let db: Base;
 let envoyes: MessageCourriel[];
@@ -55,12 +56,55 @@ describe("liens creer", () => {
     expect(verifierJeton(db, jeton, T0).valide).toBe(true);
   });
 
-  it("annule le lien si le courriel ne part pas", async () => {
+  const nombreDeLiens = () => db.prepare("SELECT count(*) AS n FROM liens").get();
+
+  it("n'enregistre aucun lien si le courriel ne part pas", async () => {
     contexte.envoyer = vi.fn().mockRejectedValue(new Error("SMTP indisponible"));
     await expect(
       lancer({ action: "creer", profil: "recruteur", destinataire: "A" }),
-    ).rejects.toThrow("Le courriel n'est pas parti : lien annulé, réessaie plus tard.");
-    expect(db.prepare("SELECT count(*) AS n FROM liens").get()).toEqual({ n: 0 });
+    ).rejects.toThrow("Le courriel n'est pas parti : aucun lien créé, réessaie plus tard.");
+    expect(nombreDeLiens()).toEqual({ n: 0 });
+  });
+
+  it("n'écrit rien en base tant que l'envoi n'est pas revenu", async () => {
+    // Un envoi qui ne revient jamais équivaut à un processus tué pendant l'envoi.
+    let envoiCommence = false;
+    contexte.envoyer = () => {
+      envoiCommence = true;
+      return new Promise<void>(() => {});
+    };
+    void lancer({ action: "creer", profil: "recruteur", destinataire: "A" });
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(envoiCommence).toBe(true);
+    expect(nombreDeLiens()).toEqual({ n: 0 });
+  });
+
+  it("prévient que le lien reçu est inactif si l'enregistrement échoue après l'envoi", async () => {
+    contexte.envoyer = async (message) => {
+      envoyes.push(message);
+      db.pragma("query_only = ON");
+    };
+    const echec = lancer({ action: "creer", profil: "recruteur", destinataire: "A" });
+    await expect(echec).rejects.toThrow(ErreurCommande);
+    await expect(echec).rejects.toThrow(
+      /^Le courriel est parti mais le lien l-[a-z0-9]{6} n'a pas pu être enregistré : le lien reçu ne fonctionnera pas, crées-en un autre\.$/,
+    );
+    db.pragma("query_only = OFF");
+    expect(envoyes).toHaveLength(1);
+    expect(nombreDeLiens()).toEqual({ n: 0 });
+  });
+
+  it(`refuse plus de ${MAX_CREATIONS_PAR_HEURE} créations par heure`, async () => {
+    for (let i = 0; i < MAX_CREATIONS_PAR_HEURE; i++) await creer();
+    await expect(
+      lancer({ action: "creer", profil: "recruteur", destinataire: "A" }, T0 + HEURE - 1),
+    ).rejects.toThrow(
+      `Déjà ${MAX_CREATIONS_PAR_HEURE} liens créés dans l'heure : réessaie plus tard.`,
+    );
+    expect(envoyes).toHaveLength(MAX_CREATIONS_PAR_HEURE);
+    await expect(
+      lancer({ action: "creer", profil: "recruteur", destinataire: "A" }, T0 + HEURE),
+    ).resolves.toMatch(/^Lien l-/);
   });
 
   it("rend lisibles les erreurs de saisie et refuse les options inconnues", async () => {
@@ -70,6 +114,10 @@ describe("liens creer", () => {
     await expect(
       lancer({ action: "creer", profil: "recruteur", destinataire: "A", jeton: "x" }),
     ).rejects.toThrow("Option inconnue : jeton.");
+    // Ce que le script du Mac envoie pour « --documents '*' ».
+    await expect(
+      lancer({ action: "creer", profil: "recruteur", destinataire: "A", documents: ["*"] }),
+    ).rejects.toThrow("Liste de documents invalide.");
     expect(envoyes).toEqual([]);
   });
 });
@@ -101,6 +149,15 @@ describe("autres actions", () => {
     );
   });
 
+  it("retire du journal les caractères invisibles ou de contrôle venus des visiteurs", async () => {
+    const { id } = await creer();
+    db.prepare(
+      "INSERT INTO consultations (lien_id, type, document, le, pays, navigateur) VALUES (?, 'document', ?, ?, ?, ?)",
+    ).run(id, "cv\u{7}\u{2028}", T0, "F\u{200b}R", "Fire\u{1b}[2J\u{9b}fox\u{202e}\u{2029}");
+    const sortie = await lancer({ action: "journal", id });
+    expect(sortie.split("\n").at(-1)).toBe("15/10/2026 14:00  document cv  FR  Fire[2Jfox");
+  });
+
   it("prolonge un lien et ses sessions, sans dépasser 180 jours", async () => {
     const { id, jeton } = await creer({ dureeJours: 10 });
     const lien = verifierJeton(db, jeton, T0).lien!;
@@ -113,6 +170,16 @@ describe("autres actions", () => {
       `Lien ${id} valable jusqu'au 13/04/2027.`,
     );
     await expect(lancer({ action: "prolonger", id, jours: 0 })).rejects.toThrow(ErreurCommande);
+  });
+
+  it("prolonge un lien expiré sans ressusciter ses sessions expirées", async () => {
+    const { id, jeton } = await creer({ dureeJours: 1 });
+    const session = ouvrirSession(db, verifierJeton(db, jeton, T0).lien!, T0);
+    expect(await lancer({ action: "prolonger", id, jours: 10 }, T0 + 2 * JOUR)).toBe(
+      `Lien ${id} valable jusqu'au 27/10/2026.`,
+    );
+    expect(verifierJeton(db, jeton, T0 + 3 * JOUR).valide).toBe(true);
+    expect(lireSession(db, session.valeur, T0 + 3 * JOUR)).toBeNull();
   });
 
   it("révoque, puis refuse de prolonger, et supprime", async () => {

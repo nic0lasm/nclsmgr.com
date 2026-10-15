@@ -9,6 +9,16 @@ import { lireConfiguration } from "./configuration";
 import { creerExpediteur } from "./smtp";
 
 const TAILLE_MAX = 64 * 1024;
+// Sous les 60 s du « timeout » de l'hôte, qui n'arrête que le client docker : la commande
+// s'arrête d'elle-même, entrée sans fin ou envoi bloqué compris. Le courriel part avant
+// l'enregistrement du lien, donc un arrêt pendant l'envoi ne laisse aucun lien en base.
+const DELAI_MAX = 45_000;
+
+const delai = setTimeout(() => {
+  process.stderr.write("Délai de 45 s dépassé : commande abandonnée, aucun lien enregistré.\n");
+  process.exit(1);
+}, DELAI_MAX);
+delai.unref();
 
 async function lireEntree(): Promise<string> {
   const morceaux: Buffer[] = [];
@@ -60,8 +70,12 @@ async function principal(): Promise<string> {
 }
 
 principal().then(
-  (sortie) => process.stdout.write(`${sortie}\n`),
+  (sortie) => {
+    clearTimeout(delai);
+    process.stdout.write(`${sortie}\n`);
+  },
   (erreur) => {
+    clearTimeout(delai);
     // La sortie d'erreur revient dans le terminal de Nico, jamais dans un journal public.
     process.stderr.write(
       erreur instanceof ErreurCommande ? `${erreur.message}\n` : `Erreur interne : ${erreur}\n`,

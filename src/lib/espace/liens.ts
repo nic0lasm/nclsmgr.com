@@ -154,46 +154,21 @@ function verifier(entree: NouveauLien) {
   };
 }
 
+export type LienPrepare = { lien: Lien; jeton: string };
+
 /**
- * Crée un lien et rend son jeton, qui n'est jamais stocké : seule son empreinte l'est.
- * L'appelant le transmet directement à Nico puis l'oublie.
+ * Valide l'entrée, tire un jeton et un identifiant encore libre, sans rien écrire : l'appelant
+ * peut transmettre le lien avant de l'enregistrer avec enregistrerLien.
  */
-export function creerLien(
-  db: Base,
-  entree: NouveauLien,
-  maintenant: number,
-): { lien: Lien; jeton: string } {
+export function preparerLien(db: Base, entree: NouveauLien, maintenant: number): LienPrepare {
   const donnees = verifier(entree);
-  const jeton = genererSecret();
-  const inserer = db.prepare(
-    `INSERT INTO liens (id, jeton_sha256, profil, langue, destinataire, organisation, message,
-       documents, note, cree_le, expire_le)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-  );
-  const expireLe = maintenant + donnees.duree * JOUR;
+  const pris = db.prepare<[string], { id: string }>("SELECT id FROM liens WHERE id = ?");
   // L'identifiant est court : en cas de collision, on en tire un autre.
   for (let essai = 0; essai < 5; essai++) {
     const id = genererIdLien();
-    try {
-      inserer.run(
-        id,
-        empreinte(jeton),
-        donnees.profil,
-        donnees.langue,
-        donnees.destinataire,
-        donnees.organisation,
-        donnees.message,
-        JSON.stringify(donnees.documents),
-        donnees.note,
-        maintenant,
-        expireLe,
-      );
-    } catch (erreur) {
-      if ((erreur as { code?: string }).code === "SQLITE_CONSTRAINT_PRIMARYKEY") continue;
-      throw erreur;
-    }
+    if (pris.get(id)) continue;
     return {
-      jeton,
+      jeton: genererSecret(),
       lien: {
         id,
         profil: donnees.profil,
@@ -204,13 +179,44 @@ export function creerLien(
         documents: donnees.documents,
         note: donnees.note,
         creeLe: maintenant,
-        expireLe,
+        expireLe: maintenant + donnees.duree * JOUR,
         revoqueLe: null,
         ouvertLe: null,
       },
     };
   }
   throw new Error("Impossible de tirer un identifiant de lien libre.");
+}
+
+/** Enregistre un lien préparé : seule l'empreinte du jeton est stockée. */
+export function enregistrerLien(db: Base, { lien, jeton }: LienPrepare): void {
+  db.prepare(
+    `INSERT INTO liens (id, jeton_sha256, profil, langue, destinataire, organisation, message,
+       documents, note, cree_le, expire_le)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  ).run(
+    lien.id,
+    empreinte(jeton),
+    lien.profil,
+    lien.langue,
+    lien.destinataire,
+    lien.organisation,
+    lien.message,
+    JSON.stringify(lien.documents),
+    lien.note,
+    lien.creeLe,
+    lien.expireLe,
+  );
+}
+
+/**
+ * Crée un lien et rend son jeton, qui n'est jamais stocké : seule son empreinte l'est.
+ * L'appelant le transmet directement à Nico puis l'oublie.
+ */
+export function creerLien(db: Base, entree: NouveauLien, maintenant: number): LienPrepare {
+  const prepare = preparerLien(db, entree, maintenant);
+  enregistrerLien(db, prepare);
+  return prepare;
 }
 
 export type Verification = { valide: true; lien: Lien } | { valide: false; lien: Lien | null };

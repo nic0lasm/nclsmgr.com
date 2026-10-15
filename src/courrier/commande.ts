@@ -3,14 +3,16 @@ import type { MessageCourriel } from "@/lib/espace/courriels";
 import { estIdLien } from "@/lib/espace/jetons";
 import {
   colonnesLien,
-  creerLien,
   DonneesInvalides,
   DUREE_MAX_JOURS,
+  enregistrerLien,
   estActif,
   JOUR,
+  preparerLien,
   revoquerLien,
   versLien,
   type Lien,
+  type LienPrepare,
   type LigneLien,
   type NouveauLien,
 } from "@/lib/espace/liens";
@@ -28,6 +30,16 @@ export type Contexte = {
 };
 
 type Entree = Record<string, unknown>;
+
+const HEURE = 3_600_000;
+export const MAX_CREATIONS_PAR_HEURE = 20;
+// Caractères de contrôle, de format et séparateurs de ligne : retirés des valeurs venues des
+// visiteurs avant de les écrire dans le terminal.
+const NON_AFFICHABLE = /[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/gu;
+
+function affichable(valeur: string): string {
+  return valeur.replace(NON_AFFICHABLE, "");
+}
 
 const jourParis = new Intl.DateTimeFormat("fr-FR", {
   dateStyle: "short",
@@ -79,17 +91,28 @@ async function creer(db: Base, entree: Entree, contexte: Contexte): Promise<stri
     "note",
     "dureeJours",
   ]);
+  const maintenant = contexte.maintenant();
+  const { n: recents } = db
+    .prepare<[number], { n: number }>("SELECT count(*) AS n FROM liens WHERE cree_le > ?")
+    .get(maintenant - HEURE)!;
+  if (recents >= MAX_CREATIONS_PAR_HEURE) {
+    throw new ErreurCommande(
+      `Déjà ${MAX_CREATIONS_PAR_HEURE} liens créés dans l'heure : réessaie plus tard.`,
+    );
+  }
   const donnees: Entree = { ...entree };
   delete donnees.action;
-  let cree: { lien: Lien; jeton: string };
+  let prepare: LienPrepare;
   try {
-    cree = creerLien(db, { langue: "fr", ...donnees } as NouveauLien, contexte.maintenant());
+    prepare = preparerLien(db, { langue: "fr", ...donnees } as NouveauLien, maintenant);
   } catch (erreur) {
     if (erreur instanceof DonneesInvalides) throw new ErreurCommande(erreur.message);
     throw erreur;
   }
-  const { lien, jeton } = cree;
+  const { lien, jeton } = prepare;
   const adresse = `${contexte.site}/${lien.langue}/p#${jeton}`;
+  // Le courriel part avant l'enregistrement : si le processus est interrompu pendant l'envoi,
+  // aucun lien n'existe en base, et un courriel parti malgré tout contient un lien inactif.
   try {
     await contexte.envoyer({
       sujet: "Espace privé : nouveau lien",
@@ -102,9 +125,15 @@ async function creer(db: Base, entree: Entree, contexte: Contexte): Promise<stri
       ].join("\n"),
     });
   } catch {
-    // Le jeton n'est conservé nulle part : un lien dont le courriel n'est pas parti est perdu.
-    db.prepare("DELETE FROM liens WHERE id = ?").run(lien.id);
-    throw new ErreurCommande("Le courriel n'est pas parti : lien annulé, réessaie plus tard.");
+    throw new ErreurCommande("Le courriel n'est pas parti : aucun lien créé, réessaie plus tard.");
+  }
+  try {
+    enregistrerLien(db, prepare);
+  } catch (erreur) {
+    throw new ErreurCommande(
+      `Le courriel est parti mais le lien ${lien.id} n'a pas pu être enregistré : le lien reçu ne fonctionnera pas, crées-en un autre.`,
+      { cause: erreur },
+    );
   }
   return `Lien ${lien.id} créé pour ${qui(lien)}, valable jusqu'au ${jourParis.format(lien.expireLe)}. Il t'a été envoyé par courriel.`;
 }
@@ -161,9 +190,11 @@ function journal(db: Base, entree: Entree, contexte: Contexte): string {
     ...lignes.map((l) =>
       [
         dateParis.format(l.le),
-        l.type === "document" ? `document ${l.document ?? "?"}` : l.type.replace("_", " "),
-        l.pays ?? "--",
-        l.navigateur ?? "",
+        l.type === "document"
+          ? `document ${affichable(l.document ?? "?")}`
+          : l.type.replace("_", " "),
+        l.pays === null ? "--" : affichable(l.pays),
+        l.navigateur === null ? "" : affichable(l.navigateur),
       ].join("  "),
     ),
   ].join("\n");
@@ -171,22 +202,36 @@ function journal(db: Base, entree: Entree, contexte: Contexte): string {
 
 function prolonger(db: Base, entree: Entree, contexte: Contexte): string {
   champs(entree, ["action", "id", "jours"]);
-  const lien = lireLien(db, idLien(entree.id));
+  const id = idLien(entree.id);
   const jours = entree.jours;
   if (!Number.isInteger(jours) || (jours as number) < 1 || (jours as number) > DUREE_MAX_JOURS) {
     throw new ErreurCommande(`Nombre de jours attendu, entre 1 et ${DUREE_MAX_JOURS}.`);
   }
-  if (lien.revoqueLe !== null) throw new ErreurCommande("Un lien révoqué ne se prolonge pas.");
   const maintenant = contexte.maintenant();
-  const expireLe = Math.min(
-    Math.max(lien.expireLe, maintenant) + (jours as number) * JOUR,
-    maintenant + DUREE_MAX_JOURS * JOUR,
-  );
-  db.transaction(() => {
-    db.prepare("UPDATE liens SET expire_le = ? WHERE id = ?").run(expireLe, lien.id);
-    db.prepare("UPDATE sessions SET expire_le = ? WHERE lien_id = ?").run(expireLe, lien.id);
-  }).immediate();
-  return `Lien ${lien.id} valable jusqu'au ${jourParis.format(expireLe)}.`;
+  // Lecture, vérification et mises à jour dans une seule transaction : une révocation
+  // concurrente ne peut pas s'intercaler.
+  const expireLe = db
+    .transaction(() => {
+      const lien = lireLien(db, id);
+      if (lien.revoqueLe !== null) throw new ErreurCommande("Un lien révoqué ne se prolonge pas.");
+      const fin = Math.min(
+        Math.max(lien.expireLe, maintenant) + (jours as number) * JOUR,
+        maintenant + DUREE_MAX_JOURS * JOUR,
+      );
+      const { changes } = db
+        .prepare("UPDATE liens SET expire_le = ? WHERE id = ? AND revoque_le IS NULL")
+        .run(fin, lien.id);
+      if (!changes) throw new ErreurCommande("Un lien révoqué ne se prolonge pas.");
+      // Seules les sessions encore valides suivent : une session expirée ne ressuscite pas.
+      db.prepare("UPDATE sessions SET expire_le = ? WHERE lien_id = ? AND expire_le > ?").run(
+        fin,
+        lien.id,
+        maintenant,
+      );
+      return fin;
+    })
+    .immediate();
+  return `Lien ${id} valable jusqu'au ${jourParis.format(expireLe)}.`;
 }
 
 function revoquer(db: Base, entree: Entree, contexte: Contexte): string {

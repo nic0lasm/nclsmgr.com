@@ -1,16 +1,19 @@
 import { execFileSync } from "node:child_process";
-import { chmodSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 // Le script du Mac est testé avec un faux ssh qui renvoie ce qu'il reçoit.
 const script = join(process.cwd(), "scripts/liens.sh");
+const FAUX_SSH = '#!/bin/sh\nprintf "%s\\n" "$*" >&2\ncat\n';
 let dossier: string;
 let fauxSsh: string;
 
 function liens(...args: string[]) {
   return execFileSync("sh", [script, ...args], {
+    // Lancé depuis un dossier qui contient des fichiers, pour vérifier qu'aucun joker n'est développé.
+    cwd: dossier,
     env: { ...process.env, LIENS_SSH: fauxSsh },
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
@@ -20,8 +23,9 @@ function liens(...args: string[]) {
 beforeAll(() => {
   dossier = mkdtempSync(join(tmpdir(), "liens-"));
   fauxSsh = join(dossier, "ssh");
-  writeFileSync(fauxSsh, '#!/bin/sh\nprintf "%s\\n" "$*" >&2\ncat\n');
+  writeFileSync(fauxSsh, FAUX_SSH);
   chmodSync(fauxSsh, 0o755);
+  writeFileSync(join(dossier, "cv-complet"), "");
 });
 
 afterAll(() => rmSync(dossier, { recursive: true, force: true }));
@@ -49,6 +53,21 @@ describe("scripts/liens.sh", () => {
       documents: ["cv-complet", "references"],
       dureeJours: 45,
     });
+  });
+
+  it("n'interprète pas les jokers et sépare l'hôte des options de ssh", () => {
+    const argsSsh = join(dossier, "args");
+    writeFileSync(fauxSsh, `#!/bin/sh\nprintf '%s\\n' "$@" > '${argsSsh}'\ncat\n`);
+    try {
+      expect(JSON.parse(liens("creer", "--documents", "*", "--destinataire", "cv*"))).toEqual({
+        action: "creer",
+        documents: ["*"],
+        destinataire: "cv*",
+      });
+      expect(readFileSync(argsSsh, "utf8")).toBe("-T\n--\nnclsmgr-liens\n");
+    } finally {
+      writeFileSync(fauxSsh, FAUX_SSH);
+    }
   });
 
   it("construit les autres actions", () => {
