@@ -1,0 +1,40 @@
+name: nclsmgr
+
+services:
+  web:
+    image: ghcr.io/nic0lasm/nclsmgr.com:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/.next/cache
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    networks: [interne]
+
+  caddy:
+    image: caddy:2-alpine@sha256:d8542f48d34a9cf4e4c11a478865229840e87e4c96ea3f439101f31a5d35f75f
+    restart: unless-stopped
+    depends_on: [web]
+    ports:
+      - "443:443"
+    read_only: true
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    security_opt: [no-new-privileges:true]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./cloudflare-ips.caddy:/etc/caddy/cloudflare-ips.caddy:ro
+      - /etc/nclsmgr/certs:/certs:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [interne, public]
+
+networks:
+  interne:
+    internal: true
+  public: {}
+
+volumes:
+  caddy_data: {}
+  caddy_config: {}
