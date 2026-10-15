@@ -18,7 +18,7 @@ The data controller is Nicolas Maigre, who can be reached through the [contact f
 | Visits to the private area (date, country, browser and operating system family, page or document viewed). The IP address is never recorded. | To know whether the link has been opened, and to secure access                                                                   | Legitimate interests: following up the contact, and security                           | 3 months                                              |
 | Server technical logs (IP address, date, page requested)                                                                                    | Site security: detecting and blocking abuse                                                                                      | Legitimate interests: site security                                                    | 30 days                                               |
 
-If you have received a personal link, I am notified by email the first time you open it. These notifications are sorted and deleted every quarter. The emails I send contain no tracking pixels.
+If you have received a personal link, I am notified by email the first time you open it, then at most once a day if someone tries to use it after it has expired or been revoked. These notifications are sorted and deleted every quarter. The emails I send contain no tracking pixels.
 
 A message sent through the contact form is kept on the site's server until it is forwarded to my mailbox, then deleted no more than 8 days later. To limit abuse, messages sent from the same connection are counted for one hour, in memory only and without keeping the IP address.
 
