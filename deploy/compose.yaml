@@ -8,6 +8,11 @@ services:
     tmpfs:
       - /tmp
       - /app/.next/cache
+    environment:
+      ESPACE_BASE: /data/base/espace.db
+    volumes:
+      - base:/data/base
+      - prive:/data/prive
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     networks: [interne]
@@ -36,5 +41,9 @@ networks:
   public: {}
 
 volumes:
+  # Base de l'espace privé, partagée plus tard avec le service courrier.
+  base: {}
+  # Documents réservés, lus par le seul service web.
+  prive: {}
   caddy_data: {}
   caddy_config: {}
