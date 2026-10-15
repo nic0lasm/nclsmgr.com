@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:courrier": "esbuild src/courrier/index.ts --bundle --platform=node --target=node24 --format=cjs --conditions=react-server --external:better-sqlite3 --outfile=dist/courrier.cjs",
+    "build:courrier": "esbuild courrier=src/courrier/index.ts liens=src/courrier/liens.ts --bundle --platform=node --target=node24 --format=cjs --conditions=react-server --external:better-sqlite3 --outdir=dist --out-extension:.js=.cjs",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
