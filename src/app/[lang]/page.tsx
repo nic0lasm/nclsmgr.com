@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { getDictionary } from "@/lib/dictionaries";
@@ -10,17 +9,17 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
   const dict = getDictionary(lang);
-  const other = lang === "fr" ? "en" : "fr";
 
   return (
-    <main className="holding">
-      <p className="brand">{dict.title}</p>
-      <h1>{dict.role}</h1>
-      <p>{dict.status}</p>
-      <p className="muted">{dict.detail}</p>
-      <Link href={`/${other}`} hrefLang={other} className="switch">
-        {dict.switchLabel}
-      </Link>
+    <main id="contenu" className="wrap">
+      <section className="section" aria-labelledby="titre">
+        <p className="section__label">{dict.title}</p>
+        <div className="section__body">
+          <h1 id="titre">{dict.role}</h1>
+          <p className="lead">{dict.status}</p>
+          <p className="muted">{dict.detail}</p>
+        </div>
+      </section>
     </main>
   );
 }
