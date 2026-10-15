@@ -65,6 +65,10 @@ nclsmgr.com {
 	# Next.js ne doit jamais recevoir cet en-tête interne depuis l'extérieur (famille CVE-2025-29927).
 	request_header -X-Middleware-Subrequest
 
+	# Pays du visiteur : seulement si la requête vient de Cloudflare (trusted_proxies).
+	@horsCloudflare not vars trusted_proxy true
+	request_header @horsCloudflare -CF-IPCountry
+
 	# Mesure d'audience : seuls le script et la collecte sont publics, jamais le tableau de bord.
 	@statistiques path /stats/script.js /stats/api/send
 	handle @statistiques {
