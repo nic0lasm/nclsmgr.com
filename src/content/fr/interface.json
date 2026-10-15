@@ -1,0 +1,39 @@
+{
+  "langue": "fr",
+  "accueil": {
+    "profil": "Profil",
+    "parcours": "Parcours",
+    "voirCv": "Voir le CV",
+    "meContacter": "Me contacter",
+    "chiffresCles": "En bref"
+  },
+  "cv": {
+    "titre": "Curriculum vitae",
+    "experiences": "Expériences",
+    "formations": "Formation",
+    "certifications": "Certifications",
+    "competences": "Compétences",
+    "langues": "Langues",
+    "centresInteret": "Centres d'intérêt",
+    "enCours": "aujourd'hui",
+    "realisations": "Réalisations"
+  },
+  "contact": {
+    "linkedin": "Mon profil LinkedIn",
+    "formulaire": {
+      "nom": "Nom",
+      "email": "E-mail",
+      "emailAide": "Pour que je puisse vous répondre",
+      "objet": "Objet",
+      "objets": ["Recrutement", "Projet", "Autre"],
+      "message": "Message",
+      "envoyer": "Envoyer",
+      "mention": "Votre nom et votre adresse servent uniquement à vous répondre.",
+      "succes": "Message bien reçu, merci. Je reviens vers vous rapidement.",
+      "champManquant": "Ce champ est nécessaire.",
+      "emailInvalide": "Cette adresse e-mail ne semble pas valide.",
+      "echec": "Le message n'a pas pu partir. Réessayez dans quelques minutes ou écrivez-moi sur LinkedIn.",
+      "tropDEnvois": "Plusieurs messages viennent d'être envoyés depuis votre connexion. Réessayez un peu plus tard."
+    }
+  }
+}

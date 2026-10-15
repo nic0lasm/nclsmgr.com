@@ -1,0 +1,39 @@
+{
+  "langue": "en",
+  "accueil": {
+    "profil": "Profile",
+    "parcours": "Background",
+    "voirCv": "View my CV",
+    "meContacter": "Get in touch",
+    "chiffresCles": "At a glance"
+  },
+  "cv": {
+    "titre": "Curriculum vitae",
+    "experiences": "Experience",
+    "formations": "Education",
+    "certifications": "Certifications",
+    "competences": "Skills",
+    "langues": "Languages",
+    "centresInteret": "Interests",
+    "enCours": "present",
+    "realisations": "Highlights"
+  },
+  "contact": {
+    "linkedin": "My LinkedIn profile",
+    "formulaire": {
+      "nom": "Name",
+      "email": "Email",
+      "emailAide": "So that I can reply to you",
+      "objet": "Subject",
+      "objets": ["Recruitment", "Project", "Other"],
+      "message": "Message",
+      "envoyer": "Send",
+      "mention": "Your name and email address are used only to reply to you.",
+      "succes": "Message received, thank you. I will get back to you shortly.",
+      "champManquant": "This field is required.",
+      "emailInvalide": "This email address does not look valid.",
+      "echec": "Your message could not be sent. Please try again in a few minutes or contact me on LinkedIn.",
+      "tropDEnvois": "Several messages have just been sent from your connection. Please try again a little later."
+    }
+  }
+}

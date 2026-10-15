@@ -3,7 +3,7 @@ import { LanguageLink } from "@/components/LanguageLink";
 import { MobileMenu } from "@/components/MobileMenu";
 import { NavLinks } from "@/components/NavLinks";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { getDictionary } from "@/lib/dictionaries";
+import { getContent } from "@/lib/content";
 import type { Locale } from "@/lib/i18n";
 import { chrome, navLinks, siteOwner } from "@/lib/navigation";
 
@@ -19,7 +19,7 @@ export function SiteHeader({ lang }: { lang: Locale }) {
       <div className="wrap site-header__inner">
         <Link className="site-brand" href={`/${lang}`}>
           <span className="site-brand__name">{siteOwner}</span>
-          <span className="site-brand__role">{getDictionary(lang).role}</span>
+          <span className="site-brand__role">{getContent(lang).profil.intitule}</span>
         </Link>
         {hasNav && (
           <nav className="site-nav" aria-label={t.navLabel}>

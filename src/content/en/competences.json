@@ -1,0 +1,46 @@
+{
+  "statut": "brouillon",
+  "langue": "en",
+  "domaines": [
+    {
+      "id": "pilotage",
+      "libelle": "Project management",
+      "elements": [
+        "Pre-sales and bid responses",
+        "Scoping and planning",
+        "Financial and contract management",
+        "Risk management",
+        "Leading multidisciplinary teams",
+        "Agile at scale (SAFe, Scrum)"
+      ]
+    },
+    {
+      "id": "cyber",
+      "libelle": "Cybersecurity",
+      "elements": [
+        "Security Officer on defence projects",
+        "Building security in from pre-sales and scoping onwards"
+      ]
+    },
+    {
+      "id": "technique",
+      "libelle": "Technical",
+      "elements": [
+        "Web development (PHP, HTML, CSS, SQL)",
+        "Databases",
+        "Electronics and industrial computing"
+      ]
+    },
+    {
+      "id": "relation",
+      "libelle": "Client relations and communications",
+      "elements": [
+        "Client relationship management, from pre-sales to delivery",
+        "B2B sales",
+        "Internal and corporate communications",
+        "Media relations",
+        "Adobe software (Illustrator, XD, Photoshop)"
+      ]
+    }
+  ]
+}

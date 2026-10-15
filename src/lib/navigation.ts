@@ -15,10 +15,10 @@ type NavEntry = {
 
 export const navEntries: readonly NavEntry[] = [
   { segment: "", label: { fr: "Accueil", en: "Home" }, published: true },
-  { segment: "cv", label: { fr: "CV", en: "Résumé" }, published: false },
+  { segment: "cv", label: { fr: "CV", en: "Résumé" }, published: true },
   { segment: "dev", label: { fr: "Dev", en: "Dev" }, published: false },
   { segment: "portfolio", label: { fr: "Portfolio", en: "Portfolio" }, published: false },
-  { segment: "contact", label: { fr: "Contact", en: "Contact" }, published: false },
+  { segment: "contact", label: { fr: "Contact", en: "Contact" }, published: true },
 ];
 
 export type NavLink = { href: string; label: string };

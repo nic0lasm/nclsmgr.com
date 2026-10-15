@@ -1,0 +1,98 @@
+{
+  "statut": "brouillon",
+  "langue": "fr",
+  "experiences": [
+    {
+      "id": "capgemini",
+      "poste": "Engagement Manager",
+      "organisation": "Capgemini",
+      "secteur": "Conseil et services numériques",
+      "lieu": "Issy-les-Moulineaux",
+      "debut": "2020-03",
+      "fin": null,
+      "contexte": "Pilotage de projets de développement applicatif, de cybersécurité et web pour des clients du secteur Défense.",
+      "realisations": [
+        "Plus de 40 projets pilotés, de l'avant-vente à la livraison",
+        "Responsabilité de la relation client et de la satisfaction sur toute la durée des engagements",
+        "Pilotage financier et contractuel : budget, marge, avenants, réponses aux appels d'offres",
+        "Constitution et management de plusieurs équipes de 5 à 10 personnes en parallèle",
+        "Gouvernance des projets et gestion des risques, en agilité à l'échelle (SAFe, Scrum)",
+        "Officier de sécurité : protection des informations et des accès sur les projets Défense"
+      ],
+      "outils": ["SAFe", "Scrum"]
+    },
+    {
+      "id": "jcdecaux",
+      "poste": "Chef de publicité",
+      "organisation": "JCDecaux",
+      "secteur": "Communication extérieure",
+      "lieu": "Gennevilliers",
+      "debut": "2018-09",
+      "fin": "2020-02",
+      "contexte": "Vente de campagnes d'affichage aux annonceurs du sud des Hauts-de-Seine.",
+      "realisations": [
+        "Développement d'un portefeuille d'annonceurs B2B",
+        "Conseil en stratégie de communication extérieure",
+        "Responsabilité du mobilier urbain du sud des Hauts-de-Seine"
+      ],
+      "outils": []
+    },
+    {
+      "id": "armee-terre",
+      "poste": "Officier communication, année de césure",
+      "organisation": "Armée de Terre",
+      "secteur": "Défense",
+      "lieu": "Tours",
+      "debut": "2017-09",
+      "fin": "2018-08",
+      "contexte": "Volontariat d'un an dans la chaîne ressources humaines de l'armée de Terre.",
+      "realisations": [
+        "Rédacteur en chef et responsable fonctionnel du site RH-Terre, management de la cellule éditoriale",
+        "Relations extérieures, reportages photo, événementiel et supports de communication"
+      ],
+      "outils": []
+    },
+    {
+      "id": "reserve",
+      "poste": "Lieutenant, officier de réserve spécialiste communication",
+      "organisation": "Armée de Terre",
+      "secteur": "Défense",
+      "lieu": "Paris",
+      "debut": "2017-09",
+      "fin": null,
+      "contexte": "Réserve opérationnelle de l'armée de Terre, en parallèle de mon activité civile.",
+      "realisations": ["Engagement de trois mois en opération extérieure"],
+      "outils": []
+    }
+  ],
+  "formations": [
+    {
+      "id": "mbs",
+      "diplome": "Master 2, Sciences de gestion",
+      "etablissement": "Montpellier Business School",
+      "lieu": "Montpellier",
+      "debut": "2015-09",
+      "fin": "2019-12",
+      "detail": "Programme Grande École et double licence de l'IAE de Montpellier. Spécialisation entrepreneuriat et conseil en environnement numérique."
+    },
+    {
+      "id": "monterrey",
+      "diplome": "Master 1, Négociations internationales",
+      "etablissement": "Tecnológico de Monterrey",
+      "lieu": "Mexique",
+      "debut": "2016-06",
+      "fin": "2017-07",
+      "detail": "Cours suivis en espagnol et en anglais."
+    },
+    {
+      "id": "dut-geii",
+      "diplome": "DUT Génie électrique et informatique industrielle",
+      "etablissement": "Université Claude Bernard Lyon 1",
+      "lieu": "Lyon",
+      "debut": "2013-09",
+      "fin": "2015-07",
+      "detail": "Informatique, électronique, électrotechnique."
+    }
+  ],
+  "certifications": []
+}

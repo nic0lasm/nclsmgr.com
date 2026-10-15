@@ -1,0 +1,47 @@
+{
+  "statut": "brouillon",
+  "langue": "en",
+  "site": {
+    "nom": "nclsmgr.com",
+    "url": "https://nclsmgr.com",
+    "locale": "en_GB",
+    "auteur": "Nicolas Maigre"
+  },
+  "pages": {
+    "accueil": {
+      "titre": "Nicolas Maigre, Cybersecurity Project Manager",
+      "description": "I run sensitive digital projects from pre-sales to delivery, with security as a requirement from day one.",
+      "og_image": "/og/accueil.png"
+    },
+    "cv": {
+      "titre": "CV · Nicolas Maigre",
+      "description": "Career history, skills and certifications of Nicolas Maigre, Cybersecurity Project Manager.",
+      "og_image": "/og/cv.png"
+    },
+    "dev": {
+      "titre": "Dev · Nicolas Maigre",
+      "description": "Technical projects and public repositories: the code is open to read and the choices behind it are explained.",
+      "og_image": "/og/dev.png"
+    },
+    "portfolio": {
+      "titre": "Portfolio · Nicolas Maigre",
+      "description": "Case studies of cybersecurity projects I have led: context, decisions and measured results.",
+      "og_image": "/og/portfolio.png"
+    },
+    "contact": {
+      "titre": "Contact · Nicolas Maigre",
+      "description": "An opportunity or a cybersecurity project in mind? Get in touch through the form or on LinkedIn.",
+      "og_image": null
+    },
+    "mentions_legales": {
+      "titre": "Legal notice · nclsmgr.com",
+      "description": "Publisher, publication director and hosting providers of the nclsmgr.com website.",
+      "og_image": null
+    },
+    "confidentialite": {
+      "titre": "Privacy · nclsmgr.com",
+      "description": "What personal data nclsmgr.com processes, how long it is kept and how to exercise your rights.",
+      "og_image": null
+    }
+  }
+}
