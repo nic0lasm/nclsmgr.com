@@ -1,6 +1,6 @@
 // Met à jour l'instantané des dépôts publics avant `next build`.
 // GITHUB_TOKEN est facultatif (60 requêtes par heure sans jeton suffisent pour un appel).
-// --strict : échoue si l'API ne répond pas, au lieu de garder l'instantané précédent.
+// --strict ou INSTANTANE_GITHUB_STRICT=1 : échoue si l'API ne répond pas, au lieu de garder l'instantané précédent.
 // INSTANTANE_GITHUB=0 : ne contacte pas GitHub et garde l'instantané tel quel.
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -14,7 +14,7 @@ import {
 const fichier = fileURLToPath(
   new URL("../src/content/projets/depots-github.json", import.meta.url),
 );
-const strict = process.argv.includes("--strict");
+const strict = process.argv.includes("--strict") || process.env.INSTANTANE_GITHUB_STRICT === "1";
 
 if (process.env.INSTANTANE_GITHUB === "0") {
   console.log("Instantané GitHub conservé (INSTANTANE_GITHUB=0).");
