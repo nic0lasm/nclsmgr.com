@@ -9,7 +9,8 @@ RUN pnpm install --frozen-lockfile
 FROM deps AS build
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY . .
-RUN pnpm build
+RUN pnpm build \
+ && test -f .next/standalone/src/content/fr/pages/contact.md
 
 FROM node:24-alpine@sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f AS run
 WORKDIR /app

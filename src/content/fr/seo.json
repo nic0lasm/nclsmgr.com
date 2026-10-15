@@ -1,0 +1,47 @@
+{
+  "statut": "brouillon",
+  "langue": "fr",
+  "site": {
+    "nom": "nclsmgr.com",
+    "url": "https://nclsmgr.com",
+    "locale": "fr_FR",
+    "auteur": "Nicolas Maigre"
+  },
+  "pages": {
+    "accueil": {
+      "titre": "Nicolas Maigre, chef de projet cyber",
+      "description": "Je pilote des projets numériques sensibles, de l'avant-vente à la livraison, avec la sécurité comme exigence de départ.",
+      "og_image": null
+    },
+    "cv": {
+      "titre": "CV · Nicolas Maigre",
+      "description": "Parcours, compétences et certifications de Nicolas Maigre, chef de projet en cybersécurité.",
+      "og_image": null
+    },
+    "dev": {
+      "titre": "Dev · Nicolas Maigre",
+      "description": "Projets techniques et dépôts publics : le code est consultable, les choix sont expliqués.",
+      "og_image": null
+    },
+    "portfolio": {
+      "titre": "Portfolio · Nicolas Maigre",
+      "description": "Études de cas de projets cyber pilotés : contexte, décisions, résultats mesurés.",
+      "og_image": null
+    },
+    "contact": {
+      "titre": "Contact · Nicolas Maigre",
+      "description": "Une opportunité ou un projet en cybersécurité ? Écrivez-moi via le formulaire ou sur LinkedIn.",
+      "og_image": null
+    },
+    "mentions_legales": {
+      "titre": "Mentions légales · nclsmgr.com",
+      "description": "Éditeur, responsable de publication et hébergeurs du site nclsmgr.com.",
+      "og_image": null
+    },
+    "confidentialite": {
+      "titre": "Confidentialité · nclsmgr.com",
+      "description": "Données traitées par nclsmgr.com, durées de conservation et exercice de vos droits.",
+      "og_image": null
+    }
+  }
+}

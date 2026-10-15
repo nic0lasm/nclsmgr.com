@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { fontVariables } from "@/app/fonts";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getDictionary } from "@/lib/dictionaries";
+import { getContent } from "@/lib/content";
 import { isLocale, locales } from "@/lib/i18n";
 import { chrome } from "@/lib/navigation";
 import { themeInitScript } from "@/lib/theme";
@@ -17,11 +17,12 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Promise<Metadata> {
   const { lang } = await params;
   if (!isLocale(lang)) return {};
-  const dict = getDictionary(lang);
+  const { seo } = getContent(lang);
   return {
-    title: dict.title,
-    description: dict.description,
-    alternates: { languages: { fr: "/fr", en: "/en" } },
+    metadataBase: new URL(seo.site.url),
+    title: seo.pages.accueil.titre,
+    description: seo.pages.accueil.description,
+    authors: [{ name: seo.site.auteur }],
   };
 }
 

@@ -1,0 +1,98 @@
+{
+  "statut": "brouillon",
+  "langue": "en",
+  "experiences": [
+    {
+      "id": "capgemini",
+      "poste": "Engagement Manager",
+      "organisation": "Capgemini",
+      "secteur": "Consulting and digital services",
+      "lieu": "Issy-les-Moulineaux",
+      "debut": "2020-03",
+      "fin": null,
+      "contexte": "Leading application development, cybersecurity and web projects for clients in the defence sector.",
+      "realisations": [
+        "Led more than 40 projects from pre-sales to delivery",
+        "Own the client relationship and client satisfaction for the full length of each engagement",
+        "Manage finances and contracts: budget, margin, contract amendments, bid responses",
+        "Build and manage several teams of 5 to 10 people at the same time",
+        "Run project governance and risk management using agile at scale (SAFe, Scrum)",
+        "Security Officer: protection of information and access on defence projects"
+      ],
+      "outils": ["SAFe", "Scrum"]
+    },
+    {
+      "id": "jcdecaux",
+      "poste": "Advertising Sales Executive",
+      "organisation": "JCDecaux",
+      "secteur": "Outdoor advertising",
+      "lieu": "Gennevilliers",
+      "debut": "2018-09",
+      "fin": "2020-02",
+      "contexte": "Sold outdoor advertising campaigns to advertisers in southern Hauts-de-Seine, west of Paris.",
+      "realisations": [
+        "Built a portfolio of B2B advertisers",
+        "Advised clients on outdoor advertising strategy",
+        "Responsible for street furniture advertising across southern Hauts-de-Seine"
+      ],
+      "outils": []
+    },
+    {
+      "id": "armee-terre",
+      "poste": "Communications Officer, gap year",
+      "organisation": "French Army",
+      "secteur": "Defence",
+      "lieu": "Tours",
+      "debut": "2017-09",
+      "fin": "2018-08",
+      "contexte": "One year of volunteer service in the French Army's human resources chain.",
+      "realisations": [
+        "Editor-in-chief and functional lead for the RH-Terre website (French Army HR), managing the editorial unit",
+        "Handled external relations, photo reports, events and communication materials"
+      ],
+      "outils": []
+    },
+    {
+      "id": "reserve",
+      "poste": "Lieutenant, reserve officer specialising in communications",
+      "organisation": "French Army",
+      "secteur": "Defence",
+      "lieu": "Paris",
+      "debut": "2017-09",
+      "fin": null,
+      "contexte": "French Army operational reserve, alongside my civilian career.",
+      "realisations": ["Three-month deployment on an overseas operation"],
+      "outils": []
+    }
+  ],
+  "formations": [
+    {
+      "id": "mbs",
+      "diplome": "Master 2 (final year of a master's degree) in Management Sciences",
+      "etablissement": "Montpellier Business School",
+      "lieu": "Montpellier",
+      "debut": "2015-09",
+      "fin": "2019-12",
+      "detail": "Programme Grande École, the school's flagship master's-level programme in management, with a double bachelor's degree from IAE Montpellier, the university's school of management. Specialisation in entrepreneurship and digital consulting."
+    },
+    {
+      "id": "monterrey",
+      "diplome": "Master 1 (first year of a master's degree) in International Negotiation",
+      "etablissement": "Tecnológico de Monterrey",
+      "lieu": "Mexico",
+      "debut": "2016-06",
+      "fin": "2017-07",
+      "detail": "Courses taught in Spanish and English."
+    },
+    {
+      "id": "dut-geii",
+      "diplome": "DUT (two-year technical degree) in Electrical Engineering and Industrial Computing",
+      "etablissement": "Université Claude Bernard Lyon 1",
+      "lieu": "Lyon",
+      "debut": "2013-09",
+      "fin": "2015-07",
+      "detail": "Computing, electronics, electrical engineering."
+    }
+  ],
+  "certifications": []
+}

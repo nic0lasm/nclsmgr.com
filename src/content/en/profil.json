@@ -1,0 +1,64 @@
+{
+  "statut": "brouillon",
+  "langue": "en",
+  "nom": "Nicolas Maigre",
+  "intitule": "Cybersecurity Project Manager",
+  "localisation": "Paris and the Île-de-France region",
+  "accroche": "I run sensitive digital projects from pre-sales to delivery, with security as a requirement from day one.",
+  "resume": [
+    "I have been an Engagement Manager at Capgemini since 2020 and have led more than 40 projects for the defence sector, covering application development, cybersecurity and web. I take each project from pre-sales to delivery and I am accountable for the client, the budget, the contract and the teams, often on several projects at once.",
+    "I also act as Security Officer there. As a reserve Lieutenant in the French Army, deployed for three months on an overseas operation, I bridge two cultures: the protection requirements of the armed forces and the delivery constraints of a digital services company.",
+    "My background is deliberately varied: a technical degree in electrical engineering and computing, business school, a year as a communications officer in the French Army, then B2B sales at JCDecaux. It gave me a way of working that has stayed with me: understand the client's business, talk technology with the teams and report plainly to decision-makers."
+  ],
+  "chiffres_cles": [
+    {
+      "valeur": "40+",
+      "libelle": "projects led from pre-sales to delivery"
+    },
+    {
+      "valeur": "Since 2020",
+      "libelle": "Engagement Manager at Capgemini"
+    },
+    {
+      "valeur": "Lieutenant",
+      "libelle": "reserve officer, French Army"
+    }
+  ],
+  "langues": [
+    {
+      "langue": "French",
+      "niveau": "Native",
+      "cecrl": null
+    },
+    {
+      "langue": "English",
+      "niveau": "Fluent (TOEIC 975/990)",
+      "cecrl": "C1"
+    },
+    {
+      "langue": "Spanish",
+      "niveau": "Fluent, after a year of study in Mexico",
+      "cecrl": null
+    }
+  ],
+  "centres_interet": [
+    {
+      "libelle": "Team sports",
+      "detail": "Rugby, volleyball, futsal"
+    },
+    {
+      "libelle": "Jazz piano",
+      "detail": null
+    }
+  ],
+  "liens": [
+    {
+      "type": "linkedin",
+      "url": "https://www.linkedin.com/in/nicolas-maigre"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/nic0lasm"
+    }
+  ]
+}

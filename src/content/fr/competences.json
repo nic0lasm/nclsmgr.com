@@ -1,0 +1,46 @@
+{
+  "statut": "brouillon",
+  "langue": "fr",
+  "domaines": [
+    {
+      "id": "pilotage",
+      "libelle": "Pilotage de projet",
+      "elements": [
+        "Avant-vente et réponse aux appels d'offres",
+        "Cadrage et planification",
+        "Pilotage financier et contractuel",
+        "Gestion des risques",
+        "Management d'équipes pluridisciplinaires",
+        "Agilité à l'échelle (SAFe, Scrum)"
+      ]
+    },
+    {
+      "id": "cyber",
+      "libelle": "Cybersécurité",
+      "elements": [
+        "Officier de sécurité sur des projets Défense",
+        "Intégration de la sécurité dès l'avant-vente et le cadrage"
+      ]
+    },
+    {
+      "id": "technique",
+      "libelle": "Technique",
+      "elements": [
+        "Développement web (PHP, HTML, CSS, SQL)",
+        "Bases de données",
+        "Électronique et informatique industrielle"
+      ]
+    },
+    {
+      "id": "relation",
+      "libelle": "Relation client et communication",
+      "elements": [
+        "Relation client, de l'avant-vente à la livraison",
+        "Commerce B2B",
+        "Communication interne et institutionnelle",
+        "Relations presse",
+        "Suite Adobe (Illustrator, XD, Photoshop)"
+      ]
+    }
+  ]
+}
