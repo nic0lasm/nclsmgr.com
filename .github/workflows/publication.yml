@@ -3,6 +3,9 @@ name: Publication
 on:
   push:
     branches: [main]
+  schedule:
+    # Rafraîchit chaque jour la liste des dépôts de l'onglet Dev.
+    - cron: "17 4 * * *"
   workflow_dispatch:
 
 permissions:
@@ -16,10 +19,53 @@ env:
   IMAGE: ghcr.io/${{ github.repository }}
 
 jobs:
+  instantane:
+    name: Instantané des dépôts GitHub
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      empreinte: ${{ steps.empreinte.outputs.empreinte }}
+      nouveau: ${{ steps.deja-publie.outputs.cache-hit != 'true' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      # Sur l'exécution planifiée, un échec de l'API arrête la publication et la version
+      # en ligne reste en place ; sur push, l'instantané commité sert de repli.
+      - name: Mettre à jour l'instantané
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          INSTANTANE_GITHUB_STRICT: ${{ github.event_name == 'schedule' && '1' || '0' }}
+        run: node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/instantane-github.mts
+      # Empreinte du contenu, sans la date de génération : deux instantanés identiques
+      # donnent la même empreinte.
+      - id: empreinte
+        run: echo "empreinte=$(jq -S 'del(.genereLe)' src/content/projets/depots-github.json | sha256sum | cut -c1-12)" >> "$GITHUB_OUTPUT"
+      # Une entrée de cache à ce nom existe si cet instantané a déjà été publié.
+      # Même chemin qu'à l'enregistrement : il entre dans la version de l'entrée de cache.
+      - id: deja-publie
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: marqueur/instantane
+          key: instantane-publie-${{ steps.empreinte.outputs.empreinte }}
+          lookup-only: true
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: depots-github
+          path: src/content/projets/depots-github.json
+          retention-days: 1
+
   # Chaque architecture est construite sur un runner natif (l'émulation QEMU de l'arm64
   # rendait la construction très lente), puis analysée avant d'être étiquetée.
   image:
     name: Image ${{ matrix.arch }}
+    needs: instantane
+    # Le passage planifié ne republie que si l'instantané a changé.
+    if: github.event_name != 'schedule' || needs.instantane.outputs.nouveau == 'true'
     runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
@@ -35,6 +81,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: depots-github
+          path: src/content/projets
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
@@ -73,7 +123,7 @@ jobs:
 
   manifeste:
     name: Étiqueter l'image multi-architecture
-    needs: image
+    needs: [instantane, image]
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -81,8 +131,17 @@ jobs:
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
     steps:
+      # Sur le passage planifié, le code ne change pas : l'étiquette dérive aussi de l'instantané
+      # pour ne pas écraser l'image déjà publiée pour ce commit.
       - id: tag
-        run: echo "tag=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+        env:
+          EMPREINTE: ${{ needs.instantane.outputs.empreinte }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = schedule ]; then
+            echo "tag=$(printf '%s-%s' "$GITHUB_SHA" "$EMPREINTE" | sha256sum | cut -c1-12)" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           pattern: empreinte-*
@@ -102,6 +161,15 @@ jobs:
           docker buildx imagetools create -t "$IMAGE:$TAG" -t "$IMAGE:latest" \
             $(printf "$IMAGE@sha256:%s " *)
           docker buildx imagetools inspect "$IMAGE:$TAG"
+      # Le cache ne sert que de marqueur : son contenu n'est jamais restauré.
+      - name: Retenir l'instantané publié
+        run: mkdir -p marqueur && echo "$EMPREINTE" > marqueur/instantane
+        env:
+          EMPREINTE: ${{ needs.instantane.outputs.empreinte }}
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: marqueur/instantane
+          key: instantane-publie-${{ needs.instantane.outputs.empreinte }}
 
   deploiement:
     name: Déployer sur le serveur
