@@ -38,6 +38,11 @@ export function sessionDansLaLimite(session: SessionCourante): boolean {
 /**
  * À appeler en tête de chaque page de l'espace, avant tout rendu : sans session valide, ou
  * au-delà de la limite de débit, la réponse est un 404 (une page ne peut pas répondre 429).
+ *
+ * Règle pour les layouts : aucune donnée privée dans un layout de /[lang]/espace, ou bien ce
+ * layout appelle lui-même exigerSession(). Next.js envoie les segments de layout avant la page
+ * (réponses RSC, préchargements) : un layout qui afficherait le nom du destinataire sans
+ * vérifier la session le livrerait même quand la page répond 404.
  */
 export async function exigerSession(): Promise<Lien> {
   const session = await sessionCourante();

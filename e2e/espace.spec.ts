@@ -1,6 +1,6 @@
 import { createHash, randomBytes, randomInt } from "node:crypto";
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type APIResponse } from "@playwright/test";
+import { expect, test, type APIRequestContext, type APIResponse } from "@playwright/test";
 import Database from "better-sqlite3";
 
 // Les liens sont insérés directement dans la base du serveur de test : src/lib/espace dépend
@@ -37,6 +37,20 @@ function creerLien(etat: Etat = "actif", destinataire = "Claire Martin"): string
   return jeton;
 }
 
+// Révoque le lien après coup, sans supprimer ses sessions : la page doit revérifier l'état
+// du lien à chaque requête, pas seulement l'existence de la session.
+function revoquer(jeton: string) {
+  const db = new Database(process.env.ESPACE_BASE_E2E ?? "", { timeout: 5000 });
+  try {
+    db.prepare("UPDATE liens SET revoque_le = ? WHERE jeton_sha256 = ?").run(
+      Date.now(),
+      createHash("sha256").update(jeton).digest(),
+    );
+  } finally {
+    db.close();
+  }
+}
+
 // Chaque test compte dans son propre compartiment de limitation de débit.
 function ipUnique(): string {
   return `2001:db8:${randomBytes(2).toString("hex")}:${randomBytes(2).toString("hex")}::1`;
@@ -55,28 +69,60 @@ function signature(reponse: APIResponse) {
   return enTetes;
 }
 
+// Ouvre une session par la route d'accès et rend la valeur du cookie.
+async function ouvrirSession(request: APIRequestContext, jeton: string): Promise<string> {
+  const reponse = await request.post("/fr/p/acces", {
+    headers: { ...MEME_ORIGINE, "X-Client-IP": ipUnique() },
+    data: { jeton },
+  });
+  expect(reponse.status()).toBe(204);
+  const valeur = /^__Host-espace=([^;]+);/.exec(reponse.headers()["set-cookie"])?.[1];
+  if (!valeur) throw new Error("Cookie de session absent.");
+  return valeur;
+}
+
 const COOKIE =
   /^__Host-espace=([A-Za-z0-9_-]{43}); Max-Age=(\d+); Path=\/; Secure; HttpOnly; SameSite=Lax$/;
 
 test.describe("échange du jeton", () => {
-  test("les quatre cas d'échec reçoivent exactement la même réponse, sans cookie", async ({
+  test("tous les cas d'échec reçoivent exactement la même réponse, sans cookie", async ({
     request,
   }) => {
     const ip = ipUnique();
-    const jetons = {
-      inconnu: randomBytes(32).toString("base64url"),
-      expire: creerLien("expire"),
-      revoque: creerLien("revoque"),
-      malForme: "pas-un-jeton",
-    };
-    const reponses = [];
-    for (const jeton of Object.values(jetons)) {
+    const valide = creerLien("actif");
+    const json = { ...MEME_ORIGINE, "Content-Type": "application/json" };
+    const cas: { nom: string; enTetes: Record<string, string>; corps: string | object }[] = [
+      {
+        nom: "inconnu",
+        enTetes: MEME_ORIGINE,
+        corps: { jeton: randomBytes(32).toString("base64url") },
+      },
+      { nom: "expiré", enTetes: MEME_ORIGINE, corps: { jeton: creerLien("expire") } },
+      { nom: "révoqué", enTetes: MEME_ORIGINE, corps: { jeton: creerLien("revoque") } },
+      { nom: "mal formé", enTetes: MEME_ORIGINE, corps: { jeton: "pas-un-jeton" } },
+      { nom: "autre site", enTetes: { "Sec-Fetch-Site": "cross-site" }, corps: { jeton: valide } },
+      { nom: "sans en-tête d'origine", enTetes: {}, corps: { jeton: valide } },
+      { nom: "Origin: null", enTetes: { Origin: "null" }, corps: { jeton: valide } },
+      {
+        nom: "corps trop long",
+        enTetes: json,
+        corps: JSON.stringify({ jeton: valide, bourrage: "x".repeat(1024) }),
+      },
+      {
+        nom: "mauvais Content-Type",
+        enTetes: { ...MEME_ORIGINE, "Content-Type": "text/plain" },
+        corps: JSON.stringify({ jeton: valide }),
+      },
+      { nom: "JSON invalide", enTetes: json, corps: `{"jeton":"${valide}"` },
+    ];
+    const reponses: { statut: number; corps: string; enTetes: Record<string, string> }[] = [];
+    for (const { nom, enTetes, corps } of cas) {
       const debut = Date.now();
       const reponse = await request.post("/fr/p/acces", {
-        headers: { ...MEME_ORIGINE, "X-Client-IP": ip },
-        data: { jeton },
+        headers: { ...enTetes, "X-Client-IP": ip },
+        data: corps,
       });
-      expect(Date.now() - debut).toBeGreaterThanOrEqual(240);
+      expect(Date.now() - debut, nom).toBeGreaterThanOrEqual(240);
       reponses.push({
         statut: reponse.status(),
         corps: await reponse.text(),
@@ -88,7 +134,8 @@ test.describe("échange du jeton", () => {
     expect(reponses[0].enTetes["set-cookie"]).toBeUndefined();
     expect(reponses[0].enTetes["cache-control"]).toBe("no-store");
     expect(reponses[0].enTetes["x-robots-tag"]).toBe("noindex");
-    for (const reponse of reponses.slice(1)) expect(reponse).toEqual(reponses[0]);
+    expect(reponses[0].enTetes["referrer-policy"]).toBeUndefined();
+    reponses.forEach((reponse, i) => expect(reponse, cas[i].nom).toEqual(reponses[0]));
   });
 
   test("un jeton valide ouvre une session par un cookie __Host- et donne accès à l'espace", async ({
@@ -157,21 +204,6 @@ test.describe("échange du jeton", () => {
     }
   });
 
-  test("un corps de plus de 1 Kio ou d'un autre type est refusé", async ({ request }) => {
-    const ip = ipUnique();
-    const jeton = creerLien("actif");
-    const trop = await request.post("/fr/p/acces", {
-      headers: { ...MEME_ORIGINE, "X-Client-IP": ip, "Content-Type": "application/json" },
-      data: JSON.stringify({ jeton, bourrage: "x".repeat(1024) }),
-    });
-    expect(trop.status()).toBe(403);
-    const texte = await request.post("/fr/p/acces", {
-      headers: { ...MEME_ORIGINE, "X-Client-IP": ip, "Content-Type": "text/plain" },
-      data: JSON.stringify({ jeton }),
-    });
-    expect(texte.status()).toBe(403);
-  });
-
   test("au-delà de 10 requêtes en 10 minutes, la réponse est 429 avec Retry-After", async ({
     request,
   }) => {
@@ -226,6 +258,59 @@ test.describe("espace", () => {
       expect(reponse.headers()["cache-control"]).toContain("no-store");
       expect(reponse.headers()["x-robots-tag"]).toBe("noindex, nofollow, noarchive, nosnippet");
       expect(await reponse.text()).not.toContain("Bonjour");
+    }
+  });
+
+  test("une session dont le lien est révoqué après l'ouverture ne montre plus rien", async ({
+    request,
+  }) => {
+    const nom = `Revoque-${randomBytes(4).toString("hex")}`;
+    const jeton = creerLien("actif", nom);
+    const cookie = { Cookie: `__Host-espace=${await ouvrirSession(request, jeton)}` };
+    const avant = await request.get("/fr/espace", { headers: cookie });
+    expect(avant.status()).toBe(200);
+    expect(await avant.text()).toContain(nom);
+    revoquer(jeton);
+    const apres = await request.get("/fr/espace", { headers: cookie });
+    expect(apres.status()).toBe(404);
+    expect(await apres.text()).not.toContain(nom);
+  });
+
+  test("aucune variante de requête sans session valide ne livre de donnée privée", async ({
+    request,
+  }) => {
+    const nom = `Marqueur-${randomBytes(4).toString("hex")}`;
+    const jeton = creerLien("actif", nom);
+    const cookie = `__Host-espace=${await ouvrirSession(request, jeton)}`;
+    revoquer(jeton);
+    const sessions: Record<string, Record<string, string>> = {
+      "sans session": {},
+      "session révoquée": { Cookie: cookie },
+    };
+    const variantes: { nom: string; url: string; enTetes: Record<string, string> }[] = [
+      { nom: "GET", url: "/fr/espace", enTetes: {} },
+      { nom: "RSC: 1", url: "/fr/espace", enTetes: { RSC: "1" } },
+      { nom: "?_rsc=x", url: "/fr/espace?_rsc=x", enTetes: {} },
+      { nom: "?_rsc=x avec RSC: 1", url: "/fr/espace?_rsc=x", enTetes: { RSC: "1" } },
+      {
+        nom: "Next-Router-Prefetch: 1",
+        url: "/fr/espace",
+        enTetes: { RSC: "1", "Next-Router-Prefetch": "1" },
+      },
+    ];
+    for (const [etat, enTetesSession] of Object.entries(sessions)) {
+      const tete = await request.head("/fr/espace", { headers: enTetesSession });
+      expect(tete.status(), `${etat}, HEAD`).toBe(404);
+      for (const variante of variantes) {
+        const reponse = await request.get(variante.url, {
+          headers: { ...enTetesSession, ...variante.enTetes },
+        });
+        const corps = await reponse.text();
+        expect(corps, `${etat}, ${variante.nom}`).not.toContain(nom);
+        expect(reponse.headers()["cache-control"], `${etat}, ${variante.nom}`).toContain(
+          "no-store",
+        );
+      }
     }
   });
 
@@ -302,6 +387,72 @@ test.describe("page /fr/p", () => {
     });
     expect(apres.status()).toBe(404);
     expect(violations).toEqual([]);
+  });
+
+  test("le lien d'évitement ne remplace pas le jeton lu dans le fragment", async ({ page }) => {
+    await page.setExtraHTTPHeaders({ "X-Client-IP": ipUnique() });
+    await page.goto(`/fr/p#${creerLien("actif")}`);
+    const bouton = page.getByRole("button", { name: "Accéder à mon espace" });
+    await expect(bouton).toBeVisible();
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("link", { name: "Aller au contenu" })).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/#contenu$/);
+    await expect(bouton).toBeVisible();
+    await expect(page.getByText("Ce lien n'est pas ou plus valide", { exact: false })).toHaveCount(
+      0,
+    );
+    await bouton.click();
+    await page.waitForURL("**/fr/espace");
+    await expect(page.getByText("Bonjour Claire Martin,")).toBeVisible();
+  });
+
+  test("Retour après une navigation interne revérifie la session auprès du serveur", async ({
+    page,
+  }) => {
+    await page.setExtraHTTPHeaders({ "X-Client-IP": ipUnique() });
+    const jeton = creerLien("actif");
+    await page.goto(`/fr/p#${jeton}`);
+    await page.getByRole("button", { name: "Accéder à mon espace" }).click();
+    await page.waitForURL("**/fr/espace");
+    await expect(page.getByText("Bonjour Claire Martin,")).toBeVisible();
+
+    // Lien du logo : navigation côté client, la page reste dans le cache du routeur.
+    await page.locator("a.site-brand").click();
+    await page.waitForURL(/\/fr$/);
+    revoquer(jeton);
+    await page.goBack();
+    await page.waitForURL("**/fr/espace");
+    await expect(page.getByText("Bonjour")).toHaveCount(0);
+  });
+
+  test("une réponse qui ne vient pas de l'application affiche un message neutre", async ({
+    page,
+  }) => {
+    const reponses = [
+      { status: 403, contentType: "text/html", body: "<html>Accès bloqué</html>" },
+      { status: 403, contentType: "application/json", body: '{"ok":false,"x":1}' },
+      { status: 502, contentType: "text/html", body: "<html>Bad gateway</html>" },
+    ];
+    for (const reponse of reponses) {
+      await page.route("**/fr/p/acces", (route) => route.fulfill(reponse));
+      await page.goto("about:blank");
+      await page.goto(`/fr/p#${randomBytes(32).toString("base64url")}`);
+      await page.getByRole("button", { name: "Accéder à mon espace" }).click();
+      await expect(page.getByRole("status")).toHaveText(
+        "Une erreur est survenue. Réessayez dans quelques minutes.",
+      );
+      await expect(page.getByRole("button", { name: "Accéder à mon espace" })).toBeVisible();
+      await page.unroute("**/fr/p/acces");
+    }
+  });
+
+  test("les autres chemins sous /p ne sont ni mis en cache ni indexés", async ({ request }) => {
+    const reponse = await request.get("/fr/p/inconnu");
+    expect(reponse.status()).toBe(404);
+    expect(reponse.headers()["cache-control"]).toContain("no-store");
+    expect(reponse.headers()["x-robots-tag"]).toBe("noindex, nofollow, noarchive");
+    expect(reponse.headers()["referrer-policy"]).toBe("same-origin");
   });
 
   test("un lien refusé affiche un seul message avec le lien vers Contact", async ({ page }) => {

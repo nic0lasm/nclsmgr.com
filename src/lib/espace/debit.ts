@@ -7,11 +7,13 @@ type Compteur = { debut: number; nombre: number };
 
 /**
  * Compteur à fenêtre fixe, en mémoire : suffisant avec un seul processus Node. Le nombre de
- * clés suivies est borné ; une fois la borne atteinte, les fenêtres échues sont purgées, puis
- * les plus anciennes clés cèdent leur place.
+ * clés suivies est borné. Une clé déjà suivie n'est jamais évincée avant la fin de sa fenêtre :
+ * une IP bloquée le reste, même sous un flot d'adresses nouvelles. Quand la table est pleine de
+ * fenêtres encore ouvertes, les nouveaux venus partagent un compartiment de débordement.
  */
 export class LimiteurDebit {
   private readonly compteurs = new Map<string, Compteur>();
+  private debordement: Compteur | null = null;
 
   constructor(
     private readonly limite: number,
@@ -25,14 +27,20 @@ export class LimiteurDebit {
 
   consommer(cle: string, maintenant: number): Decision {
     let compteur = this.compteurs.get(cle);
-    if (compteur && maintenant - compteur.debut >= this.fenetreMs) {
+    if (compteur && this.echu(compteur, maintenant)) {
       this.compteurs.delete(cle);
       compteur = undefined;
     }
     if (!compteur) {
-      this.faireDeLaPlace(maintenant);
-      compteur = { debut: maintenant, nombre: 0 };
-      this.compteurs.set(cle, compteur);
+      if (this.faireDeLaPlace(maintenant)) {
+        compteur = { debut: maintenant, nombre: 0 };
+        this.compteurs.set(cle, compteur);
+      } else {
+        if (!this.debordement || this.echu(this.debordement, maintenant)) {
+          this.debordement = { debut: maintenant, nombre: 0 };
+        }
+        compteur = this.debordement;
+      }
     }
     if (compteur.nombre >= this.limite) {
       const restant = compteur.debut + this.fenetreMs - maintenant;
@@ -42,16 +50,21 @@ export class LimiteurDebit {
     return { autorise: true };
   }
 
-  private faireDeLaPlace(maintenant: number) {
-    if (this.compteurs.size < this.maxCles) return;
+  private echu(compteur: Compteur, maintenant: number): boolean {
+    return maintenant - compteur.debut >= this.fenetreMs;
+  }
+
+  /**
+   * Rend true s'il reste une place. Une clé est réinsérée à chaque nouvelle fenêtre : l'ordre de
+   * la Map est celui des débuts de fenêtre, la purge s'arrête donc à la première encore ouverte.
+   */
+  private faireDeLaPlace(maintenant: number): boolean {
+    if (this.compteurs.size < this.maxCles) return true;
     for (const [cle, compteur] of this.compteurs) {
-      if (maintenant - compteur.debut >= this.fenetreMs) this.compteurs.delete(cle);
-    }
-    // L'ordre d'insertion de la Map est celui des débuts de fenêtre : on retire les plus anciennes.
-    for (const cle of this.compteurs.keys()) {
-      if (this.compteurs.size < this.maxCles) break;
+      if (!this.echu(compteur, maintenant)) break;
       this.compteurs.delete(cle);
     }
+    return this.compteurs.size < this.maxCles;
   }
 }
 

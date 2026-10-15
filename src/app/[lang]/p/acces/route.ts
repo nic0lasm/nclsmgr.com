@@ -38,13 +38,13 @@ async function echanger(requete: Request): Promise<Response> {
   if (!debit.autorise) return trop(debit.reessayerDans);
   if (!espaceConfigure()) return refus();
 
-  const corps = await lireCorpsJson(requete);
-  const jeton =
-    typeof corps === "object" && corps !== null && !Array.isArray(corps)
-      ? (corps as Record<string, unknown>).jeton
-      : undefined;
-
   try {
+    // Un corps tronqué ou une connexion coupée en cours de lecture lève : même refus.
+    const corps = await lireCorpsJson(requete);
+    const jeton =
+      typeof corps === "object" && corps !== null && !Array.isArray(corps)
+        ? (corps as Record<string, unknown>).jeton
+        : undefined;
     const db = base();
     const maintenant = Date.now();
     const verification = verifierJeton(db, jeton, maintenant);

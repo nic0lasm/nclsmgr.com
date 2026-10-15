@@ -6,6 +6,7 @@ import type { Locale } from "@/lib/i18n";
 import { textes } from "./textes";
 
 const FORMAT_JETON = /^[A-Za-z0-9_-]{43}$/;
+const REFUS_APPLICATION = '{"ok":false}';
 
 // Le fragment est lu une seule fois puis effacé de la barre d'adresse et de l'historique :
 // il ne survit ni à un rechargement, ni à un partage de l'adresse affichée.
@@ -25,10 +26,11 @@ function lireFragment(): string {
   return fragmentLu;
 }
 
-// Un nouveau lien collé dans la même page ne change que le fragment : il est relu.
+// Un nouveau lien collé dans la même page ne change que le fragment : il est relu. Les autres
+// fragments (lien d'évitement #contenu, ancres) sont ignorés et ne remplacent pas le jeton.
 function abonner(prevenir: () => void) {
   const relire = () => {
-    if (!window.location.hash) return;
+    if (!FORMAT_JETON.test(window.location.hash.slice(1))) return;
     fragmentLu = null;
     prevenir();
   };
@@ -81,7 +83,15 @@ export function Acces({ lang }: { lang: Locale }) {
         router.replace(`/${lang}/espace`);
         return;
       }
-      setEtat(reponse.status === 429 ? "attente" : reponse.status === 403 ? "refuse" : "erreur");
+      if (reponse.status === 429) {
+        setEtat("attente");
+        return;
+      }
+      // Seul le refus de l'application vaut « lien invalide » : une page d'erreur d'un
+      // intermédiaire (Cloudflare, proxy) ou une panne reçoit un message neutre.
+      const refusApplication =
+        reponse.status === 403 && (await reponse.text()) === REFUS_APPLICATION;
+      setEtat(refusApplication ? "refuse" : "erreur");
     } catch {
       setEtat("erreur");
     }

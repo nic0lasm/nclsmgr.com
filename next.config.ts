@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/[lang]/**": ["./src/content/*/pages/*.md"],
   },
-  // Non-indexation et absence de cache sur l'espace privé, doublées par Caddy.
+  // Non-indexation et absence de cache sur l'espace privé (à doubler par Caddy : voir en-tetes.ts).
   async headers() {
     return reglesEnTetesEspace();
   },

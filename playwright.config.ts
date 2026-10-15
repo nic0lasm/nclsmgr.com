@@ -6,14 +6,18 @@ import { defineConfig, devices } from "@playwright/test";
 const port = 3100;
 
 // Base de l'espace privé propre à ce lancement : le serveur de test la crée et la migre au
-// démarrage, les tests y insèrent leurs liens. Les processus de test héritent du chemin.
-const baseEspace = (process.env.ESPACE_BASE_E2E ??= join(
-  mkdtempSync(join(tmpdir(), "nclsmgr-e2e-")),
-  "espace.db",
-));
+// démarrage, les tests y insèrent leurs liens. Les processus de test héritent du chemin, et
+// e2e/nettoyage.ts supprime le dossier temporaire en fin de campagne.
+if (!process.env.ESPACE_BASE_E2E) {
+  const dossier = mkdtempSync(join(tmpdir(), "nclsmgr-e2e-"));
+  process.env.ESPACE_DOSSIER_E2E = dossier;
+  process.env.ESPACE_BASE_E2E = join(dossier, "espace.db");
+}
+const baseEspace = process.env.ESPACE_BASE_E2E;
 
 export default defineConfig({
   testDir: "e2e",
+  globalTeardown: "./e2e/nettoyage.ts",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   reporter: process.env.CI ? "github" : "list",

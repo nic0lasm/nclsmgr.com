@@ -32,7 +32,7 @@ export const textes: Record<Locale, TextesAcces> = {
     refusLien: "page Contact",
     refusApres: ".",
     attente: "Trop de tentatives depuis votre connexion. Réessayez dans quelques minutes.",
-    erreur: "La connexion a échoué. Vérifiez votre réseau puis réessayez.",
+    erreur: "Une erreur est survenue. Réessayez dans quelques minutes.",
     sansLien:
       "Pour entrer, rouvrez le lien personnel que vous avez reçu. Si vous êtes déjà entré depuis cet appareil, votre espace reste accessible.",
     allerEspace: "Aller à mon espace",
@@ -52,7 +52,7 @@ export const textes: Record<Locale, TextesAcces> = {
     refusLien: "Contact page",
     refusApres: ".",
     attente: "Too many attempts from your connection. Please try again in a few minutes.",
-    erreur: "The connection failed. Check your network and try again.",
+    erreur: "Something went wrong. Please try again in a few minutes.",
     sansLien:
       "To enter, open the personal link you received again. If you have already entered from this device, your space is still available.",
     allerEspace: "Go to my space",
