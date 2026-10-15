@@ -20,9 +20,8 @@ export function textPage(page: PageTexte, seoKey: PageSeo, suite?: (lang: Locale
 
   async function Page({ params }: { params: Promise<{ lang: string }> }) {
     const lang = await resolveLocale(params);
-    const { ui, profil } = getContent(lang);
+    const { profil } = getContent(lang);
     const doc = await getPage(lang, page);
-    const linkedin = profil.liens.find((l) => l.type === "linkedin");
 
     return (
       <main id="contenu" className="wrap">
@@ -32,17 +31,6 @@ export function textPage(page: PageTexte, seoKey: PageSeo, suite?: (lang: Locale
             <h1 id="titre">{doc.frontmatter.titre}</h1>
             <MarkdownView blocks={doc.blocks} locale={lang} />
             {suite?.(lang)}
-            {page === "contact" && linkedin ? (
-              <div className="actions">
-                <a
-                  className="button button--secondary"
-                  href={linkedin.url}
-                  rel="noopener noreferrer"
-                >
-                  {ui.contact.linkedin}
-                </a>
-              </div>
-            ) : null}
           </div>
         </section>
       </main>

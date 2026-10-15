@@ -66,9 +66,10 @@ describe("envoyerMessage", () => {
       entetes.set("sec-fetch-site", valeur);
       expect(await envoyerMessage(etatInitial, formulaire())).toMatchObject({ global: "echec" });
     }
-    entetes.delete("sec-fetch-site");
-    expect(await envoyerMessage(etatInitial, formulaire())).toMatchObject({ global: "echec" });
     expect(enFile()).toEqual([]);
+    // Sans l'en-tête (navigateur ancien), c'est la vérification d'origine de Next.js qui joue.
+    entetes.delete("sec-fetch-site");
+    expect(await envoyerMessage(etatInitial, formulaire())).toEqual({ statut: "envoye" });
   });
 
   it("refuse une langue inconnue", async () => {

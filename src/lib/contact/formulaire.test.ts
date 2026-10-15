@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { rediger } from "@/lib/espace/courriels";
 import { CHAMP_PIEGE, composerMessage, LIMITES, lireFormulaire } from "./formulaire";
 
 const objets = ["Recrutement", "Projet", "Autre"];
@@ -69,6 +70,50 @@ describe("lireFormulaire", () => {
     const donnees = formulaire(valide);
     donnees.set("message", new Blob(["Bonjour"]));
     expect(lireFormulaire(donnees, objets)).toMatchObject({ erreurs: { message: "manquant" } });
+  });
+});
+
+describe("accord avec la file de courriels", () => {
+  const cas = [
+    { nom: '<>"' },
+    { nom: "\u200b\u2800" },
+    { message: "\u200b\u200d\ufeff" },
+    { message: "\ufdfa".repeat(300) },
+    { nom: "Ａｌｅｘ" },
+    { courriel: "alex+site@sous.example.co" },
+    { message: "Ligne 1\r\nLigne 2\u0007" },
+    { nom: "x".repeat(LIMITES.nom) },
+    { message: "é".repeat(LIMITES.message) },
+  ];
+
+  it("tout formulaire accepté ici est accepté par la file", () => {
+    for (const champs of cas) {
+      const lecture = lireFormulaire(formulaire({ ...valide, ...champs }), objets);
+      if (lecture.type !== "valide") continue;
+      const { nom, courriel, message } = lecture.valeurs;
+      expect(() =>
+        rediger("contact", {
+          nom,
+          courriel,
+          message: composerMessage("Autre", "fr", message),
+          le: 0,
+        }),
+      ).not.toThrow();
+    }
+  });
+
+  it("signale par champ ce que la file refuserait", () => {
+    expect(lireFormulaire(formulaire({ ...valide, nom: '<>"' }), objets)).toMatchObject({
+      erreurs: { nom: "manquant" },
+    });
+    expect(
+      lireFormulaire(formulaire({ ...valide, message: "\u200b\ufeff" }), objets),
+    ).toMatchObject({
+      erreurs: { message: "manquant" },
+    });
+    expect(
+      lireFormulaire(formulaire({ ...valide, message: "\ufdfa".repeat(300) }), objets),
+    ).toMatchObject({ erreurs: { message: "invalide" } });
   });
 });
 

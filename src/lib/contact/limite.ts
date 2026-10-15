@@ -12,6 +12,9 @@ const ENTREES_MAX = 10_000;
 /** Préfixe /64 d'une adresse IPv6, ou l'adresse telle quelle. */
 export function reseau(ip: string): string {
   if (!ip.includes(":")) return ip;
+  // Adresse IPv4 écrite en IPv6 (::ffff:203.0.113.7) : c'est l'adresse IPv4 qui compte.
+  const ipv4 = /^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/i.exec(ip);
+  if (ipv4?.[1]) return ipv4[1];
   const [tete = "", queue] = ip.split("::");
   const debut = tete ? tete.split(":") : [];
   const fin = queue ? queue.split(":") : [];

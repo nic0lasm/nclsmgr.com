@@ -24,9 +24,11 @@ export async function envoyerMessage(
 ): Promise<EtatContact> {
   const entetes = await headers();
   const langue = donnees.get("langue");
-  // Requête venue d'ailleurs que du site : réponse neutre, sans détail.
+  // Une requête qu'un navigateur dit venue d'un autre site est refusée sans détail. Next.js
+  // vérifie de son côté que l'origine de toute action serveur est celle du site.
+  const site = entetes.get("sec-fetch-site");
   if (
-    entetes.get("sec-fetch-site") !== "same-origin" ||
+    (site !== null && site !== "same-origin") ||
     typeof langue !== "string" ||
     !isLocale(langue)
   ) {

@@ -3,6 +3,10 @@ import { expect, test, type Page } from "@playwright/test";
 import Database from "better-sqlite3";
 import { BASE_E2E } from "./base";
 
+// Sans Caddy devant le serveur de test, chaque test se présente avec sa propre adresse pour ne
+// pas partager la limite d'envois.
+test.use({ extraHTTPHeaders: { "X-Client-IP": `192.0.2.${Math.floor(Math.random() * 250) + 1}` } });
+
 function messagesEnFile(repere: string): string[] {
   const db = new Database(BASE_E2E, { readonly: true, fileMustExist: true });
   try {
@@ -68,7 +72,7 @@ test.describe("sans JavaScript", () => {
     const repere = `essai-piege-${Date.now()}`;
     await page.goto("/fr/contact");
     await remplir(page, repere);
-    await page.locator("#site").fill("https://spam.example");
+    await page.locator("#verification").fill("https://spam.example");
     await page.getByRole("button", { name: "Envoyer" }).click();
     await expect(page.getByRole("status")).toHaveText(/Message bien reçu/);
     expect(messagesEnFile(repere)).toEqual([]);

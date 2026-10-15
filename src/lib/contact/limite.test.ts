@@ -38,6 +38,10 @@ describe("reseau", () => {
     expect(reseau("::1")).toBe("0:0:0:0::/64");
   });
 
+  it("ramène une adresse IPv4 écrite en IPv6 à l'adresse IPv4", () => {
+    expect(reseau("::ffff:203.0.113.7")).toBe("203.0.113.7");
+  });
+
   it("laisse une adresse IPv4 ou illisible telle quelle", () => {
     expect(reseau("203.0.113.7")).toBe("203.0.113.7");
     expect(reseau("zz::1")).toBe("zz::1");
