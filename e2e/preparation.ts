@@ -8,5 +8,5 @@ import { PRIVE_FICTIF } from "./prive-fictif";
 export default function preparation() {
   const dossier = process.env.ESPACE_DOSSIER_PRIVE_E2E;
   if (!dossier) return;
-  writeFileSync(join(dossier, "prive.json"), JSON.stringify(PRIVE_FICTIF));
+  writeFileSync(join(dossier, "prive.json"), JSON.stringify(PRIVE_FICTIF), { mode: 0o600 });
 }

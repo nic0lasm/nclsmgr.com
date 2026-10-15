@@ -112,7 +112,8 @@ describe("lirePrive", () => {
     rmSync(dossier, { recursive: true, force: true });
   });
 
-  const ecrire = (contenu: string) => writeFileSync(join(dossier, "prive.json"), contenu);
+  const ecrire = (contenu: string) =>
+    writeFileSync(join(dossier, "prive.json"), contenu, { mode: 0o600 });
   const journal = () => erreurs.mock.calls.flat().join("\n");
 
   it("lit les données de la langue demandée", async () => {
@@ -150,7 +151,7 @@ describe("lirePrive", () => {
   });
 
   it("ignore un dossier à la place du fichier", async () => {
-    mkdirSync(join(dossier, "prive.json"));
+    mkdirSync(join(dossier, "prive.json"), { mode: 0o700 });
     expect(await lirePrive("fr")).toEqual(vide());
     expect(journal()).toContain("type inattendu");
   });
