@@ -981,4 +981,48 @@ test.describe("documents réservés", () => {
     const tete = await request.head("/fr/espace/documents/cv");
     expect(tete.status()).toBe(404);
   });
+
+  test("une lecture GET est notée au journal, une seule fois sur 10 minutes ; HEAD et 404 rien", async ({
+    request,
+  }) => {
+    const { jeton, enTetes } = await session(request, ["cv", "annexe", "manquant"]);
+    const navigateur = { ...enTetes, "User-Agent": FIREFOX_JOURNAL, "CF-IPCountry": "CH" };
+    expect((await request.head("/fr/espace/documents/cv", { headers: navigateur })).status()).toBe(
+      200,
+    );
+    for (const id of ["manquant", "inconnu"]) {
+      const reponse = await request.get(`/fr/espace/documents/${id}`, { headers: navigateur });
+      expect(reponse.status(), id).toBe(404);
+    }
+    // La lecture du CV, la dernière, sert de repère : les écritures partent après la réponse.
+    // Si HEAD était noté, le CV viendrait avant l'annexe.
+    for (const id of ["annexe", "annexe", "cv"]) {
+      const reponse = await request.get(`/fr/espace/documents/${id}`, { headers: navigateur });
+      expect(reponse.status(), id).toBe(200);
+    }
+    await expect.poll(() => lectures(jeton).length).toBe(2);
+    expect(lectures(jeton)).toEqual([
+      { type: "document", document: "annexe", pays: "CH", navigateur: "Firefox · Windows" },
+      { type: "document", document: "cv", pays: "CH", navigateur: "Firefox · Windows" },
+    ]);
+  });
 });
+
+const FIREFOX_JOURNAL =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0";
+
+// Lectures de documents notées au journal pour un lien (l'ouverture de la session n'y est pas).
+function lectures(jeton: string) {
+  const db = new Database(process.env.ESPACE_BASE_E2E ?? "", { timeout: 5000, readonly: true });
+  try {
+    return db
+      .prepare(
+        `SELECT c.type, c.document, c.pays, c.navigateur FROM consultations c
+         JOIN liens l ON l.id = c.lien_id
+         WHERE l.jeton_sha256 = ? AND c.type = 'document' ORDER BY c.id`,
+      )
+      .all(createHash("sha256").update(jeton).digest());
+  } finally {
+    db.close();
+  }
+}
