@@ -42,7 +42,8 @@ systemctl reload ssh
 install -d -m 750 -o deploy -g deploy /opt/nclsmgr
 install -d -m 700 -o root -g root /etc/nclsmgr/certs
 if [ ! -f /etc/nclsmgr/certs/origin.pem ]; then
-  # Certificat provisoire, remplacé par le certificat d'origine Cloudflare.
+  # Certificat provisoire, remplacé par le certificat d'origine Cloudflare
+  # (installer-certificat.sh, voir README.md).
   openssl req -x509 -newkey rsa:2048 -nodes -days 30 -subj "/CN=nclsmgr.com" \
     -addext "subjectAltName=DNS:nclsmgr.com,DNS:www.nclsmgr.com" \
     -keyout /etc/nclsmgr/certs/origin-key.pem -out /etc/nclsmgr/certs/origin.pem 2> /dev/null
