@@ -51,6 +51,9 @@ jobs:
           sbom: true
           outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=true
       - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        env:
+          # L'empreinte désigne un index (image et attestations) : préciser l'architecture.
+          TRIVY_PLATFORM: linux/${{ matrix.arch }}
         with:
           image-ref: ${{ env.IMAGE }}@${{ steps.construction.outputs.digest }}
           severity: CRITICAL,HIGH
