@@ -1,0 +1,129 @@
+{
+  "statut": "brouillon",
+  "maj": "2026-10-15",
+  "projets": [
+    {
+      "id": "zeus-poseidon",
+      "depot": "nic0lasm/zeus-poseidon-arm64",
+      "ordre": 1,
+      "afficher": true,
+      "titre": "Zeus + Poseidon on Apple Silicon",
+      "pitch": "Running a 2000 Windows game on modern Macs, from its original code and without a virtual machine.",
+      "probleme": "Zeus: Master of Olympus is a 32-bit Windows game that Apple Silicon Macs can no longer run. The usual answers are Wine or a virtual machine. This project runs the game's original code inside a small sandboxed x86 emulator and rewrites the Windows functions it needs as native code.",
+      "stack": [
+        "C++17",
+        "Unicorn (x86 emulation)",
+        "SDL2",
+        "FFmpeg",
+        "Python",
+        "CMake",
+        "GitHub Actions"
+      ],
+      "role": "Author and maintainer: reverse engineering, architecture, development, testing, releases and community.",
+      "points_forts": [
+        "The real game, not a remake: same simulation, same save files.",
+        "Accuracy you can check: replayed scenarios compare every frame with a reference.",
+        "The game's file formats documented, with reference readers in Python.",
+        "A public roadmap towards a fully native engine, one part at a time.",
+        "A ready-to-run app, with no game files in the repository."
+      ],
+      "chiffres": [
+        {
+          "valeur": "202",
+          "libelle": "Windows functions rewritten"
+        },
+        {
+          "valeur": "8",
+          "libelle": "regression scenarios"
+        },
+        {
+          "valeur": "8",
+          "libelle": "releases"
+        }
+      ],
+      "image": {
+        "src": "images/zeus-poseidon.jpg",
+        "alt": "A large city in wide mode, with the French interface"
+      },
+      "contribuer": "Try it on your Mac and report back, test another edition of the game, or pick a good first issue.",
+      "liens": [
+        {
+          "libelle": "Source code",
+          "url": "https://github.com/nic0lasm/zeus-poseidon-arm64"
+        },
+        {
+          "libelle": "Download",
+          "url": "https://github.com/nic0lasm/zeus-poseidon-arm64/releases/latest"
+        },
+        {
+          "libelle": "Architecture",
+          "url": "https://github.com/nic0lasm/zeus-poseidon-arm64/blob/main/docs/architecture.md"
+        }
+      ]
+    },
+    {
+      "id": "nclsmgr",
+      "depot": "nic0lasm/nclsmgr.com",
+      "ordre": 2,
+      "afficher": true,
+      "titre": "nclsmgr.com",
+      "pitch": "This website, run as a project in its own right: open source, self-hosted and secure by design.",
+      "probleme": "Showing how I run a project and handle security, rather than describing it. The code is public; only the private area's content stays on the server.",
+      "stack": ["Next.js", "TypeScript", "Docker Compose", "Caddy", "Cloudflare", "GitHub Actions"],
+      "role": "Scoping, architecture, security, development and operations.",
+      "points_forts": [
+        "A roadmap in milestones, each with a checkable exit criterion.",
+        "Strict nonce-based CSP, HSTS, aiming for A+ on Mozilla Observatory and SSL Labs.",
+        "CI with CodeQL, Dependabot and Docker image scanning.",
+        "Personal private links that expire and can be revoked."
+      ],
+      "chiffres": [],
+      "image": null,
+      "contribuer": null,
+      "liens": [
+        {
+          "libelle": "Source code",
+          "url": "https://github.com/nic0lasm/nclsmgr.com"
+        },
+        {
+          "libelle": "Roadmap",
+          "url": "https://github.com/nic0lasm/nclsmgr.com/blob/main/ROADMAP.md"
+        }
+      ]
+    },
+    {
+      "id": "as2c",
+      "depot": "nic0lasm/as2c",
+      "ordre": 3,
+      "afficher": true,
+      "titre": "AS2C Patrimoine",
+      "pitch": "Taking over a wealth management firm's website and automating its publishing.",
+      "probleme": "A 187-page static site with no templates, edited by hand and uploaded over FTP. Any change to the menu or contact details had to be repeated on every page.",
+      "stack": ["HTML", "CSS", "JavaScript", "Python", "GitHub Actions", "Apache (OVH)"],
+      "role": "Webmaster: site audit, checking tools, automated publishing.",
+      "points_forts": [
+        "Automatic publishing to the host on every approved change.",
+        "A checker for links, images, sitemap and search index.",
+        "A backup before every change, with a documented rollback."
+      ],
+      "chiffres": [
+        {
+          "valeur": "187",
+          "libelle": "pages maintained"
+        }
+      ],
+      "image": null,
+      "contribuer": null,
+      "liens": [
+        {
+          "libelle": "Live site",
+          "url": "https://www.as2cpatrimoine.com"
+        },
+        {
+          "libelle": "Source code",
+          "url": "https://github.com/nic0lasm/as2c"
+        }
+      ]
+    }
+  ]
+}

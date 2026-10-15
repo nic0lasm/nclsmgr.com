@@ -1,0 +1,129 @@
+{
+  "statut": "brouillon",
+  "maj": "2026-10-15",
+  "projets": [
+    {
+      "id": "zeus-poseidon",
+      "depot": "nic0lasm/zeus-poseidon-arm64",
+      "ordre": 1,
+      "afficher": true,
+      "titre": "Zeus + Poseidon sur Mac Apple Silicon",
+      "pitch": "Faire tourner un jeu Windows de 2000 sur les Mac récents, avec son code d'origine et sans machine virtuelle.",
+      "probleme": "Zeus : Master of Olympus est un jeu Windows 32 bits que les Mac Apple Silicon ne savent plus lancer. Les solutions existantes passent par Wine ou une machine virtuelle. Le projet exécute le code original du jeu dans un petit émulateur x86 isolé et réécrit en natif les fonctions Windows dont il dépend.",
+      "stack": [
+        "C++17",
+        "Unicorn (émulation x86)",
+        "SDL2",
+        "FFmpeg",
+        "Python",
+        "CMake",
+        "GitHub Actions"
+      ],
+      "role": "Auteur et mainteneur : rétro-ingénierie, architecture, développement, tests, publication des versions et animation de la communauté.",
+      "points_forts": [
+        "Le vrai jeu, pas un remake : même simulation, mêmes sauvegardes.",
+        "Fidélité prouvée : des scénarios rejoués comparent chaque image à une référence.",
+        "Formats de fichiers du jeu documentés, avec lecteurs Python de référence.",
+        "Feuille de route publique vers un moteur entièrement natif, pièce par pièce.",
+        "Application prête à l'emploi, sans aucun fichier du jeu dans le dépôt."
+      ],
+      "chiffres": [
+        {
+          "valeur": "202",
+          "libelle": "fonctions Windows réécrites"
+        },
+        {
+          "valeur": "8",
+          "libelle": "scénarios de non-régression"
+        },
+        {
+          "valeur": "8",
+          "libelle": "versions publiées"
+        }
+      ],
+      "image": {
+        "src": "images/zeus-poseidon.jpg",
+        "alt": "Une grande ville du jeu en mode large, interface en français"
+      },
+      "contribuer": "Tester sur votre Mac et le signaler, essayer une autre édition du jeu, ou prendre un ticket « good first issue ».",
+      "liens": [
+        {
+          "libelle": "Code source",
+          "url": "https://github.com/nic0lasm/zeus-poseidon-arm64"
+        },
+        {
+          "libelle": "Télécharger",
+          "url": "https://github.com/nic0lasm/zeus-poseidon-arm64/releases/latest"
+        },
+        {
+          "libelle": "Architecture",
+          "url": "https://github.com/nic0lasm/zeus-poseidon-arm64/blob/main/docs/architecture.md"
+        }
+      ]
+    },
+    {
+      "id": "nclsmgr",
+      "depot": "nic0lasm/nclsmgr.com",
+      "ordre": 2,
+      "afficher": true,
+      "titre": "nclsmgr.com",
+      "pitch": "Ce site, conçu comme un projet à part entière : ouvert, auto-hébergé et sécurisé dès la conception.",
+      "probleme": "Montrer concrètement ma façon de piloter un projet et de traiter la sécurité, plutôt que de la décrire. Le code est public ; seul le contenu de l'espace privé reste sur le serveur.",
+      "stack": ["Next.js", "TypeScript", "Docker Compose", "Caddy", "Cloudflare", "GitHub Actions"],
+      "role": "Cadrage, architecture, sécurité, développement et exploitation.",
+      "points_forts": [
+        "Feuille de route par jalons, chacun avec un critère de sortie vérifiable.",
+        "CSP stricte avec nonce, HSTS, objectif A+ sur Mozilla Observatory et SSL Labs.",
+        "Chaîne d'intégration avec CodeQL, Dependabot et analyse des images Docker.",
+        "Liens privés à usage nominatif, expirables et révocables."
+      ],
+      "chiffres": [],
+      "image": null,
+      "contribuer": null,
+      "liens": [
+        {
+          "libelle": "Code source",
+          "url": "https://github.com/nic0lasm/nclsmgr.com"
+        },
+        {
+          "libelle": "Feuille de route",
+          "url": "https://github.com/nic0lasm/nclsmgr.com/blob/main/ROADMAP.md"
+        }
+      ]
+    },
+    {
+      "id": "as2c",
+      "depot": "nic0lasm/as2c",
+      "ordre": 3,
+      "afficher": true,
+      "titre": "AS2C Patrimoine",
+      "pitch": "Reprise et mise en ligne automatisée du site d'un cabinet de gestion de patrimoine.",
+      "probleme": "Un site statique de 187 pages, sans gabarit, modifié à la main et envoyé par FTP. Chaque changement de menu ou de coordonnées devait être reporté page par page.",
+      "stack": ["HTML", "CSS", "JavaScript", "Python", "GitHub Actions", "Apache (OVH)"],
+      "role": "Webmaster : audit du site, outillage de vérification, publication automatique.",
+      "points_forts": [
+        "Publication automatique sur l'hébergement à chaque modification validée.",
+        "Script de vérification des liens, images, plan du site et index de recherche.",
+        "Sauvegarde systématique avant modification, retour arrière documenté."
+      ],
+      "chiffres": [
+        {
+          "valeur": "187",
+          "libelle": "pages maintenues"
+        }
+      ],
+      "image": null,
+      "contribuer": null,
+      "liens": [
+        {
+          "libelle": "Site en ligne",
+          "url": "https://www.as2cpatrimoine.com"
+        },
+        {
+          "libelle": "Code source",
+          "url": "https://github.com/nic0lasm/as2c"
+        }
+      ]
+    }
+  ]
+}

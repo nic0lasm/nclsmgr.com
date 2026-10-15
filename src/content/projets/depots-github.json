@@ -1,0 +1,56 @@
+{
+  "genereLe": "2026-10-15T13:24:26.280Z",
+  "depots": [
+    {
+      "nom": "nclsmgr.com",
+      "depot": "nic0lasm/nclsmgr.com",
+      "description": "Personnal portfolio",
+      "url": "https://github.com/nic0lasm/nclsmgr.com",
+      "siteWeb": null,
+      "langage": "TypeScript",
+      "topics": [],
+      "etoiles": 0,
+      "forks": 0,
+      "actifLe": "2026-10-15T13:23:44Z",
+      "licence": null,
+      "fork": false,
+      "archive": false
+    },
+    {
+      "nom": "zeus-poseidon-arm64",
+      "depot": "nic0lasm/zeus-poseidon-arm64",
+      "description": "Play Zeus: Master of Olympus + Poseidon on Apple Silicon Macs — the original game code in a sandboxed x86 emulator with a native Windows layer. No game files included.",
+      "url": "https://github.com/nic0lasm/zeus-poseidon-arm64",
+      "siteWeb": "https://github.com/nic0lasm/zeus-poseidon-arm64/releases/latest",
+      "langage": "C++",
+      "topics": [
+        "apple-silicon",
+        "city-builder",
+        "emulation",
+        "game-preservation",
+        "impressions-games"
+      ],
+      "etoiles": 0,
+      "forks": 0,
+      "actifLe": "2026-10-15T13:20:47Z",
+      "licence": "GPL-2.0",
+      "fork": false,
+      "archive": false
+    },
+    {
+      "nom": "as2c",
+      "depot": "nic0lasm/as2c",
+      "description": null,
+      "url": "https://github.com/nic0lasm/as2c",
+      "siteWeb": "https://as2c.vercel.app/",
+      "langage": "HTML",
+      "topics": [],
+      "etoiles": 0,
+      "forks": 0,
+      "actifLe": "2026-10-13T14:47:01Z",
+      "licence": null,
+      "fork": false,
+      "archive": false
+    }
+  ]
+}
