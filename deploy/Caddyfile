@@ -33,5 +33,11 @@ nclsmgr.com {
 	@static path /_next/static/*
 	header @static Cache-Control "public, max-age=31536000, immutable"
 
-	reverse_proxy web:3000
+	# Next.js ne doit jamais recevoir cet en-tête interne depuis l'extérieur (famille CVE-2025-29927).
+	request_header -X-Middleware-Subrequest
+
+	reverse_proxy web:3000 {
+		# Seul en-tête d'IP client lu par l'application ; jamais X-Forwarded-For.
+		header_up X-Client-IP {client_ip}
+	}
 }
