@@ -1,8 +1,7 @@
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { defineConfig, devices } from "@playwright/test";
-import { PRIVE_FICTIF } from "./e2e/prive-fictif";
 
 const port = 3100;
 // Second serveur, identique mais sans prive.json : les blocs privés doivent y être masqués.
@@ -19,11 +18,10 @@ if (!process.env.ESPACE_BASE_E2E) {
 }
 const baseEspace = process.env.ESPACE_BASE_E2E;
 
-// Données privées fictives (e2e/prive-fictif.ts), dans un dossier temporaire supprimé lui aussi
-// par e2e/nettoyage.ts.
+// Données privées fictives (e2e/prive-fictif.ts), écrites par e2e/preparation.ts dans un dossier
+// temporaire supprimé lui aussi par e2e/nettoyage.ts.
 if (!process.env.ESPACE_PRIVE_E2E) {
   const dossier = mkdtempSync(join(tmpdir(), "nclsmgr-e2e-prive-"));
-  writeFileSync(join(dossier, "prive.json"), JSON.stringify(PRIVE_FICTIF));
   process.env.ESPACE_DOSSIER_PRIVE_E2E = dossier;
   process.env.ESPACE_PRIVE_E2E = dossier;
 }
@@ -31,6 +29,7 @@ const dossierPrive = process.env.ESPACE_PRIVE_E2E;
 
 export default defineConfig({
   testDir: "e2e",
+  globalSetup: "./e2e/preparation.ts",
   globalTeardown: "./e2e/nettoyage.ts",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
