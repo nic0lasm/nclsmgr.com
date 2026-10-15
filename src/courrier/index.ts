@@ -88,7 +88,8 @@ async function principal() {
         walAVider = !viderWal(db);
       }
       await traiterFile(db, envoyer, Date.now, () => !arret);
-      writeFileSync(TEMOIN, String(Date.now()));
+      // Lisible du seul utilisateur du service, même si /tmp n'était pas privé au conteneur.
+      writeFileSync(TEMOIN, String(Date.now()), { mode: 0o600 });
     } catch (erreur) {
       console.error("Service courrier : erreur de cycle.", erreur);
     }
