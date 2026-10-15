@@ -8,6 +8,10 @@ updates:
       dependances:
         patterns: ["*"]
         update-types: [minor, patch]
+    ignore:
+      # Les types Node suivent la version majeure de Node utilisée (.nvmrc).
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: chore
   - package-ecosystem: docker
