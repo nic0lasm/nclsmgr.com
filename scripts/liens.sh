@@ -5,7 +5,7 @@
 # courriel : il n'apparaît jamais dans ce terminal.
 #
 #   liens creer --profil recruteur --destinataire "Camille" [--organisation "Acme"]
-#               [--langue fr|en] [--message "..."] [--documents cv,references]
+#               [--langue fr|en] [--message "..."] [--documents cv]
 #               [--note "..."] [--duree 30]
 #   liens lister [--tous]
 #   liens journal l-7kq2mz

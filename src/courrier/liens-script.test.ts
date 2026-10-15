@@ -70,6 +70,14 @@ describe("scripts/liens.sh", () => {
     }
   });
 
+  it("envoie une liste vide pour --documents ''", () => {
+    expect(JSON.parse(liens("creer", "--profil", "recruteur", "--documents", ""))).toEqual({
+      action: "creer",
+      profil: "recruteur",
+      documents: [],
+    });
+  });
+
   it("construit les autres actions", () => {
     expect(JSON.parse(liens("lister"))).toEqual({ action: "lister" });
     expect(JSON.parse(liens("lister", "--tous"))).toEqual({ action: "lister", tous: true });
