@@ -1,6 +1,5 @@
 ---
 titre: Confidentialité
-description: Quelles données le site nclsmgr.com traite, pourquoi, combien de temps, et comment exercer vos droits.
 statut: brouillon
 maj: 2026-10-15
 ---
@@ -19,13 +18,17 @@ Le responsable du traitement est Nicolas Maigre, joignable par le [formulaire de
 | Consultations de l'espace privé (date, pays, famille de navigateur et de système, page ou document consulté). L'adresse IP n'est jamais enregistrée. | Savoir si le lien a été ouvert, sécuriser l'accès                                                                                            | Intérêt légitime : suivi de la prise de contact et sécurité           | 3 mois                                                        |
 | Journaux techniques du serveur (adresse IP, date, page demandée)                                                                                     | Sécurité du site : détection et blocage des abus                                                                                             | Intérêt légitime : sécurité du site                                   | 30 jours                                                      |
 
-Si vous avez reçu un lien personnel, je suis averti par e-mail la première fois que vous l'ouvrez. Les e-mails que j'envoie ne contiennent aucun pixel de suivi.
+Si vous avez reçu un lien personnel, je suis averti par e-mail la première fois que vous l'ouvrez. Ces notifications sont triées et supprimées chaque trimestre. Les e-mails que j'envoie ne contiennent aucun pixel de suivi.
 
-Ces données ne sont ni vendues ni transmises à des tiers. Seul l'éditeur du site y a accès.
+Ces données ne sont ni vendues ni transmises à des tiers, en dehors des prestataires techniques cités plus bas. Seul l'éditeur du site y a accès. Les outils qui m'aident à organiser mes échanges peuvent voir le nom et l'organisation d'un contact, jamais son lien personnel.
+
+Les sauvegardes chiffrées du serveur sont conservées 3 mois au plus.
 
 ## Où sont les données
 
 Le serveur est situé au Canada, chez OVH. Le Canada fait l'objet d'une décision d'adéquation de la Commission européenne, qui reconnaît un niveau de protection équivalent à celui de l'Union européenne. Le trafic transite par Cloudflare, qui agit comme intermédiaire technique pour protéger le site et accélérer son affichage.
+
+Deux prestataires traitent ainsi des données pour le compte du site : Cloudflare (DNS, protection et diffusion du site) et OVHcloud (hébergement du serveur et messagerie qui reçoit les messages du formulaire).
 
 ## Cookies
 

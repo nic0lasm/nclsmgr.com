@@ -61,3 +61,30 @@ describe("parseMarkdown", () => {
     });
   });
 });
+
+describe("robustesse", () => {
+  it("traite une ligne isolée commençant par | comme du texte", () => {
+    expect(parseMarkdown("Texte\n| note isolée\nsuite").blocks).toEqual([
+      { type: "paragraph", content: [{ type: "text", value: "Texte" }] },
+      { type: "paragraph", content: [{ type: "text", value: "| note isolée suite" }] },
+    ]);
+  });
+
+  it("ignore le BOM en tête de fichier", () => {
+    expect(parseMarkdown("\uFEFF---\ntitre: A\n---\nTexte").frontmatter).toEqual({ titre: "A" });
+  });
+
+  it.each(["# Titre", "#### Titre", "1. Premier", "---", "> citation"])(
+    "refuse la syntaxe non prise en charge : %s",
+    (line) => {
+      expect(() => parseMarkdown(`Texte\n\n${line}`)).toThrow(/non prise en charge/);
+    },
+  );
+
+  it.each(["mailto:a@b.c", "http://exemple.fr", "javascript:alert(1)"])(
+    "refuse les liens hors site non https : %s",
+    (href) => {
+      expect(() => parseInline(`[lien](${href})`)).toThrow(/Lien non pris en charge/);
+    },
+  );
+});

@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { pagesSeo } from "@/content/types";
@@ -58,7 +58,10 @@ describe("contenus", () => {
 
   it("ne publie aucune coordonnée personnelle", () => {
     for (const text of everything) {
-      expect(text).not.toMatch(/(?:\+33|\b0)[1-9](?:[\s.-]?\d{2}){4}/);
+      // Seul le numéro de l'hébergeur, exigé par la LCEN, est autorisé.
+      expect(text.replaceAll("+33 9 72 10 10 07", "")).not.toMatch(
+        /(?:\+33|\b0)[1-9](?:[\s.-]?\d{2}){4}/,
+      );
       expect(text).not.toMatch(/[\w.+-]+@[\w-]+\.[\w.]+/);
       expect(text).not.toMatch(/skype/i);
     }
@@ -91,6 +94,15 @@ describe("contenus", () => {
     }
   });
 
+  it("ne référence que des images Open Graph présentes dans public/", () => {
+    for (const c of [fr, en]) {
+      for (const page of pagesSeo) {
+        const image = c.seo.pages[page].og_image;
+        if (image) expect(existsSync(path.join(process.cwd(), "public", image))).toBe(true);
+      }
+    }
+  });
+
   it("fournit un titre et une description SEO de bonne longueur pour chaque page", () => {
     for (const c of [fr, en]) {
       for (const page of pagesSeo) {
@@ -103,12 +115,11 @@ describe("contenus", () => {
     }
   });
 
-  it("fournit chaque page de texte dans les deux langues, avec titre et description", async () => {
+  it("fournit chaque page de texte dans les deux langues, avec un titre", async () => {
     for (const lang of ["fr", "en"] as const) {
       for (const page of pagesTexte) {
         const doc = await getPage(lang, page);
         expect(doc.frontmatter.titre, `${lang} ${page}`).toBeTruthy();
-        expect(doc.frontmatter.description, `${lang} ${page}`).toBeTruthy();
         expect(doc.blocks.length, `${lang} ${page}`).toBeGreaterThan(0);
       }
     }

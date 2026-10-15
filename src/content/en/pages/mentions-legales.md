@@ -1,6 +1,5 @@
 ---
 titre: Legal notice
-description: Publisher, publication director and hosting providers of the nclsmgr.com website.
 statut: brouillon
 maj: 2026-10-15
 ---
@@ -12,7 +11,7 @@ For any request, please use the [contact form](/contact).
 
 ## Hosting
 
-The site is hosted by OVH SAS, 2 rue Kellermann, 59100 Roubaix, France (registered with the Lille Métropole Trade and Companies Register, RCS Lille Métropole 424 761 419), on a server located in Canada.
+The site is hosted by OVH SAS, 2 rue Kellermann, 59100 Roubaix, France (registered with the Lille Métropole Trade and Companies Register, RCS Lille Métropole 424 761 419, telephone +33 9 72 10 10 07), on a server located in Canada.
 
 The domain name and the delivery of the site go through Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, United States.
 

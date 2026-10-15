@@ -10,7 +10,7 @@ function Inlines({ content, locale }: { content: Inline[]; locale: Locale }) {
       case "code":
         return <code key={i}>{part.value}</code>;
       case "link":
-        // Les liens internes reçoivent le préfixe de langue ; les autres ouvrent le site cible.
+        // Les liens internes reçoivent le préfixe de langue (l'analyseur n'accepte que / et https://).
         return part.href.startsWith("/") ? (
           <Link key={i} href={`/${locale}${part.href}`}>
             {part.value}
@@ -26,8 +26,14 @@ function Inlines({ content, locale }: { content: Inline[]; locale: Locale }) {
   });
 }
 
+function plainText(content: Inline[]): string {
+  return content.map((part) => part.value).join("");
+}
+
 export function MarkdownView({ blocks, locale }: { blocks: Block[]; locale: Locale }) {
+  let lastHeading = "";
   return blocks.map((block, i) => {
+    if (block.type === "heading") lastHeading = plainText(block.content);
     switch (block.type) {
       case "heading": {
         const Tag = block.level === 2 ? "h2" : "h3";
@@ -49,7 +55,14 @@ export function MarkdownView({ blocks, locale }: { blocks: Block[]; locale: Loca
         );
       case "table":
         return (
-          <div key={i} className="table-scroll">
+          // Zone défilante atteignable au clavier, nommée par le titre qui la précède.
+          <div
+            key={i}
+            className="table-scroll"
+            role="region"
+            aria-label={lastHeading || plainText(block.header[0] ?? [])}
+            tabIndex={0}
+          >
             <table className="data-table">
               <thead>
                 <tr>

@@ -11,22 +11,22 @@
     "accueil": {
       "titre": "Nicolas Maigre, chef de projet cyber",
       "description": "Je pilote des projets numériques sensibles, de l'avant-vente à la livraison, avec la sécurité comme exigence de départ.",
-      "og_image": "/og/accueil.png"
+      "og_image": null
     },
     "cv": {
       "titre": "CV · Nicolas Maigre",
       "description": "Parcours, compétences et certifications de Nicolas Maigre, chef de projet en cybersécurité.",
-      "og_image": "/og/cv.png"
+      "og_image": null
     },
     "dev": {
       "titre": "Dev · Nicolas Maigre",
       "description": "Projets techniques et dépôts publics : le code est consultable, les choix sont expliqués.",
-      "og_image": "/og/dev.png"
+      "og_image": null
     },
     "portfolio": {
       "titre": "Portfolio · Nicolas Maigre",
       "description": "Études de cas de projets cyber pilotés : contexte, décisions, résultats mesurés.",
-      "og_image": "/og/portfolio.png"
+      "og_image": null
     },
     "contact": {
       "titre": "Contact · Nicolas Maigre",

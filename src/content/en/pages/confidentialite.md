@@ -1,6 +1,5 @@
 ---
 titre: Privacy
-description: What data nclsmgr.com processes, why, for how long, and how to exercise your rights.
 statut: brouillon
 maj: 2026-10-15
 ---
@@ -19,13 +18,17 @@ The data controller is Nicolas Maigre, who can be reached through the [contact f
 | Visits to the private area (date, country, browser and operating system family, page or document viewed). The IP address is never recorded. | To know whether the link has been opened, and to secure access                                                                   | Legitimate interests: following up the contact, and security                           | 3 months                                              |
 | Server technical logs (IP address, date, page requested)                                                                                    | Site security: detecting and blocking abuse                                                                                      | Legitimate interests: site security                                                    | 30 days                                               |
 
-If you have received a personal link, I am notified by email the first time you open it. The emails I send contain no tracking pixels.
+If you have received a personal link, I am notified by email the first time you open it. These notifications are sorted and deleted every quarter. The emails I send contain no tracking pixels.
 
-This data is neither sold nor passed on to third parties. Only the site's publisher has access to it.
+This data is neither sold nor passed on to third parties, apart from the technical providers listed below. Only the site's publisher has access to it. Tools that help me organise my correspondence may see a contact's name and organisation, but never their personal link.
+
+Encrypted server backups are kept for no more than 3 months.
 
 ## Where the data is held
 
 The server is located in Canada and operated by OVH. Canada is covered by an adequacy decision of the European Commission, which recognises a level of protection equivalent to that of the European Union. Traffic passes through Cloudflare, which acts as a technical intermediary to protect the site and make it load faster.
+
+Two providers therefore process data on the site's behalf: Cloudflare (DNS, protection and delivery of the site) and OVHcloud (server hosting, and the mailbox that receives messages from the contact form).
 
 ## Cookies
 

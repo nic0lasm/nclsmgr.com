@@ -54,3 +54,14 @@ test("les liens internes des pages de texte gardent la langue", async ({ page })
     .click();
   await expect(page).toHaveURL(/\/en\/confidentialite$/);
 });
+
+test("sur mobile, le tableau de la confidentialité reste accessible au clavier", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/fr/confidentialite");
+  const region = page.getByRole("region", { name: "Ce qui est traité" });
+  await expect(region).toHaveAttribute("tabindex", "0");
+  const axe = await new AxeBuilder({ page }).analyze();
+  expect(axe.violations).toEqual([]);
+});

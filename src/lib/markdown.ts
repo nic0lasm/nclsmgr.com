@@ -29,7 +29,12 @@ export function parseInline(source: string): Inline[] {
     if (index > last) out.push({ type: "text", value: source.slice(last, index) });
     if (m[1] !== undefined) out.push({ type: "strong", value: m[1] });
     else if (m[2] !== undefined) out.push({ type: "code", value: m[2] });
-    else out.push({ type: "link", value: m[3], href: m[4] });
+    else {
+      if (!m[4].startsWith("/") && !m[4].startsWith("https://")) {
+        throw new Error(`Lien non pris en charge : ${m[4]}`);
+      }
+      out.push({ type: "link", value: m[3], href: m[4] });
+    }
     last = index + m[0].length;
   }
   if (last < source.length) out.push({ type: "text", value: source.slice(last) });
@@ -56,7 +61,7 @@ export function parseFrontmatter(source: string): { data: Record<string, string>
 }
 
 export function parseMarkdown(source: string): Document {
-  const { data, body } = parseFrontmatter(source.replace(/\r\n/g, "\n"));
+  const { data, body } = parseFrontmatter(source.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n"));
   const lines = body.replace(/<!--[\s\S]*?-->/g, "").split("\n");
   const blocks: Block[] = [];
   let i = 0;
@@ -66,6 +71,9 @@ export function parseMarkdown(source: string): Document {
     if (!line.trim()) {
       i++;
       continue;
+    }
+    if (/^(#\s|#{4,}|\d+\.\s|-{3,}\s*$|>)/.test(line)) {
+      throw new Error(`Syntaxe Markdown non prise en charge : ${line}`);
     }
     const heading = /^(#{2,3})\s+(.*)$/.exec(line);
     if (heading) {
@@ -92,7 +100,9 @@ export function parseMarkdown(source: string): Document {
       }
       blocks.push({ type: "table", header, rows });
     } else {
-      const parts: string[] = [];
+      // La ligne courante est toujours consommée, pour que l'analyse avance quoi qu'il arrive.
+      const parts: string[] = [line.trim()];
+      i++;
       while (
         i < lines.length &&
         lines[i].trim() &&

@@ -1,6 +1,5 @@
 ---
 titre: Contact
-description: Get in touch with Nicolas Maigre, Cybersecurity Project Manager.
 statut: brouillon
 maj: 2026-10-15
 ---

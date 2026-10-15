@@ -1,6 +1,5 @@
 ---
 titre: Contact
-description: Écrire à Nicolas Maigre, chef de projet cyber.
 statut: brouillon
 maj: 2026-10-15
 ---
