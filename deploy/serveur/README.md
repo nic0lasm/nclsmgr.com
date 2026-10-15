@@ -20,6 +20,7 @@ Le déploiement courant ne passe pas par ces scripts : GitHub Actions publie l'i
 | 4. Compte `liens`        | `installer-liens.sh "<clé publique dédiée>"`        | Service courrier déployé        |
 | 5. Mesure d'audience     | `installer-statistiques.sh`                         | Premier déploiement fait        |
 | 6. Sauvegardes           | `installer-sauvegarde.sh`                           | Bucket R2 et jeton S3           |
+| 7. Origine fermée        | `restreindre-origine.sh`                            | Full (strict), aucun AAAA       |
 
 Tous sont idempotents, sauf `installer-certificat.sh` qui remplace le certificat à chaque appel.
 
@@ -42,3 +43,14 @@ sur le serveur et n'en sort jamais.
 
 L'ancien certificat reste dans `/etc/nclsmgr/certs/*.precedent.pem` pour un retour arrière
 manuel. Une demande non signée se relance sans risque : seule la clé en attente est remplacée.
+
+## Origine réservée à Cloudflare
+
+`restreindre-origine.sh` ferme 80 et 443 à tout ce qui n'est pas une plage Cloudflare. En IPv4,
+les ports publiés par Docker échappent à UFW : le filtre passe par la chaîne `DOCKER-USER`, rechargée
+au démarrage de Docker et à chaque mise à jour hebdomadaire des plages. En IPv6, les réseaux Docker
+n'ont pas d'adresse : le DNS ne doit publier aucun AAAA vers l'origine, sinon Cloudflare passerait
+par le docker-proxy, qui masque l'IP source, et UFW ferme 80 et 443. Après coup, le site ne répond
+plus en direct sur l'IP du serveur, y compris pour un `curl --resolve` depuis le poste
+d'administration ; les contrôles locaux sur le serveur restent possibles. Retour arrière :
+`restreindre-origine.sh retirer`.

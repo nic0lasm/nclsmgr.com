@@ -24,4 +24,8 @@ mv "$CIBLE.tmp" "$CIBLE"
 if [ -f /opt/nclsmgr/compose.yaml ]; then
   docker compose -f /opt/nclsmgr/compose.yaml restart caddy > /dev/null || true
 fi
+# Pare-feu de l'origine (restreindre-origine.sh), s'il est installé.
+if [ -x /usr/local/sbin/nclsmgr-pare-feu-origine ]; then
+  /usr/local/sbin/nclsmgr-pare-feu-origine
+fi
 echo "Plages Cloudflare mises à jour."
