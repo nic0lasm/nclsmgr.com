@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { isCurrentPath, localizedPath, navLinks, switchLocalePath } from "@/lib/navigation";
+import {
+  isCurrentPath,
+  legalSegments,
+  localizedPath,
+  navLinks,
+  switchLocalePath,
+} from "@/lib/navigation";
 
 describe("navigation", () => {
   it("construit les adresses localisées", () => {
@@ -28,5 +34,10 @@ describe("navigation", () => {
     expect(switchLocalePath("/fr", "en")).toBe("/en");
     expect(switchLocalePath("/fr/dev/zeus-poseidon", "en")).toBe("/en/dev/zeus-poseidon");
     expect(switchLocalePath("/en/", "fr")).toBe("/fr");
+  });
+
+  it("donne une adresse aux pages légales dans chaque langue", () => {
+    expect(localizedPath("fr", legalSegments.legal)).toBe("/fr/mentions-legales");
+    expect(localizedPath("en", legalSegments.privacy)).toBe("/en/confidentialite");
   });
 });

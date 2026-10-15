@@ -3,6 +3,9 @@ import type { Locale } from "@/lib/i18n";
 export const siteOwner = "Nicolas Maigre";
 export const sourceUrl = "https://github.com/nic0lasm/nclsmgr.com";
 
+// Pages légales, liées depuis le pied de chaque page.
+export const legalSegments = { legal: "mentions-legales", privacy: "confidentialite" } as const;
+
 type NavEntry = {
   segment: string;
   label: Record<Locale, string>;
@@ -54,6 +57,8 @@ export const chrome = {
     themeGeneric: "Changer de thème",
     otherLanguage: "English",
     source: "Code source",
+    legal: "Mentions légales",
+    privacy: "Confidentialité",
   },
   en: {
     skipLink: "Skip to content",
@@ -64,5 +69,7 @@ export const chrome = {
     themeGeneric: "Change theme",
     otherLanguage: "Français",
     source: "Source code",
+    legal: "Legal notice",
+    privacy: "Privacy",
   },
 } satisfies Record<Locale, Record<string, string>>;

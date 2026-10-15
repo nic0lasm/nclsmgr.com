@@ -1,7 +1,7 @@
 import localFont from "next/font/local";
 
 // Polices servies par le site (sous-ensemble latin, licence SIL OFL 1.1 dans ./fonts).
-export const serif = localFont({
+export const sourceSerif = localFont({
   src: "./fonts/source-serif-4-latin-600.woff2",
   weight: "600",
   style: "normal",
@@ -10,7 +10,7 @@ export const serif = localFont({
   adjustFontFallback: "Times New Roman",
 });
 
-export const sans = localFont({
+export const publicSans = localFont({
   src: "./fonts/public-sans-latin-wght.woff2",
   weight: "400 700",
   style: "normal",
@@ -18,7 +18,7 @@ export const sans = localFont({
   variable: "--font-sans",
 });
 
-export const mono = localFont({
+export const plexMono = localFont({
   src: [
     { path: "./fonts/ibm-plex-mono-latin-400.woff2", weight: "400", style: "normal" },
     { path: "./fonts/ibm-plex-mono-latin-500.woff2", weight: "500", style: "normal" },
@@ -27,4 +27,6 @@ export const mono = localFont({
   variable: "--font-mono",
 });
 
-export const fontVariables = [serif.variable, sans.variable, mono.variable].join(" ");
+export const fontVariables = [sourceSerif.variable, publicSans.variable, plexMono.variable].join(
+  " ",
+);

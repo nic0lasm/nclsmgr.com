@@ -74,3 +74,16 @@ test("les polices sont servies par le site", async ({ page }) => {
   expect(loaded).toBeGreaterThanOrEqual(3);
   expect(external).toEqual([]);
 });
+
+test("le pied de page lie les pages légales dans la langue de la page", async ({ page }) => {
+  await page.goto("/en");
+  const footer = page.getByRole("contentinfo");
+  await expect(footer.getByRole("link", { name: "Legal notice" })).toHaveAttribute(
+    "href",
+    "/en/mentions-legales",
+  );
+  await expect(footer.getByRole("link", { name: "Privacy" })).toHaveAttribute(
+    "href",
+    "/en/confidentialite",
+  );
+});

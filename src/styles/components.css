@@ -295,14 +295,21 @@
 }
 
 /* ---------- Compétences (3 colonnes) ---------- */
+/* 3 ou 4 domaines sur une ligne selon la largeur, une colonne sur mobile */
 .skill-groups {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
   gap: var(--space-5);
 }
 
+.skill-groups h3,
 .skill-groups h4 {
   margin-bottom: var(--space-2);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: var(--weight-strong);
+  line-height: var(--leading-heading);
+  letter-spacing: normal;
 }
 
 .skill-groups ul {
