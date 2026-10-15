@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { isLocale, type Locale } from "@/lib/i18n";
 import { donneesOngletDev, type FicheAffichee } from "@/lib/projets";
-import type { Depot } from "@/lib/github";
 import { formaterDate, textes } from "./textes";
-import "./dev.css";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/dev">): Promise<Metadata> {
   const { lang } = await params;
@@ -19,32 +16,29 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/dev">): Pr
   };
 }
 
-function Fiche({ fiche, lang }: { fiche: FicheAffichee; lang: Locale }) {
+function FicheProjet({ fiche, lang }: { fiche: FicheAffichee; lang: Locale }) {
   const t = textes[lang];
-  return (
-    <article className="fiche" aria-labelledby={`fiche-${fiche.id}`}>
-      <header className="fiche-entete">
-        <h3 id={`fiche-${fiche.id}`}>{fiche.titre}</h3>
-        <p className="pitch">{fiche.pitch}</p>
-        {fiche.github && (
-          <p className="meta">
-            {[
-              fiche.github.langage,
-              fiche.github.licence,
-              fiche.github.etoiles > 0 ? t.etoiles(fiche.github.etoiles) : null,
-              `${t.actifLe} ${formaterDate(fiche.github.actifLe, lang)}`,
-            ]
-              .filter(Boolean)
-              .join(" · ")}
-          </p>
-        )}
-      </header>
+  const meta = [
+    fiche.depot,
+    fiche.github?.langage,
+    fiche.github?.licence,
+    fiche.github && fiche.github.etoiles > 0 ? t.etoiles(fiche.github.etoiles) : null,
+    fiche.github ? `${t.misAJour} ${formaterDate(fiche.github.actifLe, lang)}` : null,
+  ].filter(Boolean);
 
+  return (
+    <article className="project" aria-labelledby={`projet-${fiche.id}`}>
+      <h3 id={`projet-${fiche.id}`}>{fiche.titre}</h3>
+      <p>{fiche.pitch}</p>
+      {fiche.chiffres && fiche.chiffres.length > 0 && (
+        <p className="project__figures">
+          {fiche.chiffres.map((c) => `${c.valeur} ${c.libelle}`).join(" · ")}
+        </p>
+      )}
       {fiche.visuel && fiche.image && (
         // next/image ajoute un attribut style que la CSP refuse : balise img simple.
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          className="visuel"
           src={fiche.visuel.src}
           width={fiche.visuel.width}
           height={fiche.visuel.height}
@@ -53,81 +47,46 @@ function Fiche({ fiche, lang }: { fiche: FicheAffichee; lang: Locale }) {
           decoding="async"
         />
       )}
-
-      {fiche.chiffres && fiche.chiffres.length > 0 && (
-        <dl className="chiffres">
-          {fiche.chiffres.map((c) => (
-            <div key={c.libelle}>
-              <dt>{c.libelle}</dt>
-              <dd>{c.valeur}</dd>
-            </div>
-          ))}
-        </dl>
-      )}
-
-      <div className="fiche-corps">
-        <section>
-          <h4>{t.probleme}</h4>
-          <p>{fiche.probleme}</p>
-        </section>
-        <section>
-          <h4>{t.role}</h4>
-          <p>{fiche.role}</p>
-        </section>
-        <section>
-          <h4>{t.pointsForts}</h4>
-          <ul>
-            {fiche.points_forts.map((p) => (
-              <li key={p}>{p}</li>
-            ))}
-          </ul>
-        </section>
-        {fiche.contribuer && (
-          <section>
-            <h4>{t.contribuer}</h4>
-            <p>{fiche.contribuer}</p>
-          </section>
-        )}
+      <div>
+        <h4>{t.probleme}</h4>
+        <p>{fiche.probleme}</p>
       </div>
-
-      <footer className="fiche-pied">
-        <ul className="stack" aria-label={t.stack}>
-          {fiche.stack.map((s) => (
-            <li key={s}>{s}</li>
+      <div>
+        <h4>{t.role}</h4>
+        <p>{fiche.role}</p>
+      </div>
+      <div>
+        <h4>{t.pointsForts}</h4>
+        <ul>
+          {fiche.points_forts.map((p) => (
+            <li key={p}>{p}</li>
           ))}
         </ul>
-        <ul className="liens">
-          {fiche.liens.map((l) => (
-            <li key={l.url}>
-              <a href={l.url} rel="noopener noreferrer">
-                {l.libelle}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </footer>
+      </div>
+      {fiche.contribuer && (
+        <div>
+          <h4>{t.contribuer}</h4>
+          <p>{fiche.contribuer}</p>
+        </div>
+      )}
+      <ul className="tag-list" aria-label={t.stack}>
+        {fiche.stack.map((s) => (
+          <li key={s} className="tag">
+            {s}
+          </li>
+        ))}
+      </ul>
+      {meta.length > 0 && <p className="project__meta">{meta.join(" · ")}</p>}
+      <ul className="project__links">
+        {fiche.liens.map((l) => (
+          <li key={l.url}>
+            <a href={l.url} rel="noopener noreferrer">
+              {l.libelle}
+            </a>
+          </li>
+        ))}
+      </ul>
     </article>
-  );
-}
-
-function CarteDepot({ depot, lang }: { depot: Depot; lang: Locale }) {
-  const t = textes[lang];
-  return (
-    <li className="depot">
-      <a href={depot.url} rel="noopener noreferrer" className="depot-nom">
-        {depot.nom}
-      </a>
-      {depot.description && <p>{depot.description}</p>}
-      <p className="meta">
-        {[
-          depot.langage,
-          depot.etoiles > 0 ? t.etoiles(depot.etoiles) : null,
-          `${t.actifLe} ${formaterDate(depot.actifLe, lang)}`,
-        ]
-          .filter(Boolean)
-          .join(" · ")}
-      </p>
-    </li>
   );
 }
 
@@ -140,41 +99,75 @@ export default async function PageDev({ params }: PageProps<"/[lang]/dev">) {
   const { fiches, autres, genereLe } = donneesOngletDev(lang);
 
   return (
-    <main className="dev">
-      <nav className="fil">
-        <Link href={`/${lang}`}>{t.accueil}</Link>
-      </nav>
-      <header className="dev-entete">
-        <h1>{t.titrePage}</h1>
-        <p>{t.intro}</p>
-      </header>
+    <main id="contenu" className="wrap">
+      <section className="section" aria-labelledby="titre">
+        <p className="section__label">{t.titrePage}</p>
+        <div className="section__body">
+          <h1 id="titre">{t.titre}</h1>
+          <p className="lead">{t.intro}</p>
+        </div>
+      </section>
 
-      <section aria-labelledby="selection">
-        <h2 id="selection">{t.selection}</h2>
-        <div className="fiches">
+      <section className="section" aria-labelledby="selection">
+        <h2 id="selection" className="section__label">
+          {t.selection}
+        </h2>
+        <div className="section__body">
           {fiches.map((f) => (
-            <Fiche key={f.id} fiche={f} lang={lang} />
+            <FicheProjet key={f.id} fiche={f} lang={lang} />
           ))}
         </div>
       </section>
 
-      <section aria-labelledby="autres">
-        <h2 id="autres">{t.autres}</h2>
-        {autres.length > 0 ? (
-          <ul className="depots">
-            {autres.map((d) => (
-              <CarteDepot key={d.depot} depot={d} lang={lang} />
-            ))}
-          </ul>
-        ) : (
-          <p className="muted">{t.aucunAutre}</p>
-        )}
-        <p className="muted source">
-          {genereLe && `${t.miseAJour} ${formaterDate(genereLe, lang)}. `}
-          <a href="https://github.com/nic0lasm" rel="noopener noreferrer">
-            {t.surGithub}
-          </a>
-        </p>
+      <section className="section" aria-labelledby="autres">
+        <h2 id="autres" className="section__label">
+          {t.autres}
+        </h2>
+        <div className="section__body">
+          {autres.length > 0 ? (
+            <div className="table-scroll">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th scope="col">{t.colDepot}</th>
+                    <th scope="col">{t.colLangage}</th>
+                    <th scope="col" className="is-optional">
+                      {t.colLicence}
+                    </th>
+                    <th scope="col" className="is-numeric">
+                      {t.colMaj}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {autres.map((d) => (
+                    <tr key={d.depot}>
+                      <td>
+                        <a href={d.url} rel="noopener noreferrer">
+                          {d.nom}
+                        </a>
+                        {d.description && <p className="muted">{d.description}</p>}
+                      </td>
+                      <td>{d.langage ?? "·"}</td>
+                      <td className="is-optional">{d.licence ?? "·"}</td>
+                      <td className="is-numeric">
+                        <time dateTime={d.actifLe}>{formaterDate(d.actifLe, lang)}</time>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="muted">{t.aucunAutre}</p>
+          )}
+          <p className="muted">
+            {genereLe && `${t.miseAJour} ${formaterDate(genereLe, lang)}. `}
+            <a href="https://github.com/nic0lasm" rel="noopener noreferrer">
+              {t.surGithub}
+            </a>
+          </p>
+        </div>
       </section>
     </main>
   );
