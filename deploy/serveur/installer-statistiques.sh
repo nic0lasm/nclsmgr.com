@@ -15,7 +15,8 @@ TABLEAU=http://127.0.0.1:3001
 install -m 755 -o root -g root deployer.sh /usr/local/sbin/nclsmgr-deployer
 
 cd /opt/nclsmgr
-if ! docker compose config --services 2> /dev/null | grep -qx umami; then
+# Le profil doit être nommé : sans lui, Compose ne liste pas les services qui en dépendent.
+if ! COMPOSE_PROFILES=statistiques docker compose config --services 2> /dev/null | grep -qx umami; then
   echo "Le service umami n'est pas encore déployé : relancer la publication, puis ce script." >&2
   exit 1
 fi
