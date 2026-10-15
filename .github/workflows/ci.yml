@@ -70,6 +70,20 @@ jobs:
           context: .
           load: true
           tags: nclsmgr:ci
+      - name: Démarrer l'image comme en production
+        run: |
+          docker run -d --name essai --read-only --cap-drop ALL \
+            --security-opt no-new-privileges:true \
+            --tmpfs /tmp --tmpfs /app/.next/cache \
+            --tmpfs /data/base:uid=1000,gid=1000,mode=700 \
+            -e ESPACE_BASE=/data/base/espace.db \
+            -p 127.0.0.1:3000:3000 nclsmgr:ci
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3000/healthz; then exit 0; fi
+            sleep 1
+          done
+          docker logs essai
+          exit 1
       - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: nclsmgr:ci

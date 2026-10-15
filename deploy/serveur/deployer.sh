@@ -30,6 +30,6 @@ done
 cd "$DOSSIER"
 printf 'IMAGE_TAG=%s\n' "$TAG" > .env
 docker compose pull --quiet
-docker compose up -d --remove-orphans
+docker compose up -d --remove-orphans --wait --wait-timeout 120
 docker image prune -f > /dev/null
 echo "Déployé : $TAG"
