@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseInline, parseMarkdown } from "./markdown";
+import { parseInline, parseMarkdown, stripComments } from "./markdown";
 
 describe("parseInline", () => {
   it("reconnaît le gras, le code et les liens", () => {
@@ -87,4 +87,11 @@ describe("robustesse", () => {
       expect(() => parseInline(`[lien](${href})`)).toThrow(/Lien non pris en charge/);
     },
   );
+});
+
+describe("stripComments", () => {
+  it("retire aussi les commentaires imbriqués", () => {
+    expect(stripComments("a<!<!-- x -->-- y -->b")).toBe("ab");
+    expect(stripComments("a<!--<!-- x -->b")).toBe("ab");
+  });
 });

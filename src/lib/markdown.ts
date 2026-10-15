@@ -60,9 +60,21 @@ export function parseFrontmatter(source: string): { data: Record<string, string>
   return { data, body: source.slice(match[0].length) };
 }
 
+// Retire les commentaires HTML (notes de rédaction) jusqu'à stabilité, pour qu'un
+// commentaire imbriqué ne laisse pas de « <!-- » derrière lui.
+export function stripComments(source: string): string {
+  let previous: string;
+  let current = source;
+  do {
+    previous = current;
+    current = previous.replace(/<!--[\s\S]*?-->/g, "");
+  } while (current !== previous);
+  return current.replaceAll("<!--", "");
+}
+
 export function parseMarkdown(source: string): Document {
   const { data, body } = parseFrontmatter(source.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n"));
-  const lines = body.replace(/<!--[\s\S]*?-->/g, "").split("\n");
+  const lines = stripComments(body).split("\n");
   const blocks: Block[] = [];
   let i = 0;
 
