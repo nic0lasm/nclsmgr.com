@@ -46,6 +46,8 @@ describe("contenus", () => {
       certifications: c.parcours.certifications.map((x) => [x.id, x.obtention]),
       domaines: c.competences.domaines.map((d) => d.id),
       liens: c.profil.liens,
+      etudes: c.portfolio.etudes.map((e) => [e.id, e.debut, e.fin, e.liens.map((l) => l.url)]),
+      autres: c.portfolio.autres.lien.chemin,
     });
     expect(keys(en)).toEqual(keys(fr));
   });
@@ -77,6 +79,7 @@ describe("contenus", () => {
         ...c.parcours.experiences.flatMap((e) => [e.debut, e.fin]),
         ...c.parcours.formations.flatMap((f) => [f.debut, f.fin]),
         ...c.parcours.certifications.flatMap((x) => [x.obtention, x.expiration]),
+        ...c.portfolio.etudes.flatMap((e) => [e.debut, e.fin]),
       ].filter((d): d is string => d !== null);
       for (const d of dates) expect(d).toMatch(/^\d{4}-(0[1-9]|1[0-2])$/);
     }
@@ -88,7 +91,11 @@ describe("contenus", () => {
         expect(["linkedin", "github", "site"]).toContain(lien.type);
         expect(lien.url).toMatch(/^https:\/\//);
       }
-      for (const fichier of [c.profil, c.parcours, c.competences, c.seo]) {
+      for (const lien of c.portfolio.etudes.flatMap((e) => e.liens)) {
+        expect(lien.url).toMatch(/^https:\/\//);
+      }
+      expect(c.portfolio.autres.lien.chemin).toMatch(/^\/[a-z-]+$/);
+      for (const fichier of [c.profil, c.parcours, c.portfolio, c.competences, c.seo]) {
         expect(["a-rediger", "brouillon", "valide"]).toContain(fichier.statut);
       }
     }

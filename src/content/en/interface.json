@@ -7,6 +7,15 @@
     "meContacter": "Get in touch",
     "chiffresCles": "At a glance"
   },
+  "portfolio": {
+    "titre": "Portfolio",
+    "contexte": "Context",
+    "role": "My role",
+    "enjeux": "Challenges",
+    "actions": "What I did",
+    "resultats": "Outcomes",
+    "etudes": "Case studies"
+  },
   "cv": {
     "titre": "Curriculum vitae",
     "experiences": "Experience",

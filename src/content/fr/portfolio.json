@@ -1,0 +1,94 @@
+{
+  "statut": "brouillon",
+  "langue": "fr",
+  "intro": "Quelques projets que j'ai conduits, présentés comme je le ferais pour un client : le contexte, mon rôle, ce que j'ai fait et ce qui en est sorti.",
+  "etudes": [
+    {
+      "id": "nclsmgr",
+      "titre": "Ce site, conduit comme un projet client",
+      "organisation": "Projet personnel",
+      "debut": "2026-10",
+      "fin": null,
+      "contexte": "Un site personnel pour présenter mon parcours aux recruteurs et aux partenaires, avec un espace privé ouvert par lien personnel. Je le conduis avec les exigences d'un projet client : jalons, critères de sortie et sécurité dès la conception.",
+      "role": "Chef de projet et responsable technique : cadrage, choix d'architecture, exigences de sécurité, pilotage des développements et relecture de chaque changement.",
+      "enjeux": [
+        "Présenter un parcours vérifiable, avec un code source public",
+        "Appliquer à un petit projet les standards de sécurité défendus sur les grands",
+        "Rester simple à héberger et à faire évoluer"
+      ],
+      "actions": [
+        "Cadrage complet avant la première ligne de code : besoins, publics, arborescence, architecture et hébergement",
+        "Feuille de route en six jalons, chacun avec un critère de sortie vérifiable",
+        "Chaîne de livraison surveillée : revue de chaque changement, tests automatisés, analyse du code et des images, dépendances suivies",
+        "Serveur durci derrière Cloudflare, en-têtes de sécurité stricts, aucun traceur tiers",
+        "Espace privé à liens personnels expirables et révocables, jetons conservés sous forme d'empreinte"
+      ],
+      "resultats": [
+        "Code source et historique des décisions consultables publiquement",
+        "Sécurité et accessibilité des pages vérifiées automatiquement à chaque changement",
+        "Versions française et anglaise produites à partir des mêmes données"
+      ],
+      "note": null,
+      "liens": [
+        {
+          "libelle": "Code source",
+          "url": "https://github.com/nic0lasm/nclsmgr.com"
+        }
+      ]
+    },
+    {
+      "id": "capgemini-defense",
+      "titre": "Projets logiciels pour le secteur Défense",
+      "organisation": "Capgemini",
+      "debut": "2020-03",
+      "fin": null,
+      "contexte": "Depuis 2020, je pilote des projets de développement applicatif, de cybersécurité et web pour des clients du secteur Défense.",
+      "role": "Engagement Manager et officier de sécurité, responsable de chaque projet de l'avant-vente à la livraison.",
+      "enjeux": [
+        "Livrer des logiciels à des clients aux exigences de sécurité élevées",
+        "Tenir budget, marge et engagements contractuels sur plusieurs projets en parallèle",
+        "Faire travailler ensemble équipes de développement et interlocuteurs militaires"
+      ],
+      "actions": [
+        "Réponse aux appels d'offres et cadrage des engagements",
+        "Constitution et management d'équipes de 5 à 10 personnes",
+        "Gouvernance des projets en agilité à l'échelle (SAFe, Scrum) et gestion des risques",
+        "Pilotage financier et contractuel : budget, marge, avenants",
+        "Protection des informations et des accès sur les projets, en tant qu'officier de sécurité"
+      ],
+      "resultats": ["Plus de 40 projets pilotés de l'avant-vente à la livraison"],
+      "note": "Par confidentialité, aucun client, programme ni chiffre détaillé n'est cité ici.",
+      "liens": []
+    },
+    {
+      "id": "rh-terre",
+      "titre": "Site RH-Terre",
+      "organisation": "Armée de Terre",
+      "debut": "2017-09",
+      "fin": "2018-08",
+      "contexte": "Pendant mon année de césure, j'ai été officier communication dans la chaîne ressources humaines de l'armée de Terre, à Tours.",
+      "role": "Rédacteur en chef et responsable fonctionnel du site RH-Terre, à la tête de la cellule éditoriale.",
+      "enjeux": [
+        "Informer le personnel de l'armée de Terre sur les sujets ressources humaines",
+        "Faire évoluer le site en lien avec les services concernés"
+      ],
+      "actions": [
+        "Direction de la ligne éditoriale et management de la cellule de rédaction",
+        "Suivi fonctionnel du site",
+        "Reportages photo, événementiel et supports de communication",
+        "Relations extérieures"
+      ],
+      "resultats": [],
+      "note": null,
+      "liens": []
+    }
+  ],
+  "autres": {
+    "titre": "Projets personnels",
+    "texte": "Mes projets de développement, avec leur code et leur documentation, sont présentés dans l'onglet Dev.",
+    "lien": {
+      "libelle": "Voir l'onglet Dev",
+      "chemin": "/dev"
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const routes = ["", "/cv", "/contact", "/mentions-legales", "/confidentialite"];
+const routes = ["", "/cv", "/portfolio", "/contact", "/mentions-legales", "/confidentialite"];
 
 test("redirige vers la langue du visiteur", async ({ request }) => {
   const res = await request.get("/", {
