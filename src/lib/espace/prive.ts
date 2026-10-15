@@ -1,5 +1,6 @@
 import "server-only";
-import { readFile, stat } from "node:fs/promises";
+import { constants } from "node:fs";
+import { open, type FileHandle } from "node:fs/promises";
 import { join } from "node:path";
 import { locales, type Locale } from "@/lib/i18n";
 
@@ -176,18 +177,35 @@ function avertir(raison: string) {
  * fichier soit prise en compte sans redémarrage. Ne lève jamais.
  */
 export async function lirePrive(langue: Locale): Promise<DonneesPrivees> {
-  const chemin = cheminPrive();
+  let fichier: FileHandle;
+  try {
+    // Non bloquant : un tube nommé à la place du fichier ne fige pas la page.
+    fichier = await open(cheminPrive(), constants.O_RDONLY | constants.O_NONBLOCK);
+  } catch (erreur) {
+    if ((erreur as { code?: string }).code !== "ENOENT") avertir("lecture impossible");
+    return vide();
+  }
   let source: string;
   try {
-    const infos = await stat(chemin);
+    // Vérification et lecture sur le même descripteur : le fichier ne peut pas être remplacé
+    // entre les deux. La lecture est bornée, même si le fichier grandit entre-temps.
+    const infos = await fichier.stat();
     if (!infos.isFile() || infos.size > TAILLE_MAX) {
       avertir("fichier trop grand ou de type inattendu");
       return vide();
     }
-    source = await readFile(chemin, "utf8");
-  } catch (erreur) {
-    if ((erreur as { code?: string }).code !== "ENOENT") avertir("lecture impossible");
+    const tampon = Buffer.alloc(TAILLE_MAX + 1);
+    const { bytesRead } = await fichier.read(tampon, 0, tampon.length, 0);
+    if (bytesRead > TAILLE_MAX) {
+      avertir("fichier trop grand ou de type inattendu");
+      return vide();
+    }
+    source = tampon.toString("utf8", 0, bytesRead);
+  } catch {
+    avertir("lecture impossible");
     return vide();
+  } finally {
+    await fichier.close().catch(() => {});
   }
   let json: unknown;
   try {
