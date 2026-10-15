@@ -64,6 +64,11 @@ const MIGRATIONS: readonly string[] = [
   ALTER TABLE courriels ADD COLUMN prochain_le INTEGER;
   ALTER TABLE courriels ADD COLUMN abandonne_le INTEGER;
   `,
+  // 3 : la dernière notification d'un modèle (essai sur un lien inactif, alerte) se cherche par
+  // modèle et par date, sans parcourir toute la file à chaque refus.
+  `
+  CREATE INDEX courriels_modele ON courriels (modele, cree_le);
+  `,
 ];
 
 export const VERSION_SCHEMA = MIGRATIONS.length;
