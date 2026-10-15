@@ -142,9 +142,11 @@ export interface Interface {
       message: string;
       envoyer: string;
       mention: string;
+      piege: string;
       succes: string;
       champManquant: string;
       emailInvalide: string;
+      trop: string;
       echec: string;
       tropDEnvois: string;
     };

@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/[lang]/**": ["./src/content/*/pages/*.md"],
   },
+  experimental: {
+    // Seule action serveur : le formulaire de contact, dont le message fait 4 000 caractères au plus.
+    serverActions: { bodySizeLimit: "64kb" },
+  },
   // Non-indexation et absence de cache sur l'espace privé (à doubler par Caddy : voir en-tetes.ts).
   async headers() {
     return reglesEnTetesEspace();

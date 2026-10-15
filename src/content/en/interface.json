@@ -38,9 +38,11 @@
       "message": "Message",
       "envoyer": "Send",
       "mention": "Your name and email address are used only to reply to you.",
+      "piege": "Leave this field empty",
       "succes": "Message received, thank you. I will get back to you shortly.",
       "champManquant": "This field is required.",
       "emailInvalide": "This email address does not look valid.",
+      "trop": "This text is too long.",
       "echec": "Your message could not be sent. Please try again in a few minutes or contact me on LinkedIn.",
       "tropDEnvois": "Several messages have just been sent from your connection. Please try again a little later."
     }
