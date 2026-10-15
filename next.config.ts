@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { reglesEnTetesEspace } from "./src/lib/espace/en-tetes";
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -7,6 +8,10 @@ const nextConfig: NextConfig = {
   // Les pages Markdown sont lues à la requête : on les embarque dans le serveur autonome.
   outputFileTracingIncludes: {
     "/[lang]/**": ["./src/content/*/pages/*.md"],
+  },
+  // Non-indexation et absence de cache sur l'espace privé, doublées par Caddy.
+  async headers() {
+    return reglesEnTetesEspace();
   },
 };
 
