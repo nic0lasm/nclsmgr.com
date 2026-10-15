@@ -1,0 +1,33 @@
+name: Disponibilité
+
+# Sonde externe : un échec de ce workflow planifié déclenche un courriel de GitHub au propriétaire.
+# Activée par la variable SURVEILLANCE_ACTIVE une fois le site en ligne.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: disponibilite
+  cancel-in-progress: true
+
+jobs:
+  sonde:
+    name: Sonder le site
+    if: vars.SURVEILLANCE_ACTIVE == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      # Trois essais espacés : une coupure de quelques secondes ne donne pas d'alerte.
+      - name: Contrôle de santé et page d'accueil
+        run: |
+          for url in https://nclsmgr.com/healthz https://nclsmgr.com/fr; do
+            curl -fsS --retry 3 --retry-delay 20 --retry-all-errors --max-time 15 \
+              -o /dev/null -w "$url %{http_code} %{time_total}s\n" "$url"
+          done
+      - name: Certificat valable encore 14 jours
+        run: |
+          echo | openssl s_client -connect nclsmgr.com:443 -servername nclsmgr.com 2> /dev/null \
+            | openssl x509 -noout -enddate -checkend 1209600
