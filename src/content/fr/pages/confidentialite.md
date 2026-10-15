@@ -20,6 +20,8 @@ Le responsable du traitement est Nicolas Maigre, joignable par le [formulaire de
 
 Si vous avez reçu un lien personnel, je suis averti par e-mail la première fois que vous l'ouvrez. Ces notifications sont triées et supprimées chaque trimestre. Les e-mails que j'envoie ne contiennent aucun pixel de suivi.
 
+Un message envoyé par le formulaire de contact ne reste sur le serveur du site que le temps d'être transmis à ma messagerie : il en est effacé au bout de 7 jours au plus. Pour limiter les abus, les envois depuis une même connexion sont comptés pendant une heure, en mémoire seulement et sans conserver l'adresse IP.
+
 Ces données ne sont ni vendues ni transmises à des tiers, en dehors des prestataires techniques cités plus bas. Seul l'éditeur du site y a accès. Les outils qui m'aident à organiser mes échanges peuvent voir le nom et l'organisation d'un contact, jamais son lien personnel.
 
 Les sauvegardes chiffrées du serveur sont conservées 3 mois au plus.

@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import { BASE_E2E } from "./e2e/base";
 
 const port = 3100;
 
@@ -15,7 +16,7 @@ export default defineConfig({
   webServer: {
     command: "node .next/standalone/server.js",
     url: `http://127.0.0.1:${port}/healthz`,
-    env: { PORT: String(port), HOSTNAME: "127.0.0.1" },
+    env: { PORT: String(port), HOSTNAME: "127.0.0.1", ESPACE_BASE: BASE_E2E },
     reuseExistingServer: !process.env.CI,
   },
 });

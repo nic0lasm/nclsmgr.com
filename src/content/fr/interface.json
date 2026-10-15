@@ -29,9 +29,11 @@
       "message": "Message",
       "envoyer": "Envoyer",
       "mention": "Votre nom et votre adresse servent uniquement à vous répondre.",
+      "piege": "Ne pas remplir ce champ",
       "succes": "Message bien reçu, merci. Je reviens vers vous rapidement.",
       "champManquant": "Ce champ est nécessaire.",
       "emailInvalide": "Cette adresse e-mail ne semble pas valide.",
+      "trop": "Ce texte est trop long.",
       "echec": "Le message n'a pas pu partir. Réessayez dans quelques minutes ou écrivez-moi sur LinkedIn.",
       "tropDEnvois": "Plusieurs messages viennent d'être envoyés depuis votre connexion. Réessayez un peu plus tard."
     }

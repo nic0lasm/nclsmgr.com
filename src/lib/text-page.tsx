@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import type { PageSeo } from "@/content/types";
 import { getContent, getPage, type PageTexte } from "@/lib/content";
 import { MarkdownView } from "@/lib/markdown-view";
 import { pageMetadata } from "@/lib/metadata";
+import type { Locale } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/route";
 
 // Pages de texte rédigées en Markdown : contact, mentions légales, confidentialité.
-export function textPage(page: PageTexte, seoKey: PageSeo) {
+// `suite` ajoute un bloc sous le texte, comme le formulaire de la page contact.
+export function textPage(page: PageTexte, seoKey: PageSeo, suite?: (lang: Locale) => ReactNode) {
   async function generateMetadata({
     params,
   }: {
@@ -28,6 +31,7 @@ export function textPage(page: PageTexte, seoKey: PageSeo) {
           <div className="section__body prose">
             <h1 id="titre">{doc.frontmatter.titre}</h1>
             <MarkdownView blocks={doc.blocks} locale={lang} />
+            {suite?.(lang)}
             {page === "contact" && linkedin ? (
               <div className="actions">
                 <a
