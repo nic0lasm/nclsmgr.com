@@ -48,7 +48,7 @@ jobs:
           mkdir -p /tmp/certs
           openssl req -x509 -newkey rsa:2048 -nodes -days 1 -subj "/CN=nclsmgr.com" \
             -keyout /tmp/certs/origin-key.pem -out /tmp/certs/origin.pem
-          image=$(grep -oE 'caddy:[^ ]+' deploy/compose.yaml)
+          image=$(grep -oE 'image: caddy:[^ ]+' deploy/compose.yaml | cut -d' ' -f2)
           docker run --rm \
             -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
             -v "$PWD/deploy/cloudflare-ips.caddy:/etc/caddy/cloudflare-ips.caddy:ro" \
