@@ -1,0 +1,114 @@
+/*
+ * nclsmgr.com : jetons de design (direction A, « Note de synthèse »)
+ * Figés le 15 octobre 2026. Importé par src/app/globals.css
+ *
+ * Thème : clair par défaut, sombre automatique selon le système,
+ * forcé par l'attribut data-theme="light" | "dark" sur <html>.
+ * Les familles de polices viennent de next/font/local (src/app/fonts.ts),
+ * qui définit --font-serif, --font-sans et --font-mono sur <html>.
+ */
+
+:root {
+  /* Couleurs, thème clair */
+  --color-bg: #f5f6f4; /* papier froid */
+  --color-surface: #ffffff;
+  --color-ink: #141b24; /* texte principal, 16,0:1 sur le fond */
+  --color-muted: #545e69; /* texte secondaire, 6,1:1 */
+  --color-rule: #d3d8db; /* filets, bordures */
+  --color-accent: #1c4c82; /* bleu de Prusse, liens et actions, 8,1:1 */
+  --color-accent-soft: #e3eaf3; /* fonds d'étiquettes, survols */
+  --color-on-accent: #ffffff; /* texte sur bouton principal, 8,7:1 */
+  --color-private: #8a5200; /* espace privé : texte et bordure, 5,7:1 sur son fond */
+  --color-private-bg: #fbf0dc;
+  --color-focus: var(--color-accent);
+
+  /* Typographie */
+  --font-display: var(--font-serif, "Source Serif 4"), Georgia, "Times New Roman", serif;
+  --font-body: var(--font-sans, "Public Sans"), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data: var(--font-mono, "IBM Plex Mono"), ui-monospace, "SF Mono", Menlo, monospace;
+
+  --text-label: 0.75rem; /* 12 px, chasse fixe, capitales espacées */
+  --text-meta: 0.8125rem; /* 13 px, chasse fixe : dates, références */
+  --text-sm: 0.90625rem; /* 14,5 px : listes, navigation */
+  --text-base: 1rem; /* 16 px : texte courant */
+  --text-lead: 1.1875rem; /* 19 px : chapeau */
+  --text-h3: 1.25rem; /* 20 px, serif */
+  --text-h2: 1.875rem; /* 30 px, serif */
+  --text-h1: clamp(2.125rem, 1.45rem + 2.9vw, 3.375rem); /* 34 à 54 px, serif */
+
+  --leading-tight: 1.1;
+  --leading-heading: 1.3;
+  --leading-body: 1.6;
+  --tracking-label: 0.06em;
+  --tracking-display: -0.015em;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-strong: 600;
+
+  /* Espacements (base 4 px) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 2.25rem; /* espacement vertical d'une section */
+  --space-8: 3.5rem;
+  --space-9: 5rem;
+
+  /* Mise en page : 12 colonnes, 3 pour la marge d'étiquettes, 9 pour le texte.
+     Point de rupture unique : 760px (en dessous, l'étiquette passe au-dessus). */
+  --layout-max: 70rem; /* 1120 px */
+  --layout-gutter: 1.5rem;
+  --layout-pad: clamp(1.125rem, 4vw, 2.5rem);
+  --measure: 68ch;
+  --timeline-date: 7.5rem;
+
+  /* Formes */
+  --radius: 4px;
+  --border: 1px solid var(--color-rule);
+  --focus-ring: 2px solid var(--color-focus);
+  --focus-offset: 3px;
+
+  /* Mouvement */
+  --duration: 150ms;
+  --easing: cubic-bezier(0.2, 0, 0, 1);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #0f141a;
+    --color-surface: #161d25;
+    --color-ink: #e6eaee;
+    --color-muted: #9ba6b2;
+    --color-rule: #2a333d;
+    --color-accent: #8db5e6;
+    --color-accent-soft: #1b2a3b;
+    --color-on-accent: #0f141a;
+    --color-private: #e8b562;
+    --color-private-bg: #2a2113;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #0f141a;
+  --color-surface: #161d25;
+  --color-ink: #e6eaee;
+  --color-muted: #9ba6b2;
+  --color-rule: #2a333d;
+  --color-accent: #8db5e6;
+  --color-accent-soft: #1b2a3b;
+  --color-on-accent: #0f141a;
+  --color-private: #e8b562;
+  --color-private-bg: #2a2113;
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration: 0ms;
+  }
+}
