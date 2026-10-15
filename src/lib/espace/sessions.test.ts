@@ -3,7 +3,14 @@ import { ouvrirBase, type Base } from "./base";
 import { empreinte } from "./jetons";
 import { creerLien, JOUR, type Lien } from "./liens";
 import { migrer } from "./migrations";
-import { fermerSession, INACTIVITE_MAX, lireSession, NOM_COOKIE, ouvrirSession } from "./sessions";
+import {
+  fermerSession,
+  INACTIVITE_MAX,
+  lireSession,
+  MAX_SESSIONS_PAR_LIEN,
+  NOM_COOKIE,
+  ouvrirSession,
+} from "./sessions";
 
 const T0 = Date.UTC(2026, 9, 15);
 
@@ -73,6 +80,16 @@ describe("sessions", () => {
     expect(vuLe(valeur)).toBe(T0);
     lireSession(db, valeur, T0 + 60 * 60 * 1000);
     expect(vuLe(valeur)).toBe(T0 + 60 * 60 * 1000);
+  });
+
+  it("garde au plus 10 sessions par lien, en fermant les plus anciennes", () => {
+    const valeurs = Array.from({ length: 12 }, (_, i) => ouvrirSession(db, lien, T0 + i).valeur);
+    expect(db.prepare("SELECT count(*) AS n FROM sessions").get()).toEqual({
+      n: MAX_SESSIONS_PAR_LIEN,
+    });
+    expect(lireSession(db, valeurs[0], T0 + 20)).toBeNull();
+    expect(lireSession(db, valeurs[1], T0 + 20)).toBeNull();
+    expect(lireSession(db, valeurs[2], T0 + 20)).not.toBeNull();
   });
 
   it("se ferme à la déconnexion", () => {

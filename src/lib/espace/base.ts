@@ -34,7 +34,12 @@ export function base(): Base {
     const chemin = process.env.ESPACE_BASE;
     if (!chemin) throw new Error("ESPACE_BASE n'est pas défini : l'espace privé est désactivé.");
     const db = ouvrirBase(chemin);
-    migrer(db);
+    try {
+      migrer(db);
+    } catch (erreur) {
+      db.close();
+      throw erreur;
+    }
     globale.espaceBase = db;
   }
   return globale.espaceBase;

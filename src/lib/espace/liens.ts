@@ -13,11 +13,9 @@ export const DUREE_MAX_JOURS = 180;
 const LIMITES = { destinataire: 120, organisation: 120, message: 1000, note: 500 } as const;
 const MAX_DOCUMENTS = 20;
 const FORMAT_DOCUMENT = /^[a-z0-9][a-z0-9-]{0,39}$/;
-// Caractères de contrôle, invisibles et de direction refusés ; le message peut seulement
-// contenir des retours à la ligne.
-const CONTROLE = /[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u2028-\u202e\u2066-\u2069\ufeff]/;
-const CONTROLE_SAUF_LIGNE =
-  /[\u0000-\u0009\u000b-\u001f\u007f-\u009f\u200b-\u200f\u2028-\u202e\u2066-\u2069\ufeff]/;
+// Caractères de contrôle, de format (invisibles, sens d'écriture), demi-paires et séparateurs
+// de ligne refusés ; seul le message garde ses retours à la ligne.
+const INTERDIT = /[\p{Cc}\p{Cf}\p{Cs}\p{Zl}\p{Zp}]/u;
 
 export type Lien = {
   id: string;
@@ -102,12 +100,13 @@ export function estActif(lien: Lien, maintenant: number): boolean {
   return lien.revoqueLe === null && maintenant < lien.expireLe;
 }
 
-function texte(
-  valeur: string | undefined,
-  champ: keyof typeof LIMITES,
-  obligatoire: boolean,
-): string | null {
-  const propre = valeur?.normalize("NFC").trim() ?? "";
+// Les données viennent d'un JSON reçu par la commande liens : les types sont revérifiés ici.
+function texte(valeur: unknown, champ: keyof typeof LIMITES, obligatoire: boolean): string | null {
+  if (valeur !== undefined && valeur !== null && typeof valeur !== "string") {
+    throw new DonneesInvalides(`Le champ ${champ} doit être un texte.`);
+  }
+  let propre = (valeur ?? "").normalize("NFC").trim();
+  if (champ === "message") propre = propre.replace(/\r\n?/g, "\n");
   if (!propre) {
     if (obligatoire) throw new DonneesInvalides(`Le champ ${champ} est obligatoire.`);
     return null;
@@ -115,28 +114,31 @@ function texte(
   if (propre.length > LIMITES[champ]) {
     throw new DonneesInvalides(`Le champ ${champ} dépasse ${LIMITES[champ]} caractères.`);
   }
-  if ((champ === "message" ? CONTROLE_SAUF_LIGNE : CONTROLE).test(propre)) {
-    throw new DonneesInvalides(`Le champ ${champ} contient un caractère de contrôle.`);
+  if (INTERDIT.test(champ === "message" ? propre.replaceAll("\n", "") : propre)) {
+    throw new DonneesInvalides(`Le champ ${champ} contient un caractère invisible ou de contrôle.`);
   }
   return propre;
 }
 
 function verifier(entree: NouveauLien) {
-  if (!(profils as readonly string[]).includes(entree.profil)) {
+  if (!(profils as readonly unknown[]).includes(entree.profil)) {
     throw new DonneesInvalides("Profil inconnu.");
   }
-  if (!isLocale(entree.langue)) throw new DonneesInvalides("Langue inconnue.");
-  const duree = entree.dureeJours ?? DUREE_PAR_DEFAUT_JOURS;
-  if (!Number.isInteger(duree) || duree < 1 || duree > DUREE_MAX_JOURS) {
+  if (typeof entree.langue !== "string" || !isLocale(entree.langue)) {
+    throw new DonneesInvalides("Langue inconnue.");
+  }
+  const duree: unknown = entree.dureeJours ?? DUREE_PAR_DEFAUT_JOURS;
+  if (!Number.isInteger(duree) || (duree as number) < 1 || (duree as number) > DUREE_MAX_JOURS) {
     throw new DonneesInvalides(
       `La durée doit être un nombre entier de jours entre 1 et ${DUREE_MAX_JOURS}.`,
     );
   }
-  const documents = entree.documents ?? [];
+  const documents: unknown = entree.documents ?? [];
   if (
+    !Array.isArray(documents) ||
     documents.length > MAX_DOCUMENTS ||
     new Set(documents).size !== documents.length ||
-    !documents.every((document) => FORMAT_DOCUMENT.test(document))
+    !documents.every((document) => typeof document === "string" && FORMAT_DOCUMENT.test(document))
   ) {
     throw new DonneesInvalides("Liste de documents invalide.");
   }
@@ -147,8 +149,8 @@ function verifier(entree: NouveauLien) {
     organisation: texte(entree.organisation, "organisation", false),
     message: texte(entree.message, "message", false),
     note: texte(entree.note, "note", false),
-    documents,
-    duree,
+    documents: documents as string[],
+    duree: duree as number,
   };
 }
 

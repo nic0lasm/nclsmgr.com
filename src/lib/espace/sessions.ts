@@ -8,6 +8,9 @@ export const NOM_COOKIE = "__Host-espace";
 export const INACTIVITE_MAX = 14 * JOUR;
 // La date de dernière visite n'est réécrite qu'une fois par heure au plus.
 const RAFRAICHISSEMENT = 60 * 60 * 1000;
+// Au-delà, les sessions les plus anciennes du lien sont fermées : rejouer l'ouverture ne fait
+// pas grossir la base.
+export const MAX_SESSIONS_PAR_LIEN = 10;
 
 type LigneSession = LigneLien & { session_vu_le: number; session_expire_le: number };
 
@@ -19,9 +22,16 @@ export function ouvrirSession(
 ): { valeur: string; expireLe: number } {
   if (!estActif(lien, maintenant)) throw new Error("Session refusée : le lien n'est plus actif.");
   const valeur = genererSecret();
-  db.prepare(
-    "INSERT INTO sessions (id_sha256, lien_id, cree_le, vu_le, expire_le) VALUES (?, ?, ?, ?, ?)",
-  ).run(empreinte(valeur), lien.id, maintenant, maintenant, lien.expireLe);
+  db.transaction(() => {
+    db.prepare(
+      "INSERT INTO sessions (id_sha256, lien_id, cree_le, vu_le, expire_le) VALUES (?, ?, ?, ?, ?)",
+    ).run(empreinte(valeur), lien.id, maintenant, maintenant, lien.expireLe);
+    db.prepare(
+      `DELETE FROM sessions WHERE lien_id = ? AND rowid NOT IN (
+         SELECT rowid FROM sessions WHERE lien_id = ? ORDER BY cree_le DESC, rowid DESC LIMIT ?
+       )`,
+    ).run(lien.id, lien.id, MAX_SESSIONS_PAR_LIEN);
+  }).immediate();
   return { valeur, expireLe: lien.expireLe };
 }
 

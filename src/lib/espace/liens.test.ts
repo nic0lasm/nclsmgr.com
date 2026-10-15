@@ -80,6 +80,15 @@ describe("creerLien", () => {
     ["caractère de contrôle", { destinataire: "Camille\u0007" }],
     ["retour à la ligne hors message", { organisation: "A\nB" }],
     ["caractère de direction", { message: "Bonjour \u202e" }],
+    ["trait d'union invisible", { destinataire: "Ca\u00admille" }],
+    ["caractère d'étiquette", { note: "note\u{e0041}" }],
+    ["demi-paire isolée", { organisation: "Acme \ud800" }],
+    ["séparateur de ligne", { message: "a\u2028b" }],
+    ["destinataire non textuel", { destinataire: 42 as unknown as string }],
+    ["message non textuel", { message: ["a"] as unknown as string }],
+    ["documents non listés", { documents: "cv" as unknown as string[] }],
+    ["document non textuel", { documents: [1] as unknown as string[] }],
+    ["durée en texte", { dureeJours: "30" as unknown as number }],
     ["document mal nommé", { documents: ["../prive.json"] }],
     ["document en double", { documents: ["cv", "cv"] }],
     ["trop de documents", { documents: Array.from({ length: 21 }, (_, i) => `d${i}`) }],
@@ -88,9 +97,13 @@ describe("creerLien", () => {
     expect(db.prepare("SELECT count(*) AS n FROM liens").get()).toEqual({ n: 0 });
   });
 
-  it("accepte les retours à la ligne dans le message", () => {
-    const { lien } = creerLien(db, { ...nouveau, message: "Bonjour,\nà bientôt" }, T0);
-    expect(lien.message).toBe("Bonjour,\nà bientôt");
+  it("accepte les retours à la ligne dans le message, et les emojis composés", () => {
+    const { lien } = creerLien(
+      db,
+      { ...nouveau, message: "Bonjour,\r\nà bientôt \u{1f44b}\u{1f3fd}" },
+      T0,
+    );
+    expect(lien.message).toBe("Bonjour,\nà bientôt \u{1f44b}\u{1f3fd}");
   });
 });
 
