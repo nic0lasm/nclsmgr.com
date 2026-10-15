@@ -58,6 +58,12 @@ const MIGRATIONS: readonly string[] = [
 
   CREATE INDEX courriels_en_attente ON courriels (cree_le) WHERE envoye_le IS NULL;
   `,
+  // 2 : suivi des envois. prochain_le espace les essais après un échec et réserve un courriel
+  // pendant son envoi ; abandonne_le marque un courriel dont les données ne se relisent plus.
+  `
+  ALTER TABLE courriels ADD COLUMN prochain_le INTEGER;
+  ALTER TABLE courriels ADD COLUMN abandonne_le INTEGER;
+  `,
 ];
 
 export const VERSION_SCHEMA = MIGRATIONS.length;

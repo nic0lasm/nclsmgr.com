@@ -1,5 +1,7 @@
 ignoredBuiltDependencies:
   # better-sqlite3 embarque ses binaires précompilés (glibc et musl, x64 et arm64) : aucune compilation à l'installation.
   - better-sqlite3
+  # esbuild trouve son binaire dans le paquet @esbuild/<plateforme> : son script d'installation n'est pas nécessaire.
+  - esbuild
   - sharp
   - unrs-resolver
