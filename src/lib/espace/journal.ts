@@ -17,7 +17,16 @@ export const DOUBLON_DOCUMENT = 10 * MINUTE;
  * actif ou non, ne fait pas grossir la base sans fin. Un usage normal n'en approche pas.
  */
 export const MAX_LIGNES_PAR_JOUR = 50;
-/** Au-delà de ce nombre de refus sur une heure glissante, une alerte part (au plus une par heure). */
+/**
+ * Au-delà de MAX_LIGNES_PAR_JOUR, lignes de plus permises sur 24 heures, une par couple
+ * (pays, navigateur) nouveau pour ce lien et ce type.
+ */
+export const MAX_LIGNES_NOUVELLES = 20;
+/**
+ * Au-delà de ce nombre d'échanges refusés sur une heure glissante, une alerte part (au plus une
+ * par heure). Avec 10 essais par IP et par 10 minutes, il faut au moins 4 adresses pour le
+ * franchir : c'est une campagne distribuée.
+ */
 export const SEUIL_ALERTE = 200;
 
 export type ContexteVisite = { pays: string | null; navigateur: string };
@@ -77,6 +86,12 @@ export function contexteDepuis(enTetes: Headers): ContexteVisite {
 
 type TypeConsultation = "ouverture" | "document" | "essai_refuse";
 
+/**
+ * Écrit une ligne au journal, dans la limite de MAX_LIGNES_PAR_JOUR par lien et par type sur
+ * 24 heures glissantes. Au-delà, seule la première ligne d'un couple (pays, navigateur) pas
+ * encore vu pour ce lien et ce type sur ces 24 heures est écrite, jusqu'à
+ * MAX_LIGNES_NOUVELLES de plus : un lien qui circule reste visible au journal.
+ */
 function inserer(
   db: Base,
   lienId: string,
@@ -90,7 +105,17 @@ function inserer(
       "SELECT count(*) AS n FROM consultations WHERE lien_id = ? AND type = ? AND le > ?",
     )
     .get(lienId, type, maintenant - JOUR) as { n: number };
-  if (n >= MAX_LIGNES_PAR_JOUR) return false;
+  if (n >= MAX_LIGNES_PAR_JOUR + MAX_LIGNES_NOUVELLES) return false;
+  if (n >= MAX_LIGNES_PAR_JOUR) {
+    const vu = db
+      .prepare<[string, string, number, string | null, string], { id: number }>(
+        `SELECT id FROM consultations
+         WHERE lien_id = ? AND type = ? AND le > ? AND pays IS ? AND navigateur IS ?
+         LIMIT 1`,
+      )
+      .get(lienId, type, maintenant - JOUR, contexte.pays, contexte.navigateur);
+    if (vu) return false;
+  }
   db.prepare(
     `INSERT INTO consultations (lien_id, type, document, le, pays, navigateur)
      VALUES (?, ?, ?, ?, ?, ?)`,
@@ -98,14 +123,27 @@ function inserer(
   return true;
 }
 
+type Identite = { destinataire: string; organisation: string | null };
+
+/** Remplace le nom d'un lien que le valideur des courriels refuse. */
+export const NOM_NON_AFFICHABLE = "(nom non affichable)";
+
 /**
- * Met une notification en file dans la transaction en cours. Des données que le valideur des
- * courriels refuse (nom qui s'allonge à la normalisation, par exemple) ne doivent pas faire
- * perdre la ligne du journal : seule la notification est abandonnée.
+ * Met une notification en file dans la transaction en cours. Si le valideur des courriels
+ * refuse le nom ou l'organisation du lien (nom accepté en NFC à la création mais qui s'allonge
+ * en NFKC, par exemple), la notification part quand même, avec NOM_NON_AFFICHABLE et sans
+ * organisation. Dans tous les cas, la ligne du journal est gardée.
  */
-function notifier(envoyer: () => void): boolean {
+function notifier(lien: Lien, envoyer: (identite: Identite) => void): boolean {
   try {
-    envoyer();
+    envoyer({ destinataire: lien.destinataire, organisation: lien.organisation });
+    return true;
+  } catch (erreur) {
+    if (!(erreur instanceof CourrielInvalide)) throw erreur;
+  }
+  console.error("Espace privé : nom du lien refusé par le valideur des courriels, notifié sans.");
+  try {
+    envoyer({ destinataire: NOM_NON_AFFICHABLE, organisation: null });
     return true;
   } catch (erreur) {
     if (!(erreur instanceof CourrielInvalide)) throw erreur;
@@ -133,14 +171,13 @@ export function noterOuverture(
           .prepare("UPDATE liens SET ouvert_le = ? WHERE id = ? AND ouvert_le IS NULL")
           .run(maintenant, lien.id).changes === 1;
       if (premiere) {
-        notifier(() =>
+        notifier(lien, (identite) =>
           mettreEnFile(
             db,
             "ouverture",
             {
               lienId: lien.id,
-              destinataire: lien.destinataire,
-              organisation: lien.organisation,
+              ...identite,
               le: maintenant,
               pays: contexte.pays,
               navigateur: contexte.navigateur,
@@ -157,8 +194,8 @@ export function noterOuverture(
 /**
  * Essai avec le jeton d'un lien expiré ou révoqué : une ligne au journal, et une notification
  * au plus par lien et par 24 heures glissantes. La dernière notification est cherchée dans la
- * file des courriels (gardés 7 jours) : des essais répétés toutes les 23 heures notifient
- * quand même une fois par jour.
+ * file des courriels (gardés 7 jours), par l'index courriels_modele : des essais répétés
+ * toutes les 23 heures notifient quand même une fois par jour.
  */
 export function noterEssaiRefuse(
   db: Base,
@@ -177,17 +214,15 @@ export function noterEssaiRefuse(
         )
         .get(maintenant - JOUR, lien.id);
       if (dejaNotifie) return { notifie: false };
-      const revoque = lien.revoqueLe !== null;
-      const notifie = notifier(() =>
+      const notifie = notifier(lien, (identite) =>
         mettreEnFile(
           db,
           "essai_refuse",
           {
             lienId: lien.id,
-            destinataire: lien.destinataire,
-            organisation: lien.organisation,
-            motif: revoque ? "revoque" : "expire",
-            finLe: revoque ? (lien.revoqueLe as number) : lien.expireLe,
+            ...identite,
+            motif: lien.revoqueLe !== null ? "revoque" : "expire",
+            finLe: lien.revoqueLe ?? lien.expireLe,
             le: maintenant,
           },
           maintenant,
@@ -226,19 +261,23 @@ export function noterDocument(
 }
 
 /**
- * Refus de la route d'accès sur une heure glissante, toutes IP confondues, en tranches d'une
+ * Échanges de jeton refusés sur une heure glissante, toutes IP confondues, en tranches d'une
  * minute (60 entrées au plus). En mémoire : l'application tourne en un seul processus, comme
  * la limitation de débit ; un redémarrage remet seulement le compte à zéro.
  */
 export class CompteurRefus {
   private readonly tranches = new Map<number, number>();
-  /** Date de la dernière alerte connue, pour éviter de relire la base à chaque refus. */
-  derniereAlerte: number | null = null;
+  /** Avant cette date, la file n'est pas relue : alerte récente, ou recul après un essai. */
+  private pasAvant = Number.NEGATIVE_INFINITY;
 
   ajouter(maintenant: number): { total: number; depuis: number } {
     const tranche = Math.floor(maintenant / MINUTE);
     const premiere = tranche - HEURE / MINUTE + 1;
-    for (const cle of this.tranches.keys()) if (cle < premiere) this.tranches.delete(cle);
+    // Après un recul de l'horloge, les tranches postérieures à la tranche courante sont
+    // retirées aussi : elles fausseraient le total et la date de début.
+    for (const cle of this.tranches.keys()) {
+      if (cle < premiere || cle > tranche) this.tranches.delete(cle);
+    }
     this.tranches.set(tranche, (this.tranches.get(tranche) ?? 0) + 1);
     let total = 0;
     let depuis = tranche;
@@ -248,19 +287,33 @@ export class CompteurRefus {
     }
     return { total, depuis: depuis * MINUTE };
   }
+
+  /** Vrai si la file des courriels peut être relue. Une échéance à plus d'une heure, laissée
+   * par un recul de l'horloge, est ignorée. */
+  peutRelire(maintenant: number): boolean {
+    return maintenant >= this.pasAvant || this.pasAvant - maintenant > HEURE;
+  }
+
+  /** Pas de nouvelle lecture de la file avant cette date, et jamais plus d'une heure. */
+  reporter(jusqua: number, maintenant: number): void {
+    this.pasAvant = Math.min(jusqua, maintenant + HEURE);
+  }
 }
 
+/** Après un essai d'alerte, la file n'est pas relue avant ce délai, même si l'essai a échoué. */
+export const RECUL_ALERTE = MINUTE;
+
 /**
- * Compte un refus et met une alerte en file au-delà de SEUIL_ALERTE refus sur l'heure. La file
- * des courriels fait foi pour « au plus une par heure » : une alerte mise en file avant un
- * redémarrage compte aussi.
+ * Compte un échange refusé et met une alerte en file au-delà de SEUIL_ALERTE refus sur l'heure.
+ * La file des courriels fait foi pour « au plus une par heure » : une alerte mise en file avant
+ * un redémarrage compte aussi.
  */
 export function noterRefus(db: Base, compteur: CompteurRefus, maintenant: number): boolean {
   const { total, depuis } = compteur.ajouter(maintenant);
-  if (total <= SEUIL_ALERTE) return false;
-  if (compteur.derniereAlerte !== null && maintenant - compteur.derniereAlerte < HEURE) {
-    return false;
-  }
+  if (total <= SEUIL_ALERTE || !compteur.peutRelire(maintenant)) return false;
+  // Le recul est posé avant la transaction : si l'écriture échoue (base verrouillée), les
+  // refus suivants ne la retentent pas un par un.
+  compteur.reporter(maintenant + RECUL_ALERTE, maintenant);
   return db
     .transaction(() => {
       const recente = db
@@ -270,11 +323,11 @@ export function noterRefus(db: Base, compteur: CompteurRefus, maintenant: number
         )
         .get(maintenant - HEURE);
       if (recente) {
-        compteur.derniereAlerte = recente.cree_le;
+        compteur.reporter(recente.cree_le + HEURE, maintenant);
         return false;
       }
       mettreEnFile(db, "alerte", { refus: total, depuis, jusqua: maintenant }, maintenant);
-      compteur.derniereAlerte = maintenant;
+      compteur.reporter(maintenant + HEURE, maintenant);
       return true;
     })
     .immediate();

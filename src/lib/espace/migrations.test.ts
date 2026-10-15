@@ -34,6 +34,12 @@ describe("ouvrirBase", () => {
     expect(db.pragma("secure_delete", { simple: true })).toBe(1);
     expect(db.pragma("busy_timeout", { simple: true })).toBe(5000);
   });
+
+  it("règle l'attente du verrou à la demande, pour la connexion du journal", () => {
+    const db = ouvrirBase(":memory:", 100);
+    ouvertes.push(db);
+    expect(db.pragma("busy_timeout", { simple: true })).toBe(100);
+  });
 });
 
 describe("migrer", () => {
@@ -56,6 +62,37 @@ describe("migrer", () => {
         { name: "courriels", strict: 1 },
       ]),
     );
+  });
+
+  it("indexe la file des courriels par modèle et par date (migration 3)", () => {
+    const db = baseEnMemoire();
+    migrer(db);
+    expect(VERSION_SCHEMA).toBe(3);
+    const colonnes = (nom: string) =>
+      (
+        db.prepare("SELECT name FROM pragma_index_info(?) ORDER BY seqno").all(nom) as {
+          name: string;
+        }[]
+      ).map((c) => c.name);
+    expect(colonnes("courriels_modele")).toEqual(["modele", "cree_le"]);
+  });
+
+  it("amène une base en version 2 à la version 3 sans toucher à ses données", () => {
+    const db = baseEnMemoire();
+    migrer(db);
+    db.exec("DROP INDEX courriels_modele");
+    db.pragma("user_version = 2");
+    db.prepare("INSERT INTO courriels (modele, donnees, cree_le) VALUES ('alerte', '{}', 1)").run();
+    expect(migrer(db)).toBe(3);
+    expect(versionSchema(db)).toBe(3);
+    expect(
+      db
+        .prepare("SELECT name FROM sqlite_schema WHERE type = 'index' AND name = ?")
+        .get("courriels_modele"),
+    ).toEqual({ name: "courriels_modele" });
+    expect(db.prepare("SELECT modele, cree_le FROM courriels").all()).toEqual([
+      { modele: "alerte", cree_le: 1 },
+    ]);
   });
 
   it("refuse une base plus récente que le code", () => {

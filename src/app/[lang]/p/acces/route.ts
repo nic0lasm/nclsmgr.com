@@ -1,5 +1,5 @@
 import { after } from "next/server";
-import { base, espaceConfigure, type Base } from "@/lib/espace/base";
+import { base, baseJournal, codeErreur, espaceConfigure, type Base } from "@/lib/espace/base";
 import { cleIp, LimiteurDebit } from "@/lib/espace/debit";
 import { EN_TETES_ROUTES } from "@/lib/espace/en-tetes";
 import { attendreAuMoins, cookieSession, lireCorpsJson, origineAutorisee } from "@/lib/espace/http";
@@ -19,8 +19,9 @@ export const dynamic = "force-dynamic";
 // écarts de temps de la base ne disent rien de l'état du lien.
 const PLANCHER_MS = 250;
 
-// 10 échanges par IP (bloc /64 en IPv6) et par 10 minutes. À part, tous les refus de l'heure
-// (403 et 429), toutes IP confondues, sont comptés pour l'alerte à Nico.
+// 10 échanges par IP (bloc /64 en IPv6) et par 10 minutes. À part, les échanges refusés de
+// l'heure, toutes IP confondues, sont comptés pour l'alerte à Nico : seulement ceux qui ont
+// passé le contrôle d'origine et le limiteur, donc de vrais essais de jeton.
 const globale = globalThis as typeof globalThis & {
   espaceDebitAcces?: LimiteurDebit;
   espaceRefusAcces?: CompteurRefus;
@@ -31,10 +32,12 @@ const refusAcces = (globale.espaceRefusAcces ??= new CompteurRefus());
 /**
  * Ce que la requête laisse au journal, écrit après l'envoi de la réponse. Un refus ne porte un
  * lien que si le jeton est celui d'un lien expiré ou révoqué ; un jeton inconnu ne compte que
- * pour l'alerte.
+ * pour l'alerte. Une requête écartée avant l'échange (origine refusée, débit dépassé, espace
+ * non configuré) ne laisse rien : une page tierce qui ne lit pas la réponse ne doit pas pouvoir
+ * déclencher l'alerte.
  */
 type Issue = { reponse: Response; le: number } & (
-  { type: "ouverture"; lien: Lien } | { type: "refus"; lien: Lien | null }
+  { type: "ouverture"; lien: Lien } | { type: "refus"; lien: Lien | null } | { type: "ecartee" }
 );
 
 /**
@@ -53,18 +56,19 @@ function trop(reessayerDans: number): Response {
 }
 
 async function echanger(requete: Request): Promise<Issue> {
-  const echec = (reponse: Response, lien: Lien | null = null): Issue => ({
-    reponse,
+  const echec = (lien: Lien | null = null): Issue => ({
+    reponse: refus(),
     le: Date.now(),
     type: "refus",
     lien,
   });
+  const ecartee = (reponse: Response): Issue => ({ reponse, le: Date.now(), type: "ecartee" });
   // Le contrôle d'origine passe avant le compteur : un site tiers ne peut pas épuiser, par le
   // navigateur d'un visiteur, le quota de son adresse IP.
-  if (!origineAutorisee(requete.headers)) return echec(refus());
+  if (!origineAutorisee(requete.headers)) return ecartee(refus());
   const debit = debitAcces.consommer(cleIp(requete.headers.get("x-client-ip")), Date.now());
-  if (!debit.autorise) return echec(trop(debit.reessayerDans));
-  if (!espaceConfigure()) return echec(refus());
+  if (!debit.autorise) return ecartee(trop(debit.reessayerDans));
+  if (!espaceConfigure()) return ecartee(refus());
 
   try {
     // Un corps tronqué ou une connexion coupée en cours de lecture lève : même refus.
@@ -76,7 +80,7 @@ async function echanger(requete: Request): Promise<Issue> {
     const db = base();
     const maintenant = Date.now();
     const verification = verifierJeton(db, jeton, maintenant);
-    if (!verification.valide) return echec(refus(), verification.lien);
+    if (!verification.valide) return echec(verification.lien);
     // Une nouvelle session à chaque échange : pas de fixation de session possible.
     const session = ouvrirSession(db, verification.lien, maintenant);
     return {
@@ -94,22 +98,26 @@ async function echanger(requete: Request): Promise<Issue> {
   } catch {
     // Ni le jeton ni le lien dans le journal : seulement le fait.
     console.error("Espace privé : échange de jeton impossible.");
-    return echec(refus());
+    return echec();
   }
 }
 
 /**
  * Journal, date de première ouverture et notifications. Appelé par after() : la durée et le
- * contenu de la réponse ne dépendent pas de ces écritures. Une erreur n'écrit qu'un message
- * générique, sans jeton, empreinte, nom ni organisation.
+ * contenu de la réponse ne dépendent pas de ces écritures. Elles passent par la connexion du
+ * journal, qui n'attend le verrou d'écriture que 100 ms : une base tenue par le service
+ * courrier ne gèle pas le processus. Une erreur n'écrit qu'un message générique et le code
+ * SQLite, sans jeton, empreinte, nom ni organisation.
  */
 function consigner(issue: Issue, enTetes: Headers): void {
-  if (!espaceConfigure()) return;
+  if (issue.type === "ecartee" || !espaceConfigure()) return;
   const etape = (ecrire: (db: Base) => unknown) => {
     try {
-      ecrire(base());
-    } catch {
-      console.error("Espace privé : écriture du journal des consultations impossible.");
+      ecrire(baseJournal());
+    } catch (erreur) {
+      console.error(
+        `Espace privé : écriture du journal des consultations impossible (${codeErreur(erreur)}).`,
+      );
     }
   };
   if (issue.type === "ouverture") {

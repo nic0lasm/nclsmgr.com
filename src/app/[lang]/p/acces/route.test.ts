@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { inspect } from "node:util";
+import Database from "better-sqlite3";
 import {
   afterAll,
   afterEach,
@@ -12,6 +13,7 @@ import {
 } from "vitest";
 import { base, type Base } from "@/lib/espace/base";
 import { empreinte } from "@/lib/espace/jetons";
+import { CompteurRefus, NOM_NON_AFFICHABLE } from "@/lib/espace/journal";
 import { creerLien, JOUR, revoquerLien } from "@/lib/espace/liens";
 
 // after() de Next n'existe que dans une requête servie par Next : les tâches sont gardées ici
@@ -127,6 +129,48 @@ describe("POST /[lang]/p/acces", () => {
     ]);
   });
 
+  it("seuls les échanges de jeton refusés comptent pour l'alerte, pas les refus d'origine ni les 429", async () => {
+    const ajouter = vi.spyOn(CompteurRefus.prototype, "ajouter");
+    const expire = lien("expire");
+    const corps = (r: Response) => r.text();
+
+    // Écartés avant l'échange : page tierce (qui ne lit pas la réponse) et débit dépassé.
+    const ecartees = [
+      await POST(requete(expire.jeton, { "Sec-Fetch-Site": "cross-site" })),
+      await POST(requete(expire.jeton, { "Sec-Fetch-Site": "same-site" })),
+    ];
+    const memeIp = { "X-Client-IP": "203.0.113.200" };
+    const rafale: Response[] = [];
+    for (let i = 0; i < 11; i++) rafale.push(await POST(requete("pas-un-jeton", memeIp)));
+    expect(rafale.map((r) => r.status)).toEqual([...Array(10).fill(403), 429]);
+    await apresReponse();
+    // Les 10 essais passés par le limiteur comptent ; ni le 429 ni les refus d'origine.
+    expect(ajouter).toHaveBeenCalledTimes(10);
+
+    // Échanges refusés : corps invalide, jeton mal formé, inconnu, expiré.
+    const nonJson = new Request("http://127.0.0.1/fr/p/acces", {
+      method: "POST",
+      headers: { "Content-Type": "text/plain", "Sec-Fetch-Site": "same-origin" },
+      body: "{",
+    });
+    const refusees = [
+      await POST(nonJson),
+      await POST(requete({ jeton: 1 })),
+      await POST(requete("pas-un-jeton")),
+      await POST(requete(randomBytes(32).toString("base64url"))),
+      await POST(requete(expire.jeton)),
+    ];
+    await apresReponse();
+    expect(ajouter).toHaveBeenCalledTimes(15);
+    expect(compter("consultations", expire.lien.id)).toBe(1);
+
+    // La réponse reste la même, comptée ou non.
+    for (const reponse of [...ecartees, ...rafale.slice(0, 10), ...refusees]) {
+      expect(reponse.status).toBe(403);
+      expect(await corps(reponse)).toBe('{"ok":false}');
+    }
+  });
+
   it("aucun journal applicatif ne contient de jeton, d'empreinte, de nom ni d'organisation", async () => {
     const methodes = ["log", "info", "warn", "error", "debug", "trace"] as const;
     const espions: MockInstance[] = methodes.map((methode) =>
@@ -146,7 +190,8 @@ describe("POST /[lang]/p/acces", () => {
     const allonge = lien("actif", `${"a".repeat(119)}\u{FB00}`);
     const enPanne = lien("actif");
     const panneJournal = lien("revoque");
-    for (const cree of [actif, expire, revoque, allonge, enPanne, panneJournal])
+    const verrou = lien("revoque");
+    for (const cree of [actif, expire, revoque, allonge, enPanne, panneJournal, verrou])
       retenir(cree.jeton);
     const inconnu = retenir(randomBytes(32).toString("base64url"));
 
@@ -175,15 +220,35 @@ describe("POST /[lang]/p/acces", () => {
     await apresReponse();
     vi.mocked(db.prepare).mockRestore();
 
+    // Base verrouillée : le journal ne porte que le code SQLite, pas le message.
+    expect((await POST(requete(verrou.jeton))).status).toBe(403);
+    vi.spyOn(db, "prepare").mockImplementation(() => {
+      throw new Database.SqliteError(`verrou ${verrou.jeton} ${NOM}`, "SQLITE_BUSY");
+    });
+    await apresReponse();
+    vi.mocked(db.prepare).mockRestore();
+
+    // Le nom refusé par le valideur des courriels n'a pas fait perdre la notification.
+    expect(
+      (
+        db
+          .prepare("SELECT donnees FROM courriels WHERE json_extract(donnees, '$.lienId') = ?")
+          .all(allonge.lien.id) as { donnees: string }[]
+      ).map((c) => JSON.parse(c.donnees)),
+    ).toEqual([expect.objectContaining({ destinataire: NOM_NON_AFFICHABLE, organisation: null })]);
+
     const ecrit = espions.flatMap((espion) =>
       espion.mock.calls.map((appel) => appel.map((argument) => inspect(argument)).join(" ")),
     );
-    // Les pannes et la notification refusée ont bien laissé des messages, tous génériques.
+    // Les pannes et le nom refusé ont bien laissé des messages, tous génériques.
     expect(ecrit).toEqual(
       expect.arrayContaining([
         expect.stringContaining("échange de jeton impossible"),
-        expect.stringContaining("écriture du journal des consultations impossible"),
-        expect.stringContaining("notification refusée"),
+        expect.stringContaining(
+          "écriture du journal des consultations impossible (erreur non SQLite)",
+        ),
+        expect.stringContaining("écriture du journal des consultations impossible (SQLITE_BUSY)"),
+        expect.stringContaining("nom du lien refusé par le valideur des courriels"),
       ]),
     );
     for (const ligne of ecrit) {

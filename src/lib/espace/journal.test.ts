@@ -1,3 +1,4 @@
+import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ouvrirBase, type Base } from "./base";
 import { rediger } from "./courriels";
@@ -5,13 +6,16 @@ import {
   CompteurRefus,
   contexteDepuis,
   DOUBLON_DOCUMENT,
+  MAX_LIGNES_NOUVELLES,
   MAX_LIGNES_PAR_JOUR,
   navigateurDepuis,
+  NOM_NON_AFFICHABLE,
   noterDocument,
   noterEssaiRefuse,
   noterOuverture,
   noterRefus,
   paysDepuis,
+  RECUL_ALERTE,
   SEUIL_ALERTE,
   type ContexteVisite,
 } from "./journal";
@@ -205,16 +209,41 @@ describe("noterOuverture", () => {
     expect(message.texte).toContain("Pays : FR");
   });
 
-  it("garde la ligne du journal quand le valideur des courriels refuse les données", () => {
-    // Le ligature « ﬀ » double de longueur à la normalisation NFKC : 120 caractères en font 121.
+  it("notifie sans le nom quand le valideur des courriels le refuse, et garde la ligne", () => {
+    // La ligature « ﬀ » double de longueur à la normalisation NFKC : 120 caractères en font 121.
+    // Le nom passe à la création du lien (NFC) mais pas dans le courriel (NFKC).
     const { lien } = creerLien(db, { ...nouveau, destinataire: `${"a".repeat(119)}\u{FB00}` }, T0);
     const erreur = vi.spyOn(console, "error").mockImplementation(() => {});
     expect(noterOuverture(db, lien, ici, T0).premiere).toBe(true);
     expect(consultations(lien.id)).toHaveLength(1);
     expect(ouvertLe(lien.id)).toBe(T0);
-    expect(courriels("ouverture")).toEqual([]);
+    expect(courriels("ouverture")).toEqual([
+      {
+        lienId: lien.id,
+        destinataire: NOM_NON_AFFICHABLE,
+        organisation: null,
+        le: T0,
+        pays: "FR",
+        navigateur: "Firefox · Windows",
+        creeLe: T0,
+      },
+    ]);
+    expect(rediger("ouverture", courriels("ouverture")[0]).texte).toContain(
+      `${lien.id} (${NOM_NON_AFFICHABLE})`,
+    );
     expect(erreur).toHaveBeenCalledTimes(1);
     expect(String(erreur.mock.calls[0])).not.toContain("aaaa");
+  });
+
+  it("une organisation refusée par le valideur est retirée elle aussi", () => {
+    // Organisation faite seulement de caractères invisibles : vide une fois nettoyée.
+    const { lien } = creerLien(db, { ...nouveau, organisation: "Acme" }, T0);
+    const invisible: Lien = { ...lien, organisation: "\u{3164}\u{3164}" };
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    noterOuverture(db, invisible, ici, T0);
+    expect(courriels("ouverture")).toEqual([
+      expect.objectContaining({ destinataire: NOM_NON_AFFICHABLE, organisation: null }),
+    ]);
   });
 
   it("borne le journal à MAX_LIGNES_PAR_JOUR ouvertures par lien sur 24 heures", () => {
@@ -223,6 +252,48 @@ describe("noterOuverture", () => {
     expect(consultations(lien.id)).toHaveLength(MAX_LIGNES_PAR_JOUR);
     noterOuverture(db, lien, ici, T0 + JOUR + 1);
     expect(consultations(lien.id)).toHaveLength(MAX_LIGNES_PAR_JOUR + 1);
+  });
+
+  it("au-delà du plafond, note encore un couple pays et navigateur nouveau, 20 fois au plus", () => {
+    const { lien } = creerLien(db, nouveau, T0);
+    const autre = creerLien(db, nouveau, T0).lien;
+    for (let i = 0; i < MAX_LIGNES_PAR_JOUR + 5; i++) noterOuverture(db, lien, ici, T0 + i);
+    expect(consultations(lien.id)).toHaveLength(MAX_LIGNES_PAR_JOUR);
+
+    // Le lien circule : un nouveau pays, puis un nouveau navigateur, sont notés une fois.
+    const belgique: ContexteVisite = { pays: "BE", navigateur: "Firefox · Windows" };
+    const android: ContexteVisite = { pays: "FR", navigateur: "Chrome · Android" };
+    const inconnu: ContexteVisite = { pays: null, navigateur: "Autre" };
+    for (const contexte of [belgique, belgique, android, android, inconnu, inconnu]) {
+      noterOuverture(db, lien, contexte, T0 + HEURE);
+    }
+    expect(consultations(lien.id)).toHaveLength(MAX_LIGNES_PAR_JOUR + 3);
+    expect(consultations(lien.id).slice(-3)).toEqual([
+      expect.objectContaining({ pays: "BE", navigateur: "Firefox · Windows" }),
+      expect.objectContaining({ pays: "FR", navigateur: "Chrome · Android" }),
+      expect.objectContaining({ pays: null, navigateur: "Autre" }),
+    ]);
+
+    // Pas plus de MAX_LIGNES_NOUVELLES lignes de plus sur 24 heures, même avec des couples
+    // toujours nouveaux.
+    const pays = Array.from({ length: 40 }, (_, i) => `A${String.fromCharCode(65 + (i % 26))}`);
+    pays.forEach((code, i) =>
+      noterOuverture(
+        db,
+        lien,
+        { pays: code, navigateur: i < 26 ? "Edge · iOS" : "Opera · iOS" },
+        T0 + 2 * HEURE,
+      ),
+    );
+    expect(consultations(lien.id)).toHaveLength(MAX_LIGNES_PAR_JOUR + MAX_LIGNES_NOUVELLES);
+
+    // Le plafond est par lien, par type et par 24 heures.
+    noterOuverture(db, autre, belgique, T0 + 2 * HEURE);
+    expect(consultations(autre.id)).toHaveLength(1);
+    noterEssaiRefuse(db, lien, belgique, T0 + 2 * HEURE);
+    expect(consultations(lien.id)).toHaveLength(MAX_LIGNES_PAR_JOUR + MAX_LIGNES_NOUVELLES + 1);
+    noterOuverture(db, lien, belgique, T0 + 2 * HEURE + JOUR);
+    expect(consultations(lien.id)).toHaveLength(MAX_LIGNES_PAR_JOUR + MAX_LIGNES_NOUVELLES + 2);
   });
 });
 
@@ -264,6 +335,46 @@ describe("noterEssaiRefuse", () => {
     );
     expect(notifies).toEqual([true, false, true, false]);
     expect(courriels("essai_refuse")[0]).toMatchObject({ motif: "expire", finLe: T0 + JOUR });
+  });
+
+  it("notifie sans le nom quand le valideur des courriels le refuse", () => {
+    const { lien } = creerLien(db, { ...nouveau, destinataire: `${"a".repeat(119)}\u{FB00}` }, T0);
+    revoquerLien(db, lien.id, T0 + HEURE);
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(noterEssaiRefuse(db, { ...lien, revoqueLe: T0 + HEURE }, ici, T0 + 2 * HEURE)).toEqual({
+      notifie: true,
+    });
+    expect(courriels("essai_refuse")).toEqual([
+      expect.objectContaining({
+        lienId: lien.id,
+        destinataire: NOM_NON_AFFICHABLE,
+        organisation: null,
+        motif: "revoque",
+        finLe: T0 + HEURE,
+      }),
+    ]);
+  });
+
+  it("cherche la dernière notification et la dernière alerte par l'index courriels_modele", () => {
+    const { lien } = creerLien(db, { ...nouveau, dureeJours: 1 }, T0);
+    const prepare = vi.spyOn(db, "prepare");
+    noterEssaiRefuse(db, lien, ici, T0 + 2 * JOUR);
+    const compteur = new CompteurRefus();
+    for (let i = 0; i <= SEUIL_ALERTE; i++) noterRefus(db, compteur, T0 + 2 * JOUR);
+    const requetes = prepare.mock.calls
+      .map(([sql]) => sql)
+      .filter((sql) => /^\s*SELECT\b[\s\S]*\bFROM courriels\b/.test(sql));
+    prepare.mockRestore();
+    expect(requetes).toHaveLength(2);
+    for (const sql of requetes) {
+      const parametres = sql.includes("json_extract") ? [0, lien.id] : [0];
+      const plan = db.prepare(`EXPLAIN QUERY PLAN ${sql}`).all(...parametres) as {
+        detail: string;
+      }[];
+      expect(plan.map((etape) => etape.detail).join(" | ")).toMatch(
+        /SEARCH courriels USING (?:COVERING )?INDEX courriels_modele \(modele=\? AND cree_le>\?\)/,
+      );
+    }
   });
 
   it("les notifications de deux liens différents sont indépendantes", () => {
@@ -335,6 +446,41 @@ describe("noterRefus", () => {
     for (let i = 0; i < SEUIL_ALERTE; i++) noterRefus(db, compteur, T0);
     expect(noterRefus(db, compteur, T0 + HEURE)).toBe(false);
     expect(compteur.ajouter(T0 + HEURE)).toEqual({ total: 2, depuis: T0 + HEURE });
+  });
+
+  it("ne compte que l'heure écoulée après un recul de l'horloge", () => {
+    const compteur = new CompteurRefus();
+    for (let i = 0; i < 150; i++) compteur.ajouter(T0 + 2 * HEURE);
+    expect(compteur.ajouter(T0)).toEqual({ total: 1, depuis: T0 });
+  });
+
+  it("après un échec d'écriture, ne retente l'alerte qu'au bout d'une minute", () => {
+    const compteur = new CompteurRefus();
+    for (let i = 0; i < SEUIL_ALERTE; i++) noterRefus(db, compteur, T0);
+    const transaction = vi.spyOn(db, "transaction").mockImplementationOnce(() => {
+      throw new Database.SqliteError("database is locked", "SQLITE_BUSY");
+    });
+    expect(() => noterRefus(db, compteur, T0)).toThrow(/locked/);
+    for (let i = 0; i < 100; i++) {
+      expect(noterRefus(db, compteur, T0 + i * 500)).toBe(false);
+    }
+    expect(transaction).toHaveBeenCalledTimes(1);
+    expect(courriels("alerte")).toEqual([]);
+    expect(noterRefus(db, compteur, T0 + RECUL_ALERTE)).toBe(true);
+    expect(transaction.mock.calls.length).toBeGreaterThan(1);
+    expect(courriels("alerte")).toHaveLength(1);
+  });
+
+  it("une échéance laissée par un recul de l'horloge n'empêche pas une alerte", () => {
+    const compteur = new CompteurRefus();
+    for (let i = 0; i <= SEUIL_ALERTE; i++) noterRefus(db, compteur, T0 + 3 * HEURE);
+    expect(courriels("alerte")).toHaveLength(1);
+    db.prepare("DELETE FROM courriels").run();
+    // L'horloge recule de trois heures : l'attente d'une heure posée par l'alerte ne tient plus.
+    const alertes = Array.from({ length: SEUIL_ALERTE + 1 }, () =>
+      noterRefus(db, compteur, T0),
+    ).filter(Boolean);
+    expect(alertes).toHaveLength(1);
   });
 
   it("la file fait foi : pas de seconde alerte dans l'heure après un redémarrage", () => {
