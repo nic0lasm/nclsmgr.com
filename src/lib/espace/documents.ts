@@ -34,6 +34,49 @@ const NOM = /^[A-Za-z0-9][A-Za-z0-9._-]{0,80}\.pdf$/;
 const INTERDIT = /[\p{Cc}\p{Cf}\p{Cs}\p{Zl}\p{Zp}]/u;
 // Tout PDF commence par cette signature : un autre contenu nommé .pdf n'est jamais servi.
 const SIGNATURE_PDF = Buffer.from("%PDF-", "latin1");
+/**
+ * Noms PDF d'actions ou de contenu actif : scripts, action à l'ouverture, actions
+ * automatiques, lancement d'application, fichiers joints. Sous Chromium, la visionneuse PDF
+ * remplace la réponse par sa propre page, où la politique de sécurité du document ne
+ * s'applique pas : le JavaScript d'un PDF y est exécuté. Un PDF qui porte l'un de ces noms
+ * n'est donc pas servi.
+ */
+const NOMS_ACTIFS = new Set([
+  "JavaScript",
+  "JS",
+  "OpenAction",
+  "AA",
+  "Launch",
+  "EmbeddedFile",
+  "EmbeddedFiles",
+]);
+/**
+ * Nom PDF : « / » puis lettres ou séquences #xx (/J#61vaScript vaut /JavaScript), terminé par
+ * un blanc, un délimiteur PDF ou la fin du fichier. Un préfixe de police comme /AAAAAA+Helvetica
+ * ne correspond donc pas à /AA.
+ */
+const NOM_PDF = /\/((?:[A-Za-z]|#[0-9A-Fa-f]{2})+)(?=[\0\t\n\f\r ()<>[\]{}/%]|$)/g;
+
+/**
+ * Vrai si le fichier nomme une action ou un contenu actif en clair. Les objets rangés dans des
+ * flux compressés (object streams, PDF 1.5 et suivants) échappent à cette recherche : c'est
+ * une barrière contre une erreur de génération ou de dépôt, pas une garantie. La protection
+ * tient d'abord à des PDF de confiance, produits par Nico.
+ */
+export function contenuActif(contenu: Uint8Array): boolean {
+  const texte = Buffer.from(contenu.buffer, contenu.byteOffset, contenu.byteLength).toString(
+    "latin1",
+  );
+  for (const [, nom] of texte.matchAll(NOM_PDF)) {
+    const decode = nom.includes("#")
+      ? nom.replace(/#([0-9A-Fa-f]{2})/g, (_, hexa: string) =>
+          String.fromCharCode(Number.parseInt(hexa, 16)),
+        )
+      : nom;
+    if (NOMS_ACTIFS.has(decode)) return true;
+  }
+  return false;
+}
 
 /** Erreur de validation : ne porte que le chemin du champ, jamais sa valeur. */
 export class CatalogueInvalide extends Error {}
@@ -213,7 +256,7 @@ export function documentsAffiches(
 /**
  * Lit un document pour un lien. Rend null, sans distinguer les cas, quand l'identifiant n'est
  * pas dans le lien, manque au catalogue, ou que le fichier est absent, trop grand, n'est pas un
- * fichier régulier ou n'est pas un PDF.
+ * fichier régulier, n'est pas un PDF ou contient du JavaScript ou une action.
  */
 export async function lireDocument(
   id: string,
@@ -224,13 +267,23 @@ export async function lireDocument(
   const entree = (await lireCatalogue()).get(id);
   const fichier = entree ? choisir(entree.fichiers, langue) : null;
   if (!entree || !fichier) return null;
+  // Les messages citent l'identifiant, déjà validé par FORMAT_DOCUMENT, jamais le nom du
+  // fichier ni son contenu.
   const lecture = await lireFichier(fichier.valeur, TAILLE_MAX_DOCUMENT);
   if ("refus" in lecture) {
-    if (lecture.refus !== "absent") console.error("Espace privé : document illisible ou refusé.");
+    console.error(
+      lecture.refus === "absent"
+        ? `Espace privé : document ${id} absent du volume.`
+        : `Espace privé : document ${id} illisible ou refusé.`,
+    );
     return null;
   }
   if (!SIGNATURE_PDF.equals(lecture.contenu.subarray(0, SIGNATURE_PDF.length))) {
-    console.error("Espace privé : document refusé, ce n'est pas un PDF.");
+    console.error(`Espace privé : document ${id} refusé, ce n'est pas un PDF.`);
+    return null;
+  }
+  if (contenuActif(lecture.contenu)) {
+    console.error(`Espace privé : document ${id} refusé, il contient du JavaScript ou une action.`);
     return null;
   }
   const nom = entree.noms[fichier.langue] ?? choisir(entree.noms, langue)?.valeur ?? fichier.valeur;

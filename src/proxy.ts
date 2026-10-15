@@ -17,8 +17,13 @@ export function proxy(request: NextRequest) {
   }
 
   // Documents réservés (PDF) : politique fermée, sans nonce, aucun script n'y est attendu.
+  // Un x-nonce ou une politique envoyés par le client sont retirés de la requête : rien en aval
+  // ne doit les prendre pour ceux du proxy.
   if (CHEMIN_DOCUMENTS.test(pathname)) {
-    const response = NextResponse.next();
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.delete("x-nonce");
+    requestHeaders.delete("Content-Security-Policy");
+    const response = NextResponse.next({ request: { headers: requestHeaders } });
     response.headers.set("Content-Security-Policy", EN_TETES_DOCUMENT["Content-Security-Policy"]);
     return response;
   }

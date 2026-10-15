@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   CatalogueInvalide,
+  contenuActif,
   documentsAffiches,
   lireCatalogue,
   lireDocument,
@@ -106,6 +107,53 @@ describe("documentsAffiches", () => {
       { id: "cv", titre: "Full résumé", langue: "en" },
       { id: "annexe", titre: "Annexe", langue: "fr" },
     ]);
+  });
+});
+
+/** PDF fictif dont le catalogue porte l'entrée donnée. */
+function pdfAvec(entree: string): Buffer {
+  return Buffer.from(
+    `%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R ${entree} >>\nendobj\n%%EOF\n`,
+    "latin1",
+  );
+}
+
+describe("contenuActif", () => {
+  it.each([
+    ["/JavaScript", "/Names << /JavaScript 3 0 R >>"],
+    ["/JS", "/S /JavaScript /JS (app.alert(1))"],
+    ["/JS suivi d'une chaîne", "/JS(app.alert(1))"],
+    ["/JS suivi d'un dictionnaire", "/JS<414243>"],
+    ["/OpenAction", "/OpenAction 5 0 R"],
+    ["/OpenAction suivi d'un tableau", "/OpenAction[3 0 R /Fit]"],
+    ["/AA", "/AA<< /O 6 0 R >>"],
+    ["/AA suivi d'un nom", "/AA/O"],
+    ["/Launch", "/S /Launch /F (calc)"],
+    ["/EmbeddedFile", "/Type /EmbeddedFile"],
+    ["/EmbeddedFiles", "/Names << /EmbeddedFiles 4 0 R >>"],
+    ["/JavaScript en fin de ligne", "/S /JavaScript\n"],
+    ["un nom en fin de fichier", ""],
+    ["un nom écrit en #xx", "/S /J#61vaScript"],
+  ])("repère %s", (_cas, entree) => {
+    const pdf = entree ? pdfAvec(entree) : Buffer.from("%PDF-1.4\n/OpenAction", "latin1");
+    expect(contenuActif(pdf)).toBe(true);
+  });
+
+  it.each([
+    ["un PDF simple", "/Font << /F1 5 0 R >>"],
+    ["un préfixe de police", "/BaseFont /AAAAAA+Helvetica /FontName /JSABCD+Arial"],
+    [
+      "des noms qui commencent pareil",
+      "/AAPL /JSON /Launcher /OpenActions /JavaScripts /EmbeddedFileX",
+    ],
+    ["un nom sans barre oblique", "(AA JS JavaScript OpenAction)"],
+  ])("ne repère pas %s", (_cas, entree) => {
+    expect(contenuActif(pdfAvec(entree))).toBe(false);
+  });
+
+  it("lit une vue au milieu d'un tampon plus grand", () => {
+    const tampon = Buffer.concat([Buffer.from("/JS "), pdfAvec("")]);
+    expect(contenuActif(tampon.subarray(4))).toBe(false);
   });
 });
 
@@ -214,17 +262,23 @@ describe("lecture sur le volume", () => {
       expect(await lireDocument("cv", "fr", ["cv"])).toBeNull();
     });
 
-    it("refuse un fichier manquant", async () => {
+    it("refuse un fichier manquant et le signale avec l'identifiant", async () => {
       rmSync(join(dossier, "cv-fr.pdf"));
       expect(await lireDocument("cv", "fr", ["cv"])).toBeNull();
-      expect(erreurs).not.toHaveBeenCalled();
+      expect(erreurs.mock.calls).toEqual([["Espace privé : document cv absent du volume."]]);
+    });
+
+    it("ne se rabat pas sur une autre langue quand le fichier déclaré manque", async () => {
+      rmSync(join(dossier, "cv-en.pdf"));
+      expect(await lireDocument("cv", "en", ["cv"])).toBeNull();
+      expect(await lireDocument("cv", "fr", ["cv"])).not.toBeNull();
     });
 
     it("refuse un lien symbolique, même vers un PDF valide", async () => {
       rmSync(join(dossier, "cv-fr.pdf"));
       symlinkSync(join(dossier, "cv-en.pdf"), join(dossier, "cv-fr.pdf"));
       expect(await lireDocument("cv", "fr", ["cv"])).toBeNull();
-      expect(journal()).not.toContain("cv-");
+      expect(journal()).toBe("Espace privé : document cv illisible ou refusé.");
     });
 
     it("refuse un fichier trop grand", async () => {
@@ -248,6 +302,18 @@ describe("lecture sur le volume", () => {
       expect(await lireDocument("cv", "fr", ["cv"])).toBeNull();
       ecrire("cv-fr.pdf", "");
       expect(await lireDocument("cv", "fr", ["cv"])).toBeNull();
+      expect(erreurs).toHaveBeenNthCalledWith(
+        1,
+        "Espace privé : document cv refusé, ce n'est pas un PDF.",
+      );
+    });
+
+    it("refuse un PDF qui contient du JavaScript ou une action", async () => {
+      ecrire("cv-fr.pdf", pdfAvec("/OpenAction << /S /JavaScript /JS (app.alert(1)) >>"));
+      expect(await lireDocument("cv", "fr", ["cv"])).toBeNull();
+      expect(erreurs.mock.calls).toEqual([
+        ["Espace privé : document cv refusé, il contient du JavaScript ou une action."],
+      ]);
     });
   });
 });

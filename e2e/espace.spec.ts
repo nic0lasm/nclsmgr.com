@@ -935,8 +935,11 @@ test.describe("documents réservés", () => {
       "dossier",
       "trop-grand",
       "pas-pdf",
+      "actif",
       "inconnu",
     ]);
+    // Session valide dont le lien ouvre le CV : seul le format de l'identifiant est en cause.
+    const valide = await session(request, ["cv"]);
     const revoque = await session(request, ["cv"]);
     revoquer(revoque.jeton);
     const expire = await session(request, ["cv"]);
@@ -957,7 +960,8 @@ test.describe("documents réservés", () => {
       { nom: "dossier", id: "dossier", enTetes: autres.enTetes },
       { nom: "fichier trop grand", id: "trop-grand", enTetes: autres.enTetes },
       { nom: "pas un PDF", id: "pas-pdf", enTetes: autres.enTetes },
-      { nom: "identifiant avec extension", id: "cv.pdf", enTetes: revoque.enTetes },
+      { nom: "PDF avec JavaScript", id: "actif", enTetes: autres.enTetes },
+      { nom: "identifiant avec extension", id: "cv.pdf", enTetes: valide.enTetes },
     ];
     const reponses: { statut: number; corps: string; enTetes: Record<string, string> }[] = [];
     for (const { id, enTetes } of cas) {
@@ -980,6 +984,29 @@ test.describe("documents réservés", () => {
 
     const tete = await request.head("/fr/espace/documents/cv");
     expect(tete.status()).toBe(404);
+  });
+
+  test("la politique fermée ne vaut que pour les documents, requêtes RSC comprises", async ({
+    request,
+  }) => {
+    const { enTetes } = await session(request, ["cv"]);
+    const espace = await request.get("/fr/espace", { headers: enTetes });
+    expect(espace.status()).toBe(200);
+    const politique = espace.headers()["content-security-policy"] ?? "";
+    expect(politique).toMatch(/script-src 'self' 'nonce-[^']+' 'strict-dynamic'/);
+    expect(politique).not.toContain("sandbox");
+    // Le nonce de la politique est bien celui des scripts de la page.
+    const nonce = /'nonce-([^']+)'/.exec(politique)?.[1] ?? "";
+    expect(await espace.text()).toContain(`nonce="${nonce}"`);
+
+    for (const variante of [{}, { RSC: "1" }] as Record<string, string>[]) {
+      const reponse = await request.get("/fr/espace/documents/cv?_rsc=x", {
+        headers: { ...enTetes, ...variante, "X-Nonce": "nonce-du-client" },
+      });
+      expect(reponse.status()).toBe(200);
+      expect(reponse.headers()["content-type"]).toBe("application/pdf");
+      expect(reponse.headers()["content-security-policy"]).toBe(CSP);
+    }
   });
 
   test("une lecture GET est notée au journal, une seule fois sur 10 minutes ; HEAD et 404 rien", async ({

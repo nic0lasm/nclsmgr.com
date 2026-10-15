@@ -26,4 +26,8 @@ export default function preparation() {
   ecrire(join(documents, "trop-grand.pdf"), pdfFictif("Trop-grand"));
   truncateSync(join(documents, "trop-grand.pdf"), 10 * 1024 * 1024 + 1);
   ecrire(join(documents, "pas-pdf.pdf"), "<html><body>Pas un PDF</body></html>");
+  ecrire(
+    join(documents, "actif.pdf"),
+    pdfFictif("Actif", "/OpenAction << /S /JavaScript /JS (app.alert(1)) >>"),
+  );
 }
