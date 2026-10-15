@@ -67,6 +67,11 @@ export async function lireCorpsJson(requete: Request): Promise<unknown> {
 
 /** Délai plancher : la réponse ne part pas avant `plancherMs` après `debut`. */
 export async function attendreAuMoins(debut: number, plancherMs: number): Promise<void> {
-  const reste = debut + plancherMs - performance.now();
-  if (reste > 0) await new Promise((resoudre) => setTimeout(resoudre, reste));
+  // setTimeout peut rendre la main une fraction de milliseconde avant l'échéance mesurée par
+  // performance.now() : on reprend l'attente jusqu'à ce que le plancher soit vraiment atteint.
+  let reste = debut + plancherMs - performance.now();
+  while (reste > 0) {
+    await new Promise((resoudre) => setTimeout(resoudre, Math.ceil(reste)));
+    reste = debut + plancherMs - performance.now();
+  }
 }

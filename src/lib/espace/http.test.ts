@@ -108,6 +108,6 @@ describe("attendreAuMoins", () => {
   it("attend jusqu'au plancher", async () => {
     const debut = performance.now();
     await attendreAuMoins(debut, 50);
-    expect(performance.now() - debut).toBeGreaterThanOrEqual(49);
+    expect(performance.now() - debut).toBeGreaterThanOrEqual(50);
   });
 });
