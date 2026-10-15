@@ -3,6 +3,7 @@ import type { Locale } from "@/lib/i18n";
 export const textes = {
   fr: {
     titrePage: "Dev",
+    titre: "Projets open source",
     description:
       "Projets open source de Nicolas : présentation, stack, rôle et façon d'y contribuer.",
     intro:
@@ -15,14 +16,18 @@ export const textes = {
     stack: "Technologies",
     autres: "Autres dépôts publics",
     aucunAutre: "Pas d'autre dépôt public pour le moment.",
-    actifLe: "Dernière activité le",
+    misAJour: "mis à jour le",
+    colDepot: "Dépôt",
+    colLangage: "Langage",
+    colLicence: "Licence",
+    colMaj: "Mis à jour",
     etoiles: (n: number) => (n > 1 ? `${n} étoiles` : `${n} étoile`),
     miseAJour: "Liste issue de GitHub, mise à jour le",
     surGithub: "Tous mes dépôts sur GitHub",
-    accueil: "Accueil",
   },
   en: {
     titrePage: "Dev",
+    titre: "Open source projects",
     description:
       "Nicolas's open source projects: what they do, the stack, his role and how to contribute.",
     intro:
@@ -35,11 +40,14 @@ export const textes = {
     stack: "Technologies",
     autres: "Other public repositories",
     aucunAutre: "No other public repository yet.",
-    actifLe: "Last active on",
+    misAJour: "updated",
+    colDepot: "Repository",
+    colLangage: "Language",
+    colLicence: "License",
+    colMaj: "Updated",
     etoiles: (n: number) => (n > 1 ? `${n} stars` : `${n} star`),
     miseAJour: "List taken from GitHub, updated on",
     surGithub: "All my repositories on GitHub",
-    accueil: "Home",
   },
 } satisfies Record<Locale, Record<string, string | ((n: number) => string)>>;
 

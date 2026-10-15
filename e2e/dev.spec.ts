@@ -19,8 +19,8 @@ for (const lang of ["fr", "en"]) {
     expect(res?.status()).toBe(200);
     expect(res?.headers()["content-security-policy"]).toMatch(/connect-src 'self'/);
 
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Dev");
-    const fiches = page.locator("article.fiche");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    const fiches = page.locator("article.project");
     await expect(fiches.first()).toContainText("Zeus + Poseidon");
     await expect(page.getByRole("img").first()).toBeVisible();
     await expect(page.locator("main")).not.toContainText("AS2C");

@@ -37,8 +37,8 @@
           "libelle": "scénarios de non-régression"
         },
         {
-          "valeur": "1.1",
-          "libelle": "version stable publiée"
+          "valeur": "8",
+          "libelle": "versions publiées"
         }
       ],
       "image": {

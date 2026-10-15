@@ -37,8 +37,8 @@
           "libelle": "regression scenarios"
         },
         {
-          "valeur": "1.1",
-          "libelle": "stable release"
+          "valeur": "8",
+          "libelle": "releases"
         }
       ],
       "image": {
