@@ -13,15 +13,15 @@ Je suis chef de projet cyber. Ce dépôt est public par choix : la façon dont u
 
 ## Contenu du site
 
-| Rubrique | Contenu | Accès |
-| --- | --- | --- |
-| Accueil | Positionnement, faits marquants, accès rapides | Public |
-| CV | Parcours, compétences, certifications, formations | Public |
-| Dev | Projets mis en avant avec fiche détaillée, puis l'ensemble des dépôts publics | Public |
-| Portfolio | Études de cas de projets pilotés, projets personnels, réalisations visuelles | Public |
-| Contact | Formulaire auto-hébergé, LinkedIn | Public |
-| Articles | Retours d'expérience et notes techniques | À venir |
-| Espace privé | Version du site adaptée au destinataire, documents complémentaires | Sur lien personnel |
+| Rubrique     | Contenu                                                                       | Accès              |
+| ------------ | ----------------------------------------------------------------------------- | ------------------ |
+| Accueil      | Positionnement, faits marquants, accès rapides                                | Public             |
+| CV           | Parcours, compétences, certifications, formations                             | Public             |
+| Dev          | Projets mis en avant avec fiche détaillée, puis l'ensemble des dépôts publics | Public             |
+| Portfolio    | Études de cas de projets pilotés, projets personnels, réalisations visuelles  | Public             |
+| Contact      | Formulaire auto-hébergé, LinkedIn                                             | Public             |
+| Articles     | Retours d'expérience et notes techniques                                      | À venir            |
+| Espace privé | Version du site adaptée au destinataire, documents complémentaires            | Sur lien personnel |
 
 Le site est disponible en français et en anglais.
 
@@ -47,23 +47,23 @@ Visiteur ─► Cloudflare (DNS, pare-feu, cache)
 GitHub ─► GitHub Actions (build, tests, analyses) ─► déploiement
 ```
 
-| Brique | Choix |
-| --- | --- |
-| Application | Next.js, TypeScript, contenus MDX bilingues |
-| Exécution | Docker Compose, images amd64 et arm64 |
-| Frontal | Caddy, derrière Cloudflare |
-| Données | SQLite pour l'espace privé, PostgreSQL pour Umami |
-| Livraison | GitHub Actions, déploiement continu après revue |
+| Brique      | Choix                                             |
+| ----------- | ------------------------------------------------- |
+| Application | Next.js, TypeScript, contenus MDX bilingues       |
+| Exécution   | Docker Compose, images amd64 et arm64             |
+| Frontal     | Caddy, derrière Cloudflare                        |
+| Données     | SQLite pour l'espace privé, PostgreSQL pour Umami |
+| Livraison   | GitHub Actions, déploiement continu après revue   |
 
 ## Feuille de route
 
 Le projet avance par jalons, chacun avec un critère de sortie vérifiable. Détail dans [ROADMAP.md](ROADMAP.md).
 
-| Jalon | Objectif | Échéance | État |
-| --- | --- | --- | --- |
-| 0. Cadrage | Besoins, architecture, choix techniques | 15 oct. 2026 | Terminé |
-| 1. Socle sécurisé | Serveur durci, DNS, chaîne de livraison, page d'attente | 21 oct. 2026 | En cours |
-| 2. Vitrine publique | Accueil, CV, Dev, Portfolio, Contact | 28 oct. 2026 | À venir |
-| 3. Espace privé | Liens personnels, profils, suivi des consultations | 3 nov. 2026 | À venir |
-| 4. Lancement | Version anglaise, statistiques, audit de sécurité | 5 nov. 2026 | À venir |
-| 5. Autonomie | Articles, migration vers un serveur auto-hébergé | 2027 | À venir |
+| Jalon               | Objectif                                                | Échéance     | État     |
+| ------------------- | ------------------------------------------------------- | ------------ | -------- |
+| 0. Cadrage          | Besoins, architecture, choix techniques                 | 15 oct. 2026 | Terminé  |
+| 1. Socle sécurisé   | Serveur durci, DNS, chaîne de livraison, page d'attente | 21 oct. 2026 | En cours |
+| 2. Vitrine publique | Accueil, CV, Dev, Portfolio, Contact                    | 28 oct. 2026 | À venir  |
+| 3. Espace privé     | Liens personnels, profils, suivi des consultations      | 3 nov. 2026  | À venir  |
+| 4. Lancement        | Version anglaise, statistiques, audit de sécurité       | 5 nov. 2026  | À venir  |
+| 5. Autonomie        | Articles, migration vers un serveur auto-hébergé        | 2027         | À venir  |

@@ -1,0 +1,37 @@
+{
+	admin off
+	servers {
+		import /etc/caddy/cloudflare-ips.caddy
+		client_ip_headers CF-Connecting-IP
+	}
+}
+
+(securite) {
+	header {
+		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+		Cross-Origin-Opener-Policy "same-origin"
+		Cross-Origin-Resource-Policy "same-origin"
+		-Server
+	}
+}
+
+www.nclsmgr.com {
+	tls /certs/origin.pem /certs/origin-key.pem
+	import securite
+	redir https://nclsmgr.com{uri} permanent
+}
+
+nclsmgr.com {
+	tls /certs/origin.pem /certs/origin-key.pem
+	import securite
+	encode zstd gzip
+
+	@static path /_next/static/*
+	header @static Cache-Control "public, max-age=31536000, immutable"
+
+	reverse_proxy web:3000
+}
