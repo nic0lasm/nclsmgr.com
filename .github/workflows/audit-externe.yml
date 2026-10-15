@@ -1,0 +1,66 @@
+name: Audit externe
+
+# Vue de l'extérieur, telle qu'un visiteur ou un scanner la voit : DNS derrière Cloudflare,
+# note Mozilla Observatory et note SSL Labs. Un écart fait échouer le workflow, ce qui envoie un
+# courriel au propriétaire. Lancé à la main après un changement, et chaque mois.
+on:
+  schedule:
+    - cron: "41 5 1 * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  audit:
+    name: Audit externe
+    if: github.event_name == 'workflow_dispatch' || vars.SURVEILLANCE_ACTIVE == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Adresses publiques dans les plages Cloudflare
+        run: |
+          curl -fsS https://www.cloudflare.com/ips-v4 > plages
+          echo >> plages
+          curl -fsS https://www.cloudflare.com/ips-v6 >> plages
+          for nom in nclsmgr.com www.nclsmgr.com; do
+            for type in A AAAA; do
+              dig +short "$type" "$nom" | sed "s/^/$nom $type /"
+            done
+          done > adresses
+          cat adresses
+          python3 - <<'PY'
+          import ipaddress
+          plages = [ipaddress.ip_network(l.strip()) for l in open("plages") if l.strip()]
+          # dig +short donne aussi les CNAME intermédiaires, qui finissent par un point.
+          lignes = [l.split() for l in open("adresses") if l.strip() and not l.strip().endswith(".")]
+          hors = [l for l in lignes if not any(ipaddress.ip_address(l[2]) in p for p in plages)]
+          if not lignes or hors:
+              raise SystemExit(f"Adresse hors Cloudflare ou absente : {hors or 'aucune réponse'}")
+          print("Toutes les adresses publiques sont des adresses Cloudflare.")
+          PY
+
+      - name: Mozilla Observatory
+        run: |
+          curl -fsS -X POST "https://observatory-api.mdn.mozilla.net/api/v2/scan?host=nclsmgr.com" > observatory.json
+          python3 - <<'PY'
+          import json
+          r = json.load(open("observatory.json"))
+          print(f"Note {r.get('grade')} ({r.get('score')}/100), tests échoués : {r.get('tests_failed')}")
+          print(r.get("details_url", ""))
+          if r.get("grade") != "A+":
+              raise SystemExit("Note Observatory inférieure à A+.")
+          PY
+
+      - name: SSL Labs
+        run: |
+          api=https://api.ssllabs.com/api/v3/analyze
+          curl -fsS "$api?host=nclsmgr.com&startNew=on&all=done" > /dev/null
+          for _ in $(seq 1 60); do
+            sleep 15
+            curl -fsS "$api?host=nclsmgr.com&all=done" > ssllabs.json
+            etat=$(jq -r .status ssllabs.json)
+            [ "$etat" = READY ] || [ "$etat" = ERROR ] && break
+          done
+          jq -r '"État : \(.status)", (.endpoints[]? | "\(.ipAddress) : \(.grade // .statusMessage)")' ssllabs.json
+          jq -e '.status == "READY" and (.endpoints | length > 0) and all(.endpoints[]; .grade == "A+")' ssllabs.json > /dev/null \
+            || { echo "Note SSL Labs inférieure à A+ ou analyse incomplète."; exit 1; }
