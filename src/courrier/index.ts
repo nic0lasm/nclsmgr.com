@@ -3,13 +3,13 @@
 // Construit par « pnpm build:courrier », lancé par « node courrier.cjs ».
 import { writeFileSync } from "node:fs";
 import { setTimeout as pause } from "node:timers/promises";
-import { createTransport } from "nodemailer";
 import { ouvrirBase, type Base } from "@/lib/espace/base";
 import { JOUR } from "@/lib/espace/liens";
 import { VERSION_SCHEMA, versionSchema } from "@/lib/espace/migrations";
 import { purger, viderWal } from "@/lib/espace/purge";
 import { traiterFile } from "./boucle";
 import { lireConfiguration } from "./configuration";
+import { creerExpediteur } from "./smtp";
 
 const INTERVALLE = 30_000;
 const ATTENTE_SCHEMA_MAX = 5 * 60_000;
@@ -50,28 +50,7 @@ async function principal() {
   const db = ouvrirBase(chemin);
   await attendreSchema(db);
 
-  const transport = createTransport({
-    host: config.hote,
-    port: config.port,
-    secure: config.port === 465,
-    requireTLS: true,
-    auth: { user: config.utilisateur, pass: config.motDePasse },
-    tls: { minVersion: "TLSv1.2", servername: config.hote },
-    connectionTimeout: 15_000,
-    greetingTimeout: 15_000,
-    socketTimeout: 30_000,
-    disableFileAccess: true,
-    disableUrlAccess: true,
-  });
-  const envoyer = async (message: { sujet: string; texte: string; repondreA?: string }) => {
-    await transport.sendMail({
-      from: config.expediteur,
-      to: config.destinataire,
-      replyTo: message.repondreA,
-      subject: message.sujet,
-      text: message.texte,
-    });
-  };
+  const expediteur = creerExpediteur(config);
 
   if (!arret) console.log("Service courrier démarré.");
   let dernierePurge = 0;
@@ -87,7 +66,7 @@ async function principal() {
         // Une lecture du service web empêchait de vider le journal : on réessaie à chaque cycle.
         walAVider = !viderWal(db);
       }
-      await traiterFile(db, envoyer, Date.now, () => !arret);
+      await traiterFile(db, expediteur.envoyer, Date.now, () => !arret);
       // Lisible du seul utilisateur du service, même si /tmp n'était pas privé au conteneur.
       writeFileSync(TEMOIN, String(Date.now()), { mode: 0o600 });
     } catch (erreur) {
@@ -95,7 +74,7 @@ async function principal() {
     }
     await attendre(INTERVALLE);
   }
-  transport.close();
+  expediteur.fermer();
   db.close();
   console.log("Service courrier arrêté.");
 }
