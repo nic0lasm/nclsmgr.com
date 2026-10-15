@@ -17,6 +17,41 @@ services:
     security_opt: [no-new-privileges:true]
     networks: [interne]
 
+  # Seul service à sortir sur Internet, seul détenteur du secret SMTP. Activé par le déployeur
+  # lorsque /etc/nclsmgr/smtp.json existe (voir configurer-smtp.sh).
+  courrier:
+    image: ghcr.io/nic0lasm/nclsmgr.com:${IMAGE_TAG:-latest}
+    profiles: [courrier]
+    command: ["node", "courrier.cjs"]
+    # Node n'est pas PID 1 : les signaux d'arrêt lui parviennent normalement.
+    init: true
+    # Un envoi en cours peut durer jusqu'à 60 s : on le laisse finir pour ne pas l'envoyer deux fois.
+    stop_grace_period: 75s
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      ESPACE_BASE: /data/base/espace.db
+    volumes:
+      - base:/data/base
+      - /etc/nclsmgr/smtp.json:/run/secrets/smtp:ro
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "process.exit(Date.now()-require('fs').statSync('/tmp/courrier-vivant').mtimeMs<120000?0:1)"
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      # Couvre l'attente de la migration de la base par le service web.
+      start_period: 5m
+      start_interval: 5s
+    networks: [sortie]
+
   caddy:
     image: caddy:2-alpine@sha256:d8542f48d34a9cf4e4c11a478865229840e87e4c96ea3f439101f31a5d35f75f
     restart: unless-stopped
@@ -39,9 +74,10 @@ networks:
   interne:
     internal: true
   public: {}
+  sortie: {}
 
 volumes:
-  # Base de l'espace privé, partagée plus tard avec le service courrier.
+  # Base de l'espace privé, partagée avec le service courrier.
   base: {}
   # Documents réservés, lus par le seul service web.
   prive: {}
