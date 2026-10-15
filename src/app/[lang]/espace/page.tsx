@@ -1,11 +1,20 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { exigerSession } from "@/lib/espace/acces";
+import { documentsAffiches, lireCatalogue } from "@/lib/espace/documents";
 import { lirePrive, vide } from "@/lib/espace/prive";
 import { blocsParProfil, type Bloc } from "@/lib/espace/profils";
 import { isLocale } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/route";
-import { BlocCoordonnees, Contributions, Etudes, Message, Parcours, References } from "./blocs";
+import {
+  BlocCoordonnees,
+  Contributions,
+  Documents,
+  Etudes,
+  Message,
+  Parcours,
+  References,
+} from "./blocs";
 import { Rechargement } from "./Rechargement";
 import { textes } from "./textes";
 
@@ -28,6 +37,9 @@ export default async function PageEspace({ params }: PageProps<"/[lang]/espace">
   const blocs = blocsParProfil[lien.profil] ?? [];
   // prive.json n'est lu que pour les profils qui en affichent une partie.
   const prive = blocs.some((b) => BLOCS_PRIVES.includes(b)) ? await lirePrive(lang) : vide();
+  // Le catalogue n'est lu que si le lien ouvre au moins un document.
+  const documents =
+    lien.documents.length > 0 ? documentsAffiches(await lireCatalogue(), lien.documents, lang) : [];
 
   function rendre(bloc: Bloc): ReactNode {
     switch (bloc) {
@@ -59,6 +71,7 @@ export default async function PageEspace({ params }: PageProps<"/[lang]/espace">
           </form>
         </div>
       </section>
+      <Documents documents={documents} lang={lang} t={t} />
       {blocs.map(rendre)}
     </main>
   );

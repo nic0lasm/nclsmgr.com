@@ -23,6 +23,27 @@ export const EN_TETES_ESPACE = {
   "Referrer-Policy": "same-origin",
 } as const;
 
+/**
+ * /fr/espace/documents/<id> : en plus de ceux de l'espace, pour le PDF comme pour le 404.
+ * Politique fermée : aucun chargement, aucun cadre parent, document isolé dans une origine
+ * opaque (sandbox). Les visionneuses PDF de Chromium, Firefox et Safari (18.4 et suivants)
+ * affichent le fichier malgré sandbox ; allow-downloads laisse fonctionner leur bouton
+ * d'enregistrement, sans rien permettre d'autre (aucun script).
+ */
+export const EN_TETES_DOCUMENT = {
+  ...EN_TETES_ESPACE,
+  "Content-Security-Policy":
+    "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; sandbox allow-downloads",
+  "X-Content-Type-Options": "nosniff",
+  "Accept-Ranges": "none",
+} as const;
+
+/**
+ * Chemins des documents réservés. Le proxy y remplace sa politique de sécurité (nonce, scripts)
+ * par celle des documents : sans cela, la sienne écraserait celle que pose la route.
+ */
+export const CHEMIN_DOCUMENTS = /^\/(?:fr|en)\/espace\/documents(?:\/|$)/;
+
 type EnTetes = Record<string, string>;
 
 function liste(enTetes: EnTetes) {

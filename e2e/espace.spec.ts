@@ -11,6 +11,7 @@ import Database from "better-sqlite3";
 import portfolioFr from "../src/content/fr/portfolio.json";
 import parcoursFr from "../src/content/fr/parcours.json";
 import projetsFr from "../src/content/projets/fr.json";
+import { pdfFictif } from "./documents-fictifs";
 import { PRIVE_FICTIF } from "./prive-fictif";
 
 // Les liens sont insérés directement dans la base du serveur de test : src/lib/espace dépend
@@ -25,6 +26,7 @@ type OptionsLien = {
   langue?: "fr" | "en";
   organisation?: string;
   message?: string;
+  documents?: string[];
 };
 
 function creerLien(
@@ -43,7 +45,7 @@ function creerLien(
     db.prepare(
       `INSERT INTO liens (id, jeton_sha256, profil, langue, destinataire, organisation, message,
          documents, cree_le, expire_le, revoque_le)
-       VALUES (?, ?, ?, ?, ?, ?, ?, '[]', ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).run(
       id,
       createHash("sha256").update(jeton).digest(),
@@ -52,6 +54,7 @@ function creerLien(
       destinataire,
       options.organisation ?? null,
       options.message ?? null,
+      JSON.stringify(options.documents ?? []),
       etat === "expire" ? maintenant - 40 * JOUR : maintenant,
       etat === "expire" ? maintenant - 10 * JOUR : maintenant + 30 * JOUR,
       etat === "revoque" ? maintenant : null,
@@ -69,6 +72,19 @@ function revoquer(jeton: string) {
   try {
     db.prepare("UPDATE liens SET revoque_le = ? WHERE jeton_sha256 = ?").run(
       Date.now(),
+      createHash("sha256").update(jeton).digest(),
+    );
+  } finally {
+    db.close();
+  }
+}
+
+// Fait expirer le lien après l'ouverture de la session.
+function expirer(jeton: string) {
+  const db = new Database(process.env.ESPACE_BASE_E2E ?? "", { timeout: 5000 });
+  try {
+    db.prepare("UPDATE liens SET expire_le = ? WHERE jeton_sha256 = ?").run(
+      Date.now() - 1,
       createHash("sha256").update(jeton).digest(),
     );
   } finally {
@@ -806,6 +822,49 @@ test.describe("contenu par profil", () => {
     await sansViolation(page);
   });
 
+  test("bloc Documents : documents du lien présents au catalogue, dans la langue de la page", async ({
+    page,
+  }) => {
+    await entrer(
+      page,
+      creerLien("actif", "Claire Martin", { documents: ["inconnu", "cv", "annexe"] }),
+    );
+    expect(await sections(page)).toEqual(["Documents", "Parcours", "Références", "Coordonnées"]);
+    const liens = page.getByRole("region", { name: "Documents" }).getByRole("link");
+    await expect(liens).toHaveText(["CV complet (PDF)", "Annexe fictive (PDF)"]);
+    await expect(liens.nth(0)).toHaveAttribute("href", "/fr/espace/documents/cv");
+    await expect(liens.nth(1)).toHaveAttribute("href", "/fr/espace/documents/annexe");
+    await sansViolation(page);
+
+    // Le lien mène bien au PDF avec la session du navigateur.
+    const pdf = await page.request.get("/fr/espace/documents/cv");
+    expect(pdf.status()).toBe(200);
+    expect(pdf.headers()["content-type"]).toBe("application/pdf");
+
+    // En anglais : titre anglais du CV, titre français de l'annexe, marqué comme tel.
+    await page.goto("/en/espace");
+    await expect(liens).toHaveText(["Full résumé (PDF)", "Annexe fictive (PDF)"]);
+    await expect(liens.nth(0)).toHaveAttribute("href", "/en/espace/documents/cv");
+    await expect(liens.nth(1).locator('span[lang="fr"]')).toHaveText("Annexe fictive");
+    await sansViolation(page);
+  });
+
+  test("bloc Documents masqué sans document du lien au catalogue", async ({ page }) => {
+    const cas: { documents: string[]; origine: string }[] = [
+      { documents: [], origine: "" },
+      { documents: ["inconnu"], origine: "" },
+      // Second serveur : pas de catalogue du tout.
+      { documents: ["cv"], origine: SANS_PRIVE },
+    ];
+    for (const { documents, origine } of cas) {
+      await page.context().clearCookies();
+      await entrer(page, creerLien("actif", "Claire Martin", { documents }), "fr", origine);
+      await expect(page.getByText("Bonjour Claire Martin,")).toBeVisible();
+      expect(await sections(page), documents.join(",")).not.toContain("Documents");
+      expect(await page.content()).not.toContain("/espace/documents/");
+    }
+  });
+
   test("sans prive.json, les blocs privés sont masqués et le reste s'affiche", async ({ page }) => {
     const attendu: Record<Profil, string[]> = {
       recruteur: ["Parcours"],
@@ -820,5 +879,106 @@ test.describe("contenu par profil", () => {
       expect(await sections(page), profil).toEqual(titres);
       expect(await page.content()).not.toContain(coordonnees.email);
     }
+  });
+});
+
+test.describe("documents réservés", () => {
+  const CSP =
+    "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; sandbox allow-downloads";
+
+  async function session(request: APIRequestContext, documents: string[]) {
+    const jeton = creerLien("actif", "Claire Martin", { documents });
+    return { jeton, enTetes: { Cookie: `__Host-espace=${await ouvrirSession(request, jeton)}` } };
+  }
+
+  test("un lien recruteur reçoit le PDF de la langue demandée, avec ses en-têtes", async ({
+    request,
+  }) => {
+    const { enTetes } = await session(request, ["cv"]);
+    for (const [langue, texte, nom] of [
+      ["fr", "CV-fictif-FR", "Exemple-CV.pdf"],
+      ["en", "CV-fictif-EN", "Example-Resume.pdf"],
+    ]) {
+      const attendu = pdfFictif(texte);
+      const reponse = await request.get(`/${langue}/espace/documents/cv`, { headers: enTetes });
+      expect(reponse.status()).toBe(200);
+      expect((await reponse.body()).equals(attendu)).toBe(true);
+      const h = reponse.headers();
+      expect(h).toMatchObject({
+        "content-type": "application/pdf",
+        "content-length": String(attendu.length),
+        "content-disposition": `inline; filename="${nom}"`,
+        "cache-control": "private, no-store",
+        "x-content-type-options": "nosniff",
+        "x-robots-tag": "noindex, nofollow, noarchive, nosnippet",
+        "referrer-policy": "same-origin",
+        "accept-ranges": "none",
+        "content-security-policy": CSP,
+      });
+      expect(h["set-cookie"]).toBeUndefined();
+      expect(h["etag"]).toBeUndefined();
+      expect(h["last-modified"]).toBeUndefined();
+    }
+
+    // Les requêtes partielles sont ignorées : le fichier part en entier.
+    const partielle = await request.get("/fr/espace/documents/cv", {
+      headers: { ...enTetes, Range: "bytes=0-3" },
+    });
+    expect(partielle.status()).toBe(200);
+    expect((await partielle.body()).equals(pdfFictif("CV-fictif-FR"))).toBe(true);
+  });
+
+  test("tous les refus reçoivent exactement la même réponse 404", async ({ request }) => {
+    const autres = await session(request, [
+      "manquant",
+      "symbolique",
+      "dossier",
+      "trop-grand",
+      "pas-pdf",
+      "inconnu",
+    ]);
+    const revoque = await session(request, ["cv"]);
+    revoquer(revoque.jeton);
+    const expire = await session(request, ["cv"]);
+    expirer(expire.jeton);
+    const cas: { nom: string; id: string; enTetes: Record<string, string> }[] = [
+      { nom: "sans session", id: "cv", enTetes: {} },
+      {
+        nom: "cookie inconnu",
+        id: "cv",
+        enTetes: { Cookie: `__Host-espace=${randomBytes(32).toString("base64url")}` },
+      },
+      { nom: "lien révoqué", id: "cv", enTetes: revoque.enTetes },
+      { nom: "lien expiré", id: "cv", enTetes: expire.enTetes },
+      { nom: "document hors du lien", id: "cv", enTetes: autres.enTetes },
+      { nom: "absent du catalogue", id: "inconnu", enTetes: autres.enTetes },
+      { nom: "fichier manquant", id: "manquant", enTetes: autres.enTetes },
+      { nom: "lien symbolique", id: "symbolique", enTetes: autres.enTetes },
+      { nom: "dossier", id: "dossier", enTetes: autres.enTetes },
+      { nom: "fichier trop grand", id: "trop-grand", enTetes: autres.enTetes },
+      { nom: "pas un PDF", id: "pas-pdf", enTetes: autres.enTetes },
+      { nom: "identifiant avec extension", id: "cv.pdf", enTetes: revoque.enTetes },
+    ];
+    const reponses: { statut: number; corps: string; enTetes: Record<string, string> }[] = [];
+    for (const { id, enTetes } of cas) {
+      const reponse = await request.get(`/fr/espace/documents/${id}`, { headers: enTetes });
+      reponses.push({
+        statut: reponse.status(),
+        corps: await reponse.text(),
+        enTetes: signature(reponse),
+      });
+    }
+    expect(reponses[0].statut).toBe(404);
+    expect(reponses[0].corps).toBe("");
+    expect(reponses[0].enTetes).toMatchObject({
+      "cache-control": "private, no-store",
+      "x-content-type-options": "nosniff",
+      "content-security-policy": CSP,
+    });
+    expect(reponses[0].enTetes["content-type"]).toBeUndefined();
+    reponses.forEach((reponse, i) => expect(reponse, cas[i].nom).toEqual(reponses[0]));
+
+    const tete = await request.head("/fr/espace/documents/cv");
+    expect(tete.status()).toBe(404);
   });
 });

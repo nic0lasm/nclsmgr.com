@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { getContent } from "@/lib/content";
 import { formatPeriod } from "@/lib/dates";
+import type { DocumentAffiche } from "@/lib/espace/documents";
 import type { Lien } from "@/lib/espace/liens";
 import { typeContact, type Coordonnees, type Reference } from "@/lib/espace/prive";
 import { paragraphes, projetsPourContributeurs, type DocumentProjet } from "@/lib/espace/profils";
@@ -54,6 +55,33 @@ export function Message({ lien, lang, t }: Commun & { lien: Lien }) {
         ))}
       </div>
     </div>
+  );
+}
+
+/**
+ * Documents réservés du lien, présents au catalogue. Masqué s'il n'y en a aucun. Un lien <a>
+ * simple et non next/link : le PDF n'est jamais préchargé, il n'est lu qu'au clic.
+ */
+export function Documents({ documents, lang, t }: Commun & { documents: DocumentAffiche[] }) {
+  if (documents.length === 0) return null;
+  return (
+    <section className="section" aria-labelledby="documents">
+      <h2 className="section__label" id="documents">
+        {t.documents}
+      </h2>
+      <div className="section__body">
+        <ul>
+          {documents.map((d) => (
+            <li key={d.id}>
+              <a href={`/${lang}/espace/documents/${d.id}`}>
+                <span lang={d.langue === lang ? undefined : d.langue}>{d.titre}</span>
+                {` (${t.formatPdf})`}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
   );
 }
 
