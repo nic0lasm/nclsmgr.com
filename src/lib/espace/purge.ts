@@ -1,6 +1,5 @@
 import "server-only";
 import type { Base } from "./base";
-import { MAX_ESSAIS } from "./courriels";
 import { JOUR } from "./liens";
 import { INACTIVITE_MAX } from "./sessions";
 
@@ -14,7 +13,15 @@ export type BilanPurge = {
   liens: number;
   consultations: number;
   courriels: number;
+  /** Faux si un lecteur a empêché de vider le journal WAL : à refaire avec viderWal. */
+  walVide: boolean;
 };
+
+/** Vide le journal WAL ; faux si une lecture en cours l'en empêche. */
+export function viderWal(db: Base): boolean {
+  const [resultat] = db.pragma("wal_checkpoint(TRUNCATE)") as { busy: number }[];
+  return resultat?.busy === 0;
+}
 
 /**
  * Supprime ce qui a dépassé sa durée de conservation, puis vide le journal WAL pour que les
@@ -22,7 +29,7 @@ export type BilanPurge = {
  */
 export function purger(db: Base, maintenant: number): BilanPurge {
   const bilan = db
-    .transaction((): BilanPurge => ({
+    .transaction(() => ({
       sessions: db
         .prepare("DELETE FROM sessions WHERE expire_le <= ? OR vu_le <= ?")
         .run(maintenant, maintenant - INACTIVITE_MAX).changes,
@@ -33,16 +40,12 @@ export function purger(db: Base, maintenant: number): BilanPurge {
       consultations: db
         .prepare("DELETE FROM consultations WHERE le <= ?")
         .run(maintenant - CONSERVATION_JOURNAL).changes,
+      // Un courriel envoyé part 7 jours après son envoi ; un courriel qui n'a pas pu partir,
+      // 7 jours après sa création.
       courriels: db
-        .prepare(
-          `DELETE FROM courriels
-             WHERE (envoye_le IS NOT NULL AND envoye_le <= ?)
-                OR (envoye_le IS NULL AND essais >= ? AND cree_le <= ?)`,
-        )
-        .run(maintenant - CONSERVATION_COURRIELS, MAX_ESSAIS, maintenant - CONSERVATION_COURRIELS)
-        .changes,
+        .prepare("DELETE FROM courriels WHERE coalesce(envoye_le, cree_le) <= ?")
+        .run(maintenant - CONSERVATION_COURRIELS).changes,
     }))
     .immediate();
-  db.pragma("wal_checkpoint(TRUNCATE)");
-  return bilan;
+  return { ...bilan, walVide: viderWal(db) };
 }

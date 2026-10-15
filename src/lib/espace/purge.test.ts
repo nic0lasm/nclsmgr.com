@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { ouvrirBase, type Base } from "./base";
-import { marquerEchec, marquerEnvoye, mettreEnFile } from "./courriels";
+import { abandonner, marquerEnvoye, mettreEnFile } from "./courriels";
 import { creerLien, JOUR, revoquerLien } from "./liens";
 import { migrer } from "./migrations";
 import { purger } from "./purge";
@@ -61,16 +61,17 @@ describe("purger", () => {
     expect(lireSession(db, recente.valeur, T0 + INACTIVITE_MAX + 1)).not.toBeNull();
   });
 
-  it("supprime les courriels envoyés ou abandonnés depuis plus de 7 jours", () => {
+  it("supprime les courriels envoyés, abandonnés ou restés en attente depuis 7 jours", () => {
     const donnees = { refus: 300, depuis: T0, jusqua: T0 };
-    const envoye = mettreEnFile(db, "alerte", donnees, T0);
+    const envoye = mettreEnFile(db, "alerte", donnees, T0 - JOUR);
     marquerEnvoye(db, envoye, T0);
     const abandonne = mettreEnFile(db, "alerte", donnees, T0);
-    marquerEchec(db, abandonne, T0, true);
+    abandonner(db, abandonne, T0);
     mettreEnFile(db, "alerte", donnees, T0);
+    mettreEnFile(db, "alerte", donnees, T0 + JOUR);
 
     expect(purger(db, T0 + 7 * JOUR - 1).courriels).toBe(0);
-    expect(purger(db, T0 + 7 * JOUR).courriels).toBe(2);
+    expect(purger(db, T0 + 7 * JOUR)).toMatchObject({ courriels: 3, walVide: true });
     expect(compter("courriels")).toBe(1);
   });
 });

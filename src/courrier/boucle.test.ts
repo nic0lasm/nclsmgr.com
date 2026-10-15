@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ouvrirBase, type Base } from "@/lib/espace/base";
-import { MAX_ESSAIS, mettreEnFile, type MessageCourriel } from "@/lib/espace/courriels";
+import { mettreEnFile, reserver, type MessageCourriel } from "@/lib/espace/courriels";
 import { migrer } from "@/lib/espace/migrations";
 import { traiterFile } from "./boucle";
 
@@ -10,7 +10,7 @@ const alerte = (refus: number) => ({ refus, depuis: T0, jusqua: T0 });
 let db: Base;
 
 function etat() {
-  return db.prepare("SELECT id, envoye_le, essais FROM courriels ORDER BY id").all();
+  return db.prepare("SELECT id, envoye_le, essais, abandonne_le FROM courriels ORDER BY id").all();
 }
 
 beforeEach(() => {
@@ -37,8 +37,8 @@ describe("traiterFile", () => {
     expect(bilan).toEqual({ envoyes: 2, echecs: 0 });
     expect(envoyes.map((m) => m.texte.split(" ")[0])).toEqual(["1", "2"]);
     expect(etat()).toEqual([
-      { id: 1, envoye_le: T0, essais: 0 },
-      { id: 2, envoye_le: T0, essais: 0 },
+      { id: 1, envoye_le: T0, essais: 0, abandonne_le: null },
+      { id: 2, envoye_le: T0, essais: 0, abandonne_le: null },
     ]);
   });
 
@@ -49,8 +49,8 @@ describe("traiterFile", () => {
     expect(await traiterFile(db, envoyer, () => T0)).toEqual({ envoyes: 0, echecs: 1 });
     expect(envoyer).toHaveBeenCalledTimes(1);
     expect(etat()).toEqual([
-      { id: 1, envoye_le: null, essais: 1 },
-      { id: 2, envoye_le: null, essais: 0 },
+      { id: 1, envoye_le: null, essais: 1, abandonne_le: null },
+      { id: 2, envoye_le: null, essais: 0, abandonne_le: null },
     ]);
     expect(console.error).toHaveBeenCalledWith(expect.stringContaining("EAUTH"));
   });
@@ -63,8 +63,38 @@ describe("traiterFile", () => {
     const envoyer = vi.fn().mockResolvedValue(undefined);
     expect(await traiterFile(db, envoyer, () => T0)).toEqual({ envoyes: 1, echecs: 1 });
     expect(etat()).toEqual([
-      { id: 1, envoye_le: null, essais: MAX_ESSAIS },
-      { id: 2, envoye_le: T0, essais: 0 },
+      { id: 1, envoye_le: null, essais: 0, abandonne_le: T0 },
+      { id: 2, envoye_le: T0, essais: 0, abandonne_le: null },
     ]);
+  });
+
+  it("laisse un courriel réservé ailleurs entre-temps", async () => {
+    mettreEnFile(db, "alerte", alerte(1), T0);
+    const autre = mettreEnFile(db, "alerte", alerte(2), T0);
+    // Pendant le premier envoi, une autre instance prend le second courriel.
+    const envoyer = vi.fn(async () => void reserver(db, autre, T0));
+    expect(await traiterFile(db, envoyer, () => T0)).toEqual({ envoyes: 1, echecs: 0 });
+    expect(envoyer).toHaveBeenCalledTimes(1);
+  });
+
+  it("s'arrête entre deux envois quand le service doit s'éteindre", async () => {
+    mettreEnFile(db, "alerte", alerte(1), T0);
+    mettreEnFile(db, "alerte", alerte(2), T0);
+    let arret = false;
+    const envoyer = vi.fn(async () => {
+      arret = true;
+    });
+    expect(
+      await traiterFile(
+        db,
+        envoyer,
+        () => T0,
+        () => !arret,
+      ),
+    ).toEqual({
+      envoyes: 1,
+      echecs: 0,
+    });
+    expect(envoyer).toHaveBeenCalledTimes(1);
   });
 });
