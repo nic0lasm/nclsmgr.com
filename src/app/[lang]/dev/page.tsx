@@ -1,19 +1,12 @@
-import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { isLocale, type Locale } from "@/lib/i18n";
+import { pageMetadata } from "@/lib/metadata";
 import { donneesOngletDev, type FicheAffichee } from "@/lib/projets";
 import { formaterDate, textes } from "./textes";
 
-export async function generateMetadata({ params }: PageProps<"/[lang]/dev">): Promise<Metadata> {
-  const { lang } = await params;
-  if (!isLocale(lang)) return {};
-  const t = textes[lang];
-  return {
-    title: `${t.titrePage} · nclsmgr.com`,
-    description: t.description,
-    alternates: { languages: { fr: "/fr/dev", en: "/en/dev" } },
-  };
+export function generateMetadata({ params }: PageProps<"/[lang]/dev">) {
+  return pageMetadata(params, "dev", "/dev");
 }
 
 function FicheProjet({ fiche, lang }: { fiche: FicheAffichee; lang: Locale }) {

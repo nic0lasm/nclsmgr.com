@@ -4,8 +4,6 @@ export const textes = {
   fr: {
     titrePage: "Dev",
     titre: "Projets open source",
-    description:
-      "Projets open source de Nicolas : présentation, stack, rôle et façon d'y contribuer.",
     intro:
       "Une sélection de projets présentés en détail, puis la liste de mes autres dépôts publics sur GitHub.",
     selection: "Projets mis en avant",
@@ -28,8 +26,6 @@ export const textes = {
   en: {
     titrePage: "Dev",
     titre: "Open source projects",
-    description:
-      "Nicolas's open source projects: what they do, the stack, his role and how to contribute.",
     intro:
       "A few projects described in detail, then the list of my other public repositories on GitHub.",
     selection: "Featured projects",
