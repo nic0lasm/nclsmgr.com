@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { buildCsp, createNonce } from "@/lib/csp";
+import { CHEMIN_DOCUMENTS, EN_TETES_DOCUMENT } from "@/lib/espace/en-tetes";
 import { isLocale, negotiateLocale } from "@/lib/i18n";
 
 export function proxy(request: NextRequest) {
@@ -13,6 +14,18 @@ export function proxy(request: NextRequest) {
     const redirect = NextResponse.redirect(url, 307);
     redirect.headers.set("Vary", "Accept-Language");
     return redirect;
+  }
+
+  // Documents réservés (PDF) : politique fermée, sans nonce, aucun script n'y est attendu.
+  // Un x-nonce ou une politique envoyés par le client sont retirés de la requête : rien en aval
+  // ne doit les prendre pour ceux du proxy.
+  if (CHEMIN_DOCUMENTS.test(pathname)) {
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.delete("x-nonce");
+    requestHeaders.delete("Content-Security-Policy");
+    const response = NextResponse.next({ request: { headers: requestHeaders } });
+    response.headers.set("Content-Security-Policy", EN_TETES_DOCUMENT["Content-Security-Policy"]);
+    return response;
   }
 
   const nonce = createNonce();

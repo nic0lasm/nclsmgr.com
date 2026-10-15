@@ -5,12 +5,15 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { ouvrirBase, type Base } from "./base";
 import {
   creerLien,
+  DOCUMENTS_PAR_DEFAUT,
   DonneesInvalides,
   DUREE_MAX_JOURS,
   JOUR,
+  profils,
   revoquerLien,
   verifierJeton,
   type NouveauLien,
+  type Profil,
 } from "./liens";
 import { migrer } from "./migrations";
 import { lireSession, ouvrirSession } from "./sessions";
@@ -66,7 +69,30 @@ describe("creerLien", () => {
       message: null,
       documents: ["cv-complet"],
     });
-    expect(verifierJeton(db, creerLien(db, nouveau, T0).jeton, T0).lien?.documents).toEqual([]);
+    const client = creerLien(db, { ...nouveau, profil: "client" }, T0);
+    expect(verifierJeton(db, client.jeton, T0).lien?.documents).toEqual([]);
+  });
+
+  it("applique les documents par défaut du profil quand la liste n'est pas fournie", () => {
+    const attendus: Record<Profil, string[]> = {
+      recruteur: ["cv"],
+      developpeur: [],
+      client: [],
+      partenaire: [],
+    };
+    for (const profil of profils) {
+      const { jeton, lien } = creerLien(db, { ...nouveau, profil }, T0);
+      expect(lien.documents, profil).toEqual(attendus[profil]);
+      expect(verifierJeton(db, jeton, T0).lien?.documents, profil).toEqual(attendus[profil]);
+    }
+    // Une liste fournie, même vide, remplace celle du profil.
+    expect(creerLien(db, { ...nouveau, documents: [] }, T0).lien.documents).toEqual([]);
+    expect(creerLien(db, { ...nouveau, documents: ["autre"] }, T0).lien.documents).toEqual([
+      "autre",
+    ]);
+    // La liste par défaut n'est pas partagée entre les liens créés.
+    creerLien(db, nouveau, T0).lien.documents.push("x");
+    expect(DOCUMENTS_PAR_DEFAUT.recruteur).toEqual(["cv"]);
   });
 
   it.each<[string, Partial<NouveauLien>]>([
