@@ -12,7 +12,19 @@ export const DUREE_MAX_JOURS = 180;
 
 const LIMITES = { destinataire: 120, organisation: 120, message: 1000, note: 500 } as const;
 const MAX_DOCUMENTS = 20;
-const FORMAT_DOCUMENT = /^[a-z0-9][a-z0-9-]{0,39}$/;
+export const FORMAT_DOCUMENT = /^[a-z0-9][a-z0-9-]{0,39}$/;
+
+/**
+ * Documents ouverts par défaut, quand la création ne précise pas la liste. La commande liens
+ * tourne dans le conteneur courrier, qui ne voit pas le catalogue : la liste vit donc ici. Un
+ * identifiant absent du catalogue n'affiche rien, il n'empêche pas la création du lien.
+ */
+export const DOCUMENTS_PAR_DEFAUT: Record<Profil, readonly string[]> = {
+  recruteur: ["cv"],
+  developpeur: [],
+  client: [],
+  partenaire: [],
+};
 // Caractères de contrôle, de format (invisibles, sens d'écriture), demi-paires et séparateurs
 // de ligne refusés ; seul le message garde ses retours à la ligne.
 const INTERDIT = /[\p{Cc}\p{Cf}\p{Cs}\p{Zl}\p{Zp}]/u;
@@ -133,7 +145,7 @@ function verifier(entree: NouveauLien) {
       `La durée doit être un nombre entier de jours entre 1 et ${DUREE_MAX_JOURS}.`,
     );
   }
-  const documents: unknown = entree.documents ?? [];
+  const documents: unknown = entree.documents ?? [...DOCUMENTS_PAR_DEFAUT[entree.profil]];
   if (
     !Array.isArray(documents) ||
     documents.length > MAX_DOCUMENTS ||

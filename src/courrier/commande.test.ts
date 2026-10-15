@@ -56,6 +56,15 @@ describe("liens creer", () => {
     expect(verifierJeton(db, jeton, T0).valide).toBe(true);
   });
 
+  it("ouvre le CV par défaut à un recruteur, rien aux autres profils, sauf liste fournie", async () => {
+    const documents = async (options: Record<string, unknown>) =>
+      verifierJeton(db, (await creer(options)).jeton, T0).lien?.documents;
+    expect(await documents({})).toEqual(["cv"]);
+    expect(await documents({ profil: "developpeur" })).toEqual([]);
+    expect(await documents({ documents: [] })).toEqual([]);
+    expect(await documents({ profil: "client", documents: ["cv"] })).toEqual(["cv"]);
+  });
+
   const nombreDeLiens = () => db.prepare("SELECT count(*) AS n FROM liens").get();
 
   it("n'enregistre aucun lien si le courriel ne part pas", async () => {
