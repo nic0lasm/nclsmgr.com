@@ -268,6 +268,95 @@ test.describe("échange du jeton", () => {
   });
 });
 
+// Lecture de la base du serveur de test : journal et file des courriels d'un lien.
+function lireTraces(jeton: string) {
+  const db = new Database(process.env.ESPACE_BASE_E2E ?? "", { timeout: 5000, readonly: true });
+  try {
+    const { id, ouvert_le } = db
+      .prepare("SELECT id, ouvert_le FROM liens WHERE jeton_sha256 = ?")
+      .get(createHash("sha256").update(jeton).digest()) as { id: string; ouvert_le: number | null };
+    return {
+      ouvertLe: ouvert_le,
+      consultations: db
+        .prepare("SELECT type, pays, navigateur FROM consultations WHERE lien_id = ? ORDER BY id")
+        .all(id),
+      courriels: (
+        db
+          .prepare(
+            `SELECT modele, donnees FROM courriels
+             WHERE json_extract(donnees, '$.lienId') = ? ORDER BY id`,
+          )
+          .all(id) as { modele: string; donnees: string }[]
+      ).map(({ modele, donnees }) => ({ modele, ...JSON.parse(donnees) })),
+    };
+  } finally {
+    db.close();
+  }
+}
+
+test.describe("journal des consultations", () => {
+  const FIREFOX =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0";
+
+  test("une ouverture écrit une ligne de journal et une notification, à la première seulement", async ({
+    request,
+  }) => {
+    const nom = `Journal-${randomBytes(4).toString("hex")}`;
+    const jeton = creerLien("actif", nom);
+    const enTetes = { ...MEME_ORIGINE, "User-Agent": FIREFOX, "CF-IPCountry": "BE" };
+    for (let i = 0; i < 2; i++) {
+      const reponse = await request.post("/fr/p/acces", {
+        headers: { ...enTetes, "X-Client-IP": ipUnique() },
+        data: { jeton },
+      });
+      expect(reponse.status()).toBe(204);
+      // Les écritures partent après la réponse : on attend qu'elles soient faites.
+      await expect.poll(() => lireTraces(jeton).consultations.length).toBe(i + 1);
+    }
+    const traces = lireTraces(jeton);
+    expect(traces.ouvertLe).toEqual(expect.any(Number));
+    expect(traces.consultations).toEqual([
+      { type: "ouverture", pays: "BE", navigateur: "Firefox · Windows" },
+      { type: "ouverture", pays: "BE", navigateur: "Firefox · Windows" },
+    ]);
+    expect(traces.courriels).toEqual([
+      expect.objectContaining({
+        modele: "ouverture",
+        destinataire: nom,
+        pays: "BE",
+        navigateur: "Firefox · Windows",
+      }),
+    ]);
+  });
+
+  test("un essai sur un lien expiré est noté avec une notification, sans changer la réponse", async ({
+    request,
+  }) => {
+    const jeton = creerLien("expire");
+    const reponses: string[] = [];
+    for (let i = 0; i < 2; i++) {
+      const reponse = await request.post("/fr/p/acces", {
+        headers: { ...MEME_ORIGINE, "X-Client-IP": ipUnique(), "CF-IPCountry": "T1" },
+        data: { jeton },
+      });
+      expect(reponse.status()).toBe(403);
+      reponses.push((await reponse.body()).toString("hex"));
+      await expect.poll(() => lireTraces(jeton).consultations.length).toBe(i + 1);
+    }
+    expect(reponses[0]).toBe(Buffer.from('{"ok":false}').toString("hex"));
+    expect(reponses[1]).toBe(reponses[0]);
+    const traces = lireTraces(jeton);
+    expect(traces.ouvertLe).toBeNull();
+    expect(traces.consultations).toEqual([
+      expect.objectContaining({ type: "essai_refuse", pays: null }),
+      expect.objectContaining({ type: "essai_refuse", pays: null }),
+    ]);
+    expect(traces.courriels).toEqual([
+      expect.objectContaining({ modele: "essai_refuse", motif: "expire" }),
+    ]);
+  });
+});
+
 test.describe("espace", () => {
   test("sans session valide, /fr/espace répond 404 sans cache ni indexation", async ({
     request,
