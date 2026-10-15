@@ -78,10 +78,10 @@ jobs:
           HOST: ${{ secrets.DEPLOY_HOST }}
           TAG: ${{ needs.image.outputs.tag }}
         run: |
-          ssh_opts="-i $HOME/.ssh/deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
-          scp $ssh_opts deploy/compose.yaml deploy/Caddyfile deploy/cloudflare-ips.caddy "deploy@${HOST}:/opt/nclsmgr/"
-          ssh $ssh_opts "deploy@${HOST}" \
-            "cd /opt/nclsmgr && IMAGE_TAG=${TAG} docker compose pull --quiet && IMAGE_TAG=${TAG} docker compose up -d --remove-orphans && docker image prune -f"
+          # La clé n'autorise qu'une commande forcée sur le serveur (deploy/serveur/deployer.sh).
+          tar -C deploy -cf - compose.yaml Caddyfile \
+            | ssh -i "$HOME/.ssh/deploy" -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+              "deploy@${HOST}" "$TAG"
       - name: Nettoyer
         if: always()
         run: rm -f ~/.ssh/deploy
