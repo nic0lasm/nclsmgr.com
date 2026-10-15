@@ -19,6 +19,7 @@ TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
 tar -xf - -C "$TMP" --no-same-owner --no-same-permissions compose.yaml Caddyfile
+ancien_caddyfile=$(cat "$DOSSIER/Caddyfile" 2> /dev/null || true)
 for fichier in compose.yaml Caddyfile; do
   if [ ! -f "$TMP/$fichier" ] || [ -L "$TMP/$fichier" ]; then
     echo "Fichier manquant ou invalide : $fichier" >&2
@@ -29,11 +30,22 @@ done
 
 cd "$DOSSIER"
 printf 'IMAGE_TAG=%s\n' "$TAG" > .env
-# Le service courrier ne démarre qu'une fois son secret SMTP en place.
+# Les services facultatifs ne démarrent qu'une fois leurs secrets en place.
+profils=""
 if [ -f /etc/nclsmgr/smtp.json ]; then
-  echo "COMPOSE_PROFILES=courrier" >> .env
+  profils="courrier"
+fi
+if [ -f /etc/nclsmgr/umami.env ]; then
+  profils="${profils:+$profils,}statistiques"
+fi
+if [ -n "$profils" ]; then
+  echo "COMPOSE_PROFILES=$profils" >> .env
 fi
 docker compose pull --quiet
 docker compose up -d --remove-orphans --wait --wait-timeout 120
+# Le Caddyfile est monté fichier par fichier : Caddy ne voit la nouvelle version qu'au redémarrage.
+if [ "$(cat Caddyfile)" != "$ancien_caddyfile" ]; then
+  docker compose restart caddy > /dev/null
+fi
 docker image prune -f > /dev/null
 echo "Déployé : $TAG"

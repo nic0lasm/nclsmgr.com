@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { fontVariables } from "@/app/fonts";
+import { MesureAudience } from "@/components/MesureAudience";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { getContent } from "@/lib/content";
@@ -43,6 +44,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
         <SiteHeader lang={lang} />
         {children}
         <SiteFooter lang={lang} />
+        <MesureAudience nonce={nonce} />
       </body>
     </html>
   );
