@@ -1,7 +1,17 @@
 import { createHash, randomBytes, randomInt } from "node:crypto";
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type APIRequestContext, type APIResponse } from "@playwright/test";
+import {
+  expect,
+  test,
+  type APIRequestContext,
+  type APIResponse,
+  type Page,
+} from "@playwright/test";
 import Database from "better-sqlite3";
+import portfolioFr from "../src/content/fr/portfolio.json";
+import parcoursFr from "../src/content/fr/parcours.json";
+import projetsFr from "../src/content/projets/fr.json";
+import { PRIVE_FICTIF } from "./prive-fictif";
 
 // Les liens sont insérés directement dans la base du serveur de test : src/lib/espace dépend
 // de « server-only », qui lève hors de Next. Seule l'empreinte SHA-256 du jeton est stockée.
@@ -9,8 +19,19 @@ const JOUR = 86_400_000;
 const ALPHABET_ID = "23456789abcdefghjkmnpqrstuvwxyz";
 
 type Etat = "actif" | "expire" | "revoque";
+type Profil = "recruteur" | "developpeur" | "client" | "partenaire";
+type OptionsLien = {
+  profil?: Profil;
+  langue?: "fr" | "en";
+  organisation?: string;
+  message?: string;
+};
 
-function creerLien(etat: Etat = "actif", destinataire = "Claire Martin"): string {
+function creerLien(
+  etat: Etat = "actif",
+  destinataire = "Claire Martin",
+  options: OptionsLien = {},
+): string {
   const chemin = process.env.ESPACE_BASE_E2E;
   if (!chemin) throw new Error("ESPACE_BASE_E2E manque : voir playwright.config.ts.");
   const jeton = randomBytes(32).toString("base64url");
@@ -20,13 +41,17 @@ function creerLien(etat: Etat = "actif", destinataire = "Claire Martin"): string
   const db = new Database(chemin, { timeout: 5000 });
   try {
     db.prepare(
-      `INSERT INTO liens (id, jeton_sha256, profil, langue, destinataire, documents, cree_le,
-         expire_le, revoque_le)
-       VALUES (?, ?, 'recruteur', 'fr', ?, '[]', ?, ?, ?)`,
+      `INSERT INTO liens (id, jeton_sha256, profil, langue, destinataire, organisation, message,
+         documents, cree_le, expire_le, revoque_le)
+       VALUES (?, ?, ?, ?, ?, ?, ?, '[]', ?, ?, ?)`,
     ).run(
       id,
       createHash("sha256").update(jeton).digest(),
+      options.profil ?? "recruteur",
+      options.langue ?? "fr",
       destinataire,
+      options.organisation ?? null,
+      options.message ?? null,
       etat === "expire" ? maintenant - 40 * JOUR : maintenant,
       etat === "expire" ? maintenant - 10 * JOUR : maintenant + 30 * JOUR,
       etat === "revoque" ? maintenant : null,
@@ -515,5 +540,196 @@ test.describe("sortie", () => {
     expect(reponse.headers()["set-cookie"]).toBe(
       "__Host-espace=; Max-Age=0; Path=/; Secure; HttpOnly; SameSite=Lax",
     );
+  });
+});
+
+test.describe("contenu par profil", () => {
+  // Second serveur de playwright.config.ts, lancé sans prive.json.
+  const SANS_PRIVE = process.env.ESPACE_URL_SANS_PRIVE_E2E ?? "";
+  const { coordonnees, references } = PRIVE_FICTIF.fr;
+
+  async function entrer(page: Page, jeton: string, langue: "fr" | "en" = "fr", origine = "") {
+    await page.setExtraHTTPHeaders({ "X-Client-IP": ipUnique() });
+    await page.goto(`${origine}/${langue}/p#${jeton}`);
+    const bouton = langue === "fr" ? "Accéder à mon espace" : "Enter my space";
+    await page.getByRole("button", { name: bouton }).click();
+    await page.waitForURL(`**/${langue}/espace`);
+  }
+
+  async function sansViolation(page: Page) {
+    // Après une navigation côté client, le titre peut arriver un peu après le contenu.
+    await expect(page).toHaveTitle(/\S/);
+    const axe = await new AxeBuilder({ page }).analyze();
+    expect(axe.violations).toEqual([]);
+  }
+
+  // Les intitulés de section disent à eux seuls quels blocs sont présents, et dans quel ordre.
+  const sections = (page: Page) => page.locator("main h2").allTextContents();
+
+  // Ce que doit montrer l'onglet contributions, d'après les fiches projets publiques.
+  const fiches = projetsFr.projets.filter((f) => f.afficher);
+  const ouverts = fiches.filter((f) => f.contribuer);
+  const avecDocument = (nom: RegExp) => fiches.some((f) => f.liens.some((l) => nom.test(l.url)));
+  const sectionsDeveloppeur = [
+    ouverts.length > 0 ? "Projets ouverts aux contributions" : "Projets publics",
+    ...(avecDocument(/\/ROADMAP\.md$/i) ? ["Feuilles de route"] : []),
+    ...(avecDocument(/\/CONTRIBUTING\.md$/i) ? ["Guides de contribution"] : []),
+  ];
+
+  test("recruteur : parcours, références et coordonnées", async ({ page }) => {
+    await entrer(page, creerLien("actif", "Claire Martin", { profil: "recruteur" }));
+    await expect(page.getByText("Bonjour Claire Martin,")).toBeVisible();
+    expect(await sections(page)).toEqual(["Parcours", "Références", "Coordonnées"]);
+
+    for (const experience of parcoursFr.experiences) {
+      await expect(
+        page.getByRole("heading", { level: 3, name: experience.poste, exact: true }),
+      ).toBeVisible();
+    }
+    await expect(page.getByRole("link", { name: "Voir le CV" })).toHaveAttribute("href", "/fr/cv");
+
+    const reference = page.getByRole("article", { name: references[0].nom });
+    await expect(reference.getByText("Directrice de programme · Société Exemple")).toBeVisible();
+    await expect(reference.locator("p")).toHaveText([
+      "Directrice de programme · Société Exemple",
+      "Référence fictive, première ligne.",
+      "Deuxième ligne.",
+      "Contact : camille@example.com",
+    ]);
+    await expect(reference.getByRole("link", { name: "camille@example.com" })).toHaveAttribute(
+      "href",
+      "mailto:camille@example.com",
+    );
+
+    await expect(page.getByRole("link", { name: coordonnees.telephone })).toHaveAttribute(
+      "href",
+      "tel:+33639980000",
+    );
+    await expect(page.getByRole("link", { name: coordonnees.email })).toHaveAttribute(
+      "href",
+      `mailto:${coordonnees.email}`,
+    );
+    await expect(page.getByText(coordonnees.ville)).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "linkedin.com/in/exemple-fictif" }),
+    ).toHaveAttribute("href", coordonnees.linkedin);
+
+    // Rien des autres profils.
+    const html = await page.content();
+    expect(html).not.toContain("Comment contribuer");
+    expect(html).not.toContain(portfolioFr.etudes[0].contexte);
+    await sansViolation(page);
+  });
+
+  test("développeur : projets ouverts, sans aucune donnée privée", async ({ page }) => {
+    await entrer(page, creerLien("actif", "Claire Martin", { profil: "developpeur" }));
+    await expect(page.getByText("Bonjour Claire Martin,")).toBeVisible();
+    expect(await sections(page)).toEqual(sectionsDeveloppeur);
+
+    for (const fiche of ouverts.length > 0 ? ouverts : fiches) {
+      const article = page.getByRole("article", { name: fiche.titre });
+      await expect(article).toBeVisible();
+      if (fiche.contribuer) await expect(article.getByText(fiche.contribuer)).toBeVisible();
+      for (const lien of fiche.liens) {
+        await expect(article.getByRole("link", { name: lien.libelle })).toHaveAttribute(
+          "href",
+          lien.url,
+        );
+      }
+    }
+    await expect(
+      page.getByRole("link", { name: "Tous mes projets dans l'onglet Dev" }),
+    ).toHaveAttribute("href", "/fr/dev");
+
+    const html = await page.content();
+    for (const prive of [
+      coordonnees.telephone,
+      coordonnees.email,
+      coordonnees.ville,
+      references[0].nom,
+    ]) {
+      expect(html).not.toContain(prive);
+    }
+    expect(html).not.toContain(parcoursFr.experiences[0].contexte);
+    expect(html).not.toContain(portfolioFr.etudes[0].contexte);
+    await sansViolation(page);
+  });
+
+  for (const profil of ["client", "partenaire"] as const) {
+    test(`${profil} : études de cas et coordonnées`, async ({ page }) => {
+      await entrer(page, creerLien("actif", "Claire Martin", { profil }));
+      await expect(page.getByText("Bonjour Claire Martin,")).toBeVisible();
+      expect(await sections(page)).toEqual(["Études de cas", "Coordonnées"]);
+      for (const etude of portfolioFr.etudes) {
+        await expect(
+          page.getByRole("heading", { level: 3, name: etude.titre, exact: true }),
+        ).toBeVisible();
+      }
+      await expect(page.getByRole("link", { name: "Voir le portfolio" })).toHaveAttribute(
+        "href",
+        "/fr/portfolio",
+      );
+      await expect(page.getByRole("link", { name: coordonnees.email })).toBeVisible();
+
+      const html = await page.content();
+      expect(html).not.toContain(references[0].nom);
+      expect(html).not.toContain("Comment contribuer");
+      expect(html).not.toContain(parcoursFr.experiences[0].contexte);
+      await sansViolation(page);
+    });
+  }
+
+  test("le message est affiché en texte brut, un paragraphe par ligne", async ({ page }) => {
+    const message = "Merci pour notre échange.\n\n<b>x</b><script>";
+    const jeton = creerLien("actif", "Claire Martin", {
+      profil: "client",
+      organisation: "Société Test",
+      message,
+    });
+    await entrer(page, jeton);
+    await expect(page.getByText("<b>x</b><script>", { exact: true })).toBeVisible();
+    await expect(page.locator(".private-slip__body p")).toHaveText([
+      "Bonjour Claire Martin,",
+      "Merci pour notre échange.",
+      "<b>x</b><script>",
+    ]);
+    await expect(page.locator(".private-slip__header")).toContainText("Société Test");
+    await expect(page.locator("main b")).toHaveCount(0);
+    await expect(page.locator("main script")).toHaveCount(0);
+  });
+
+  test("en anglais, les blocs suivent la langue de la page et le message garde la sienne", async ({
+    page,
+  }) => {
+    const jeton = creerLien("actif", "Claire Martin", {
+      profil: "recruteur",
+      langue: "fr",
+      message: "Ravi de vous revoir.",
+    });
+    await entrer(page, jeton, "en");
+    await expect(page.getByText("Hello Claire Martin,")).toBeVisible();
+    expect(await sections(page)).toEqual(["Background", "References", "Contact details"]);
+    await expect(page.locator('.private-slip__body p[lang="fr"]')).toHaveText(
+      "Ravi de vous revoir.",
+    );
+    await expect(page.getByRole("link", { name: PRIVE_FICTIF.en.coordonnees.email })).toBeVisible();
+    expect(await page.content()).not.toContain(coordonnees.ville);
+    await sansViolation(page);
+  });
+
+  test("sans prive.json, les blocs privés sont masqués et le reste s'affiche", async ({ page }) => {
+    const attendu: Record<Profil, string[]> = {
+      recruteur: ["Parcours"],
+      developpeur: sectionsDeveloppeur,
+      client: ["Études de cas"],
+      partenaire: ["Études de cas"],
+    };
+    for (const [profil, titres] of Object.entries(attendu) as [Profil, string[]][]) {
+      await page.context().clearCookies();
+      await entrer(page, creerLien("actif", "Claire Martin", { profil }), "fr", SANS_PRIVE);
+      await expect(page.getByText("Bonjour Claire Martin,")).toBeVisible();
+      expect(await sections(page), profil).toEqual(titres);
+      expect(await page.content()).not.toContain(coordonnees.email);
+    }
   });
 });
