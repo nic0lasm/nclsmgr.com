@@ -20,7 +20,7 @@ The data controller is Nicolas Maigre, who can be reached through the [contact f
 
 If you have received a personal link, I am notified by email the first time you open it. These notifications are sorted and deleted every quarter. The emails I send contain no tracking pixels.
 
-A message sent through the contact form stays on the site's server only until it is forwarded to my mailbox, and is deleted from the server within 7 days. To limit abuse, messages sent from the same connection are counted for one hour, in memory only and without keeping the IP address.
+A message sent through the contact form is kept on the site's server until it is forwarded to my mailbox, then deleted no more than 8 days later. To limit abuse, messages sent from the same connection are counted for one hour, in memory only and without keeping the IP address.
 
 This data is neither sold nor passed on to third parties, apart from the technical providers listed below. Only the site's publisher has access to it. Tools that help me organise my correspondence may see a contact's name and organisation, but never their personal link.
 
