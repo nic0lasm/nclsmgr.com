@@ -12,7 +12,7 @@ The data controller is Nicolas Maigre, who can be reached through the [contact f
 
 | Data                                                                                                                                        | Purpose                                                                                                                          | Legal basis                                                                            | Retention period                                      |
 | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| Anonymous visit statistics (page viewed, country, device type, referring site)                                                              | To know which pages are read. The tool, Umami, is hosted on the same server, sets no cookies and does not store your IP address. | Legitimate interests                                                                   | 2 years                                               |
+| Anonymous visit statistics (page viewed, country, device type, referring site)                                                              | To know which pages are read. The tool, Umami, is hosted on the same server, sets no cookies and does not store your IP address. | Legitimate interests                                                                   | 13 months                                             |
 | Messages sent through the contact form (name, email address, message)                                                                       | To reply to you                                                                                                                  | Steps taken at your request prior to entering into a contract, or legitimate interests | 12 months after our last exchange                     |
 | Personal link to the private area (name, organisation, welcome message)                                                                     | To show you a version of the site tailored to our conversation                                                                   | Legitimate interests: following up a professional contact                              | Deleted 3 months after the link expires or is revoked |
 | Visits to the private area (date, country, browser and operating system family, page or document viewed). The IP address is never recorded. | To know whether the link has been opened, and to secure access                                                                   | Legitimate interests: following up the contact, and security                           | 3 months                                              |
@@ -31,6 +31,12 @@ Encrypted server backups are kept for no more than 3 months.
 The server is located in Canada and operated by OVH. Canada is covered by an adequacy decision of the European Commission, which recognises a level of protection equivalent to that of the European Union. Traffic passes through Cloudflare, which acts as a technical intermediary to protect the site and make it load faster.
 
 Two providers therefore process data on the site's behalf: Cloudflare (DNS, protection and delivery of the site) and OVHcloud (server hosting, and the mailbox that receives messages from the contact form).
+
+## Audience measurement
+
+Audience measurement uses Umami, installed on the site's own server: no data is passed to a third party. Umami sets no cookies and does not store your IP address. It only uses it during the visit to work out your country, then discards it. Statistics are kept for 13 months.
+
+Nothing is measured in the private area. If your browser sends the Do Not Track signal, your visit is not counted.
 
 ## Cookies
 

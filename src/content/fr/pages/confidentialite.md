@@ -12,7 +12,7 @@ Le responsable du traitement est Nicolas Maigre, joignable par le [formulaire de
 
 | Données                                                                                                                                              | Pourquoi                                                                                                                                     | Base légale                                                           | Durée de conservation                                         |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------- |
-| Statistiques de visite anonymes (page vue, pays, type d'appareil, site d'origine)                                                                    | Savoir quelles pages sont lues. L'outil, Umami, est hébergé sur le même serveur, ne dépose aucun cookie et ne conserve pas votre adresse IP. | Intérêt légitime                                                      | 2 ans                                                         |
+| Statistiques de visite anonymes (page vue, pays, type d'appareil, site d'origine)                                                                    | Savoir quelles pages sont lues. L'outil, Umami, est hébergé sur le même serveur, ne dépose aucun cookie et ne conserve pas votre adresse IP. | Intérêt légitime                                                      | 13 mois                                                       |
 | Messages envoyés par le formulaire de contact (nom, adresse e-mail, message)                                                                         | Vous répondre                                                                                                                                | Mesures précontractuelles prises à votre demande, ou intérêt légitime | 12 mois après le dernier échange                              |
 | Lien personnel vers l'espace privé (nom, organisation, message d'accueil)                                                                            | Vous présenter une version du site adaptée à notre échange                                                                                   | Intérêt légitime : suivi d'une prise de contact professionnelle       | Supprimées 3 mois après l'expiration ou la révocation du lien |
 | Consultations de l'espace privé (date, pays, famille de navigateur et de système, page ou document consulté). L'adresse IP n'est jamais enregistrée. | Savoir si le lien a été ouvert, sécuriser l'accès                                                                                            | Intérêt légitime : suivi de la prise de contact et sécurité           | 3 mois                                                        |
@@ -31,6 +31,12 @@ Les sauvegardes chiffrées du serveur sont conservées 3 mois au plus.
 Le serveur est situé au Canada, chez OVH. Le Canada fait l'objet d'une décision d'adéquation de la Commission européenne, qui reconnaît un niveau de protection équivalent à celui de l'Union européenne. Le trafic transite par Cloudflare, qui agit comme intermédiaire technique pour protéger le site et accélérer son affichage.
 
 Deux prestataires traitent ainsi des données pour le compte du site : Cloudflare (DNS, protection et diffusion du site) et OVHcloud (hébergement du serveur et messagerie qui reçoit les messages du formulaire).
+
+## Mesure d'audience
+
+La mesure d'audience passe par Umami, installé sur le serveur du site : aucune donnée n'est transmise à un tiers. Umami ne dépose aucun cookie et ne conserve pas votre adresse IP. Il s'en sert seulement, au moment de la visite, pour en déduire le pays, puis l'oublie. Les statistiques sont gardées 13 mois.
+
+Aucune mesure n'est faite dans l'espace privé. Si votre navigateur envoie le signal Do Not Track, votre visite n'est pas comptée.
 
 ## Cookies
 
