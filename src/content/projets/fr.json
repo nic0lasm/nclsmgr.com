@@ -58,6 +58,14 @@
         {
           "libelle": "Architecture",
           "url": "https://github.com/nic0lasm/zeus-poseidon-arm64/blob/main/docs/architecture.md"
+        },
+        {
+          "libelle": "Feuille de route",
+          "url": "https://github.com/nic0lasm/zeus-poseidon-arm64/blob/main/docs/roadmap.md"
+        },
+        {
+          "libelle": "Guide de contribution",
+          "url": "https://github.com/nic0lasm/zeus-poseidon-arm64/blob/main/CONTRIBUTING.md"
         }
       ]
     },
@@ -79,7 +87,7 @@
       ],
       "chiffres": [],
       "image": null,
-      "contribuer": null,
+      "contribuer": "Signaler une faille en privé selon la politique de sécurité, ou ouvrir un ticket pour une erreur sur le site.",
       "liens": [
         {
           "libelle": "Code source",
@@ -88,6 +96,10 @@
         {
           "libelle": "Feuille de route",
           "url": "https://github.com/nic0lasm/nclsmgr.com/blob/main/ROADMAP.md"
+        },
+        {
+          "libelle": "Politique de sécurité",
+          "url": "https://github.com/nic0lasm/nclsmgr.com/blob/main/SECURITY.md"
         }
       ]
     },
