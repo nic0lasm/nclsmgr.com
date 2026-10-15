@@ -95,7 +95,7 @@
       "id": "as2c",
       "depot": "nic0lasm/as2c",
       "ordre": 3,
-      "afficher": false,
+      "afficher": true,
       "titre": "AS2C Patrimoine",
       "pitch": "Taking over a wealth management firm's website and automating its publishing.",
       "probleme": "A 187-page static site with no templates, edited by hand and uploaded over FTP. Any change to the menu or contact details had to be repeated on every page.",
@@ -118,6 +118,10 @@
         {
           "libelle": "Live site",
           "url": "https://www.as2cpatrimoine.com"
+        },
+        {
+          "libelle": "Source code",
+          "url": "https://github.com/nic0lasm/as2c"
         }
       ]
     }

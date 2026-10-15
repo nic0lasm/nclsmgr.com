@@ -95,7 +95,7 @@
       "id": "as2c",
       "depot": "nic0lasm/as2c",
       "ordre": 3,
-      "afficher": false,
+      "afficher": true,
       "titre": "AS2C Patrimoine",
       "pitch": "Reprise et mise en ligne automatisée du site d'un cabinet de gestion de patrimoine.",
       "probleme": "Un site statique de 187 pages, sans gabarit, modifié à la main et envoyé par FTP. Chaque changement de menu ou de coordonnées devait être reporté page par page.",
@@ -118,6 +118,10 @@
         {
           "libelle": "Site en ligne",
           "url": "https://www.as2cpatrimoine.com"
+        },
+        {
+          "libelle": "Code source",
+          "url": "https://github.com/nic0lasm/as2c"
         }
       ]
     }

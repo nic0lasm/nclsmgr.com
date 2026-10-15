@@ -23,7 +23,7 @@ for (const lang of ["fr", "en"]) {
     const fiches = page.locator("article.project");
     await expect(fiches.first()).toContainText("Zeus + Poseidon");
     await expect(page.getByRole("img").first()).toBeVisible();
-    await expect(page.locator("main")).not.toContainText("AS2C");
+    await expect(fiches).toHaveCount(3);
 
     await page.waitForLoadState("networkidle");
     expect(requetesTierces).toEqual([]);
