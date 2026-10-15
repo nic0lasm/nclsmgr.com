@@ -65,8 +65,25 @@ nclsmgr.com {
 	# Next.js ne doit jamais recevoir cet en-tête interne depuis l'extérieur (famille CVE-2025-29927).
 	request_header -X-Middleware-Subrequest
 
-	reverse_proxy web:3000 {
-		# Seul en-tête d'IP client lu par l'application ; jamais X-Forwarded-For.
-		header_up X-Client-IP {client_ip}
+	# Mesure d'audience : seuls le script et la collecte sont publics, jamais le tableau de bord.
+	@statistiques path /stats/script.js /stats/api/send
+	handle @statistiques {
+		uri strip_prefix /stats
+		reverse_proxy umami:3000 {
+			# Umami lit d'abord cet en-tête : on impose l'IP vue par Caddy derrière Cloudflare.
+			header_up CF-Connecting-IP {client_ip}
+		}
 	}
+
+	handle {
+		reverse_proxy web:3000 {
+			# Seul en-tête d'IP client lu par l'application ; jamais X-Forwarded-For.
+			header_up X-Client-IP {client_ip}
+		}
+	}
+}
+
+# Tableau de bord Umami, publié sur la boucle locale du serveur seulement (tunnel SSH).
+http://:3001 {
+	reverse_proxy umami:3000
 }
