@@ -16,6 +16,13 @@
     "resultats": "Outcomes",
     "etudes": "Case studies"
   },
+  "articles": {
+    "titre": "Articles",
+    "publieLe": "Published on",
+    "aucun": "No articles yet.",
+    "enFrancais": "These articles are written in French for now.",
+    "tous": "All articles"
+  },
   "cv": {
     "titre": "Curriculum vitae",
     "experiences": "Experience",

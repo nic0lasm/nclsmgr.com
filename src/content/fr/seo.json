@@ -28,6 +28,11 @@
       "description": "Études de cas de projets cyber pilotés : contexte, décisions, résultats mesurés.",
       "og_image": null
     },
+    "articles": {
+      "titre": "Articles · Nicolas Maigre",
+      "description": "Retours d'expérience de pilotage de projets et notes techniques sur la sécurité de ce site.",
+      "og_image": null
+    },
     "contact": {
       "titre": "Contact · Nicolas Maigre",
       "description": "Une opportunité ou un projet en cybersécurité ? Écrivez-moi via le formulaire ou sur LinkedIn.",

@@ -19,3 +19,14 @@ export function formatPeriod(
   const to = end ? formatMonth(end, locale) : ongoing;
   return start ? `${formatMonth(start, locale)} · ${to}` : to;
 }
+
+// « 2026-10-15 » devient « 15 octobre 2026 » ou « 15 October 2026 ».
+export function formatDay(day: string, locale: Locale): string {
+  const [year, m, d] = day.split("-").map(Number);
+  return new Intl.DateTimeFormat(locale === "fr" ? "fr-FR" : "en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(Date.UTC(year, m - 1, d)));
+}

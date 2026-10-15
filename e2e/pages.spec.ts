@@ -1,7 +1,15 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const routes = ["", "/cv", "/portfolio", "/contact", "/mentions-legales", "/confidentialite"];
+const routes = [
+  "",
+  "/cv",
+  "/portfolio",
+  "/articles",
+  "/contact",
+  "/mentions-legales",
+  "/confidentialite",
+];
 
 test("redirige vers la langue du visiteur", async ({ request }) => {
   const res = await request.get("/", {
@@ -64,4 +72,28 @@ test("sur mobile, le tableau de la confidentialité reste accessible au clavier"
   await expect(region).toHaveAttribute("tabindex", "0");
   const axe = await new AxeBuilder({ page }).analyze();
   expect(axe.violations).toEqual([]);
+});
+
+test("un article s'affiche avec un seul titre, sans violation axe", async ({ page }) => {
+  const res = await page.goto("/fr/articles/securite-des-la-conception");
+  expect(res?.status()).toBe(200);
+  expect(res?.headers()["content-security-policy"]).toMatch(/'nonce-[^']+'/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+  await expect(page.locator('meta[property="og:type"]')).toHaveAttribute("content", "article");
+  // L'article n'existe qu'en français : aucune version anglaise annoncée.
+  await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveCount(0);
+  const axe = await new AxeBuilder({ page }).analyze();
+  expect(axe.violations).toEqual([]);
+});
+
+test("un slug inconnu répond 404", async ({ page }) => {
+  const res = await page.goto("/fr/articles/inconnu");
+  expect(res?.status()).toBe(404);
+});
+
+test("un article absent dans une langue renvoie à la liste des articles", async ({ page }) => {
+  await page.goto("/en/articles/securite-des-la-conception");
+  await expect(page).toHaveURL(/\/en\/articles$/);
+  await page.getByRole("main").getByRole("link").first().click();
+  await expect(page).toHaveURL(/\/fr\/articles\/securite-des-la-conception$/);
 });

@@ -28,6 +28,11 @@
       "description": "Case studies of cybersecurity projects I have led: context, decisions and measured results.",
       "og_image": null
     },
+    "articles": {
+      "titre": "Articles · Nicolas Maigre",
+      "description": "Lessons from running projects and technical notes on how this site is secured, mostly in French.",
+      "og_image": null
+    },
     "contact": {
       "titre": "Contact · Nicolas Maigre",
       "description": "An opportunity or a cybersecurity project in mind? Get in touch through the form or on LinkedIn.",

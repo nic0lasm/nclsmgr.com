@@ -16,6 +16,13 @@
     "resultats": "Résultats",
     "etudes": "Études de cas"
   },
+  "articles": {
+    "titre": "Articles",
+    "publieLe": "Publié le",
+    "aucun": "Aucun article pour l'instant.",
+    "enFrancais": "Article rédigé en français.",
+    "tous": "Tous les articles"
+  },
   "cv": {
     "titre": "Curriculum vitae",
     "experiences": "Expériences",
