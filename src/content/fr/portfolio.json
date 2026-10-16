@@ -1,10 +1,95 @@
 {
   "statut": "brouillon",
   "langue": "fr",
-  "intro": "Quelques projets que j'ai conduits, présentés comme je le ferais pour un client : le contexte, mon rôle, ce que j'ai fait et ce qui en est sorti.",
+  "intro": "Trois situations que je rencontre souvent auprès des ministères régaliens et du secteur public, présentées comme je le ferais pour un client : le contexte, mon rôle, ce que j'ai fait et ce qui en est sorti. Par confidentialité, aucun client ni programme n'est cité et certains détails sont modifiés.",
   "etudes": [
     {
+      "id": "analyse-risque",
+      "theme": "Analyse de risque cyber",
+      "titre": "Décider de l'ouverture d'un service sensible",
+      "organisation": "Capgemini, pour un ministère régalien",
+      "debut": null,
+      "fin": null,
+      "contexte": "Un service numérique devait s'ouvrir à de nouveaux utilisateurs, dont certains hors du réseau du ministère. Avant de trancher, la direction voulait connaître les risques réels et le coût de leur traitement.",
+      "role": "Chef de projet de l'analyse : cadrage avec le RSSI et les métiers, animation des ateliers, synthèse pour la direction.",
+      "enjeux": [
+        "Parler le langage des métiers autant que celui de la sécurité",
+        "Obtenir des décisions dans le calendrier du projet, sans bloquer la livraison",
+        "Produire un dossier réutilisable pour l'homologation"
+      ],
+      "actions": [
+        "Ateliers avec les métiers, l'exploitation et la sécurité, selon la méthode EBIOS Risk Manager",
+        "Scénarios de risque hiérarchisés par gravité et vraisemblance",
+        "Mesures chiffrées et classées : avant l'ouverture, à planifier, à accepter",
+        "Note de décision courte pour la direction, en plus du rapport complet"
+      ],
+      "resultats": [
+        "Une ouverture décidée sur la base de risques identifiés et acceptés",
+        "Un plan de traitement intégré au calendrier du projet",
+        "Un dossier repris pour l'homologation de sécurité"
+      ],
+      "note": null,
+      "liens": []
+    },
+    {
+      "id": "architecture-souveraine",
+      "theme": "Architecture souveraine",
+      "titre": "Choisir un hébergement de confiance pour une application sensible",
+      "organisation": "Capgemini, pour le secteur public",
+      "debut": null,
+      "fin": null,
+      "contexte": "Une application existante devait quitter son hébergement d'origine. Deux voies étaient possibles : un cloud qualifié SecNumCloud ou une installation sur site chez le bénéficiaire.",
+      "role": "Chef de projet de l'étude d'architecture, avec un architecte et un expert sécurité.",
+      "enjeux": [
+        "Comparer deux options sur des critères que la direction peut arbitrer",
+        "Respecter les exigences de souveraineté et de protection des données",
+        "Anticiper le coût complet : migration, exploitation, réversibilité"
+      ],
+      "actions": [
+        "Inventaire des flux, des données et des dépendances de l'application",
+        "Deux architectures cibles décrites et comparées : sécurité, coût, délai, réversibilité",
+        "Analyse de risques de chaque option",
+        "Feuille de route de migration pour l'option retenue"
+      ],
+      "resultats": [
+        "Une option retenue et justifiée devant le comité de pilotage",
+        "Une feuille de route de migration exploitable par les équipes"
+      ],
+      "note": null,
+      "liens": []
+    },
+    {
+      "id": "pilotage-applicatif",
+      "theme": "Pilotage applicatif régalien",
+      "titre": "Livrer une application métier sous exigences de sécurité",
+      "organisation": "Capgemini, pour un ministère régalien",
+      "debut": null,
+      "fin": null,
+      "contexte": "Une application métier à développer pour les agents d'un ministère, avec des exigences de sécurité élevées, un calendrier contraint et un budget compris entre 500 k€ et 2 M€.",
+      "role": "Chef de projet, responsable du client, du budget, du contrat et d'une équipe de cinq à dix personnes.",
+      "enjeux": [
+        "Tenir le calendrier et le budget",
+        "Intégrer la sécurité dès les premières itérations",
+        "Garder les utilisateurs métier au cœur des choix"
+      ],
+      "actions": [
+        "Cadrage avec les métiers et découpage en versions livrables",
+        "Pilotage agile (Scrum) et comités réguliers avec le client",
+        "Exigences de sécurité suivies dans le backlog au même titre que les fonctionnalités",
+        "Suivi financier, avenants et gestion des risques"
+      ],
+      "resultats": [
+        "Des versions mises en production à un rythme régulier",
+        "Une relation poursuivie sur de nouveaux lots"
+      ],
+      "note": null,
+      "liens": []
+    }
+  ],
+  "annexe": [
+    {
       "id": "nclsmgr",
+      "theme": null,
       "titre": "Ce site, conduit comme un projet client",
       "organisation": "Projet personnel",
       "debut": "2026-10",
@@ -35,52 +120,6 @@
           "url": "https://github.com/nic0lasm/nclsmgr.com"
         }
       ]
-    },
-    {
-      "id": "capgemini-defense",
-      "titre": "Projets numériques pour le secteur régalien",
-      "organisation": "Capgemini",
-      "debut": "2020-03",
-      "fin": null,
-      "contexte": "Depuis 2020, je pilote des projets de développement applicatif, de cybersécurité et de cloud de confiance pour les ministères régaliens et le secteur public.",
-      "role": "Chef de projet senior (Engagement Manager), responsable de chaque projet du cadrage à la livraison.",
-      "enjeux": [
-        "Livrer des logiciels à des clients aux exigences de sécurité élevées",
-        "Tenir budget, marge et engagements contractuels sur plusieurs projets en parallèle",
-        "Faire travailler ensemble équipes de développement et interlocuteurs métier"
-      ],
-      "actions": [
-        "Réponse aux appels d'offres et cadrage des engagements",
-        "Constitution et management d'équipes de 5 à 10 personnes",
-        "Gouvernance des projets en agilité à l'échelle (SAFe, Scrum) et gestion des risques",
-        "Pilotage financier et contractuel : budget, marge, avenants",
-        "Protection des informations et des accès sur les projets, en tant qu'officier de sécurité"
-      ],
-      "resultats": ["Plus de 30 projets pilotés, de 500 k€ à 2 M€"],
-      "note": "Par confidentialité, aucun client, programme ni chiffre détaillé n'est cité ici.",
-      "liens": []
-    },
-    {
-      "id": "rh-terre",
-      "titre": "Site RH-Terre",
-      "organisation": "Armée de Terre",
-      "debut": "2017-09",
-      "fin": "2018-08",
-      "contexte": "Pendant mon année de césure, j'ai été officier communication dans la chaîne ressources humaines de l'armée de Terre, à Tours.",
-      "role": "Rédacteur en chef et responsable fonctionnel du site RH-Terre, à la tête de la cellule éditoriale.",
-      "enjeux": [
-        "Informer le personnel de l'armée de Terre sur les sujets ressources humaines",
-        "Faire évoluer le site en lien avec les services concernés"
-      ],
-      "actions": [
-        "Direction de la ligne éditoriale et management de la cellule de rédaction",
-        "Suivi fonctionnel du site",
-        "Reportages photo, événementiel et supports de communication",
-        "Relations extérieures"
-      ],
-      "resultats": [],
-      "note": null,
-      "liens": []
     }
   ],
   "autres": {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { getContent } from "@/lib/content";
-import { formatPeriod } from "@/lib/dates";
+import { caseMeta, formatPeriod } from "@/lib/dates";
 import type { DocumentAffiche } from "@/lib/espace/documents";
 import type { Lien } from "@/lib/espace/liens";
 import { typeContact, type Coordonnees, type Reference } from "@/lib/espace/prive";
@@ -307,9 +307,7 @@ export function Etudes({ lang, t }: Commun) {
         {portfolio.etudes.map((etude) => (
           <article className="project" key={etude.id} aria-labelledby={`etude-${etude.id}`}>
             <h3 id={`etude-${etude.id}`}>{etude.titre}</h3>
-            <p className="project__meta">
-              {etude.organisation} · {formatPeriod(etude.debut, etude.fin, lang, ui.cv.enCours)}
-            </p>
+            <p className="project__meta">{caseMeta(etude, lang, ui.cv.enCours)}</p>
             <p>{etude.contexte}</p>
             {etude.resultats.length > 0 ? (
               <div>

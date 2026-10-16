@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatMonth, formatPeriod } from "./dates";
+import { caseMeta, formatMonth, formatPeriod } from "./dates";
 
 describe("formatMonth", () => {
   it("écrit le mois en toutes lettres dans chaque langue", () => {
@@ -18,5 +18,23 @@ describe("formatPeriod", () => {
 
   it("n'affiche que la fin quand le début est inconnu", () => {
     expect(formatPeriod(null, "2015-07", "fr", "aujourd'hui")).toBe("juillet 2015");
+  });
+});
+
+describe("caseMeta", () => {
+  const base = { theme: "Architecture souveraine", organisation: "Capgemini" };
+  it("omet la période d'un cas non daté", () => {
+    expect(caseMeta({ ...base, debut: null, fin: null }, "fr", "aujourd'hui")).toBe(
+      "Architecture souveraine · Capgemini",
+    );
+  });
+  it("ajoute la période d'un cas daté et ignore un thème absent", () => {
+    expect(
+      caseMeta(
+        { theme: null, organisation: "Projet personnel", debut: "2026-10", fin: null },
+        "fr",
+        "aujourd'hui",
+      ),
+    ).toBe("Projet personnel · octobre 2026 · aujourd'hui");
   });
 });

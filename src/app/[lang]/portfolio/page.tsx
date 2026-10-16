@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { EtudeDeCas, Interface } from "@/content/types";
 import { getContent } from "@/lib/content";
-import { formatPeriod } from "@/lib/dates";
+import { caseMeta } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/metadata";
 import { resolveLocale } from "@/lib/route";
@@ -29,9 +29,7 @@ function Etude({ etude, lang, ui }: { etude: EtudeDeCas; lang: Locale; ui: Inter
   return (
     <article className="project" aria-labelledby={`etude-${etude.id}`}>
       <h3 id={`etude-${etude.id}`}>{etude.titre}</h3>
-      <p className="project__meta">
-        {etude.organisation} · {formatPeriod(etude.debut, etude.fin, lang, ui.cv.enCours)}
-      </p>
+      <p className="project__meta">{caseMeta(etude, lang, ui.cv.enCours)}</p>
       <div>
         <h4>{t.contexte}</h4>
         <p>{etude.contexte}</p>
@@ -83,6 +81,19 @@ export default async function PagePortfolio({ params }: PageProps<"/[lang]/portf
           ))}
         </div>
       </section>
+
+      {portfolio.annexe.length > 0 ? (
+        <section className="section" aria-labelledby="annexe">
+          <h2 className="section__label" id="annexe">
+            {ui.portfolio.annexe}
+          </h2>
+          <div className="section__body">
+            {portfolio.annexe.map((etude) => (
+              <Etude key={etude.id} etude={etude} lang={lang} ui={ui} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="section" aria-labelledby="autres">
         <h2 className="section__label" id="autres">
