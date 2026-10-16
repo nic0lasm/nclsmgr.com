@@ -122,6 +122,13 @@ async function ouvrirSession(request: APIRequestContext, jeton: string): Promise
   return valeur;
 }
 
+async function sansViolation(page: Page) {
+  // Après une navigation côté client, le titre peut arriver un peu après le contenu.
+  await expect(page).toHaveTitle(/\S/);
+  const axe = await new AxeBuilder({ page }).analyze();
+  expect(axe.violations).toEqual([]);
+}
+
 const COOKIE =
   /^__Host-espace=([A-Za-z0-9_-]{43}); Max-Age=(\d+); Path=\/; Secure; HttpOnly; SameSite=Lax$/;
 
@@ -489,8 +496,7 @@ test.describe("page /fr/p", () => {
     expect(page.url()).not.toContain(jeton);
     expect(await page.evaluate(() => window.location.hash)).toBe("");
 
-    const axeAcces = await new AxeBuilder({ page }).analyze();
-    expect(axeAcces.violations).toEqual([]);
+    await sansViolation(page);
 
     await bouton.click();
     await page.waitForURL("**/fr/espace");
@@ -504,8 +510,7 @@ test.describe("page /fr/p", () => {
     expect(session?.value).toMatch(/^[A-Za-z0-9_-]{43}$/);
     expect(await page.evaluate(() => document.cookie)).not.toContain("__Host-espace");
 
-    const axeEspace = await new AxeBuilder({ page }).analyze();
-    expect(axeEspace.violations).toEqual([]);
+    await sansViolation(page);
 
     await page.getByRole("button", { name: "Quitter l'espace" }).click();
     await page.waitForURL(/\/fr$/);
@@ -611,8 +616,7 @@ test.describe("page /fr/p", () => {
       "/fr/espace",
     );
     await expect(page.getByRole("button", { name: "Accéder à mon espace" })).toHaveCount(0);
-    const axe = await new AxeBuilder({ page }).analyze();
-    expect(axe.violations).toEqual([]);
+    await sansViolation(page);
   });
 
   test("en anglais, les textes suivent la langue", async ({ page }) => {
@@ -659,13 +663,6 @@ test.describe("contenu par profil", () => {
     const bouton = langue === "fr" ? "Accéder à mon espace" : "Enter my space";
     await page.getByRole("button", { name: bouton }).click();
     await page.waitForURL(`**/${langue}/espace`);
-  }
-
-  async function sansViolation(page: Page) {
-    // Après une navigation côté client, le titre peut arriver un peu après le contenu.
-    await expect(page).toHaveTitle(/\S/);
-    const axe = await new AxeBuilder({ page }).analyze();
-    expect(axe.violations).toEqual([]);
   }
 
   // Les intitulés de section disent à eux seuls quels blocs sont présents, et dans quel ordre.
