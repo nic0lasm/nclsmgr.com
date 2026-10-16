@@ -83,4 +83,4 @@ Le site est en ligne et ouvre officiellement le 5 novembre 2026. Les étapes et 
 
 Ce dépôt sert un site personnel : je n'y attends pas de contribution, mais une erreur signalée par un ticket est toujours bienvenue. Les vulnérabilités suivent [SECURITY.md](SECURITY.md).
 
-Aucune licence n'est accordée pour l'instant : le code reste consultable, sa réutilisation demande mon accord.
+Le code source est publié sous [licence MIT](LICENSE). Elle ne couvre que le code : les textes, images et autres contenus du site, notamment ceux de `src/content/`, restent tous droits réservés. Les polices embarquées dans `src/app/fonts/` gardent leur propre licence, la SIL Open Font License.
