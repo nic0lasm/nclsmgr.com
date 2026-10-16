@@ -9,13 +9,13 @@
   },
   "pages": {
     "accueil": {
-      "titre": "Nicolas Maigre, Cybersecurity Project Manager",
-      "description": "I run sensitive digital projects from pre-sales to delivery, with security as a requirement from day one.",
+      "titre": "Nicolas Maigre, cyber and sovereignty project manager",
+      "description": "Project manager at Capgemini for French government ministries and the public sector: application development, cyber risk, trusted cloud.",
       "og_image": null
     },
     "cv": {
       "titre": "CV · Nicolas Maigre",
-      "description": "Career history, skills and certifications of Nicolas Maigre, Cybersecurity Project Manager.",
+      "description": "Career history, skills and education of Nicolas Maigre, cybersecurity and digital sovereignty project manager for the public sector.",
       "og_image": null
     },
     "dev": {
@@ -25,12 +25,12 @@
     },
     "portfolio": {
       "titre": "Portfolio · Nicolas Maigre",
-      "description": "Case studies of cybersecurity projects I have led: context, decisions and measured results.",
+      "description": "Three anonymised cases: cyber risk assessment, sovereign architecture and application delivery for the public sector.",
       "og_image": null
     },
     "contact": {
       "titre": "Contact · Nicolas Maigre",
-      "description": "An opportunity or a cybersecurity project in mind? Get in touch through the form or on LinkedIn.",
+      "description": "A public-sector project, or a question on cybersecurity or digital sovereignty? Get in touch through the form or on LinkedIn.",
       "og_image": null
     },
     "mentions_legales": {

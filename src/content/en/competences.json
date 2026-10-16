@@ -6,11 +6,11 @@
       "id": "pilotage",
       "libelle": "Project management",
       "elements": [
-        "Pre-sales and bid responses",
-        "Scoping and planning",
-        "Financial and contract management",
-        "Risk management",
+        "Scoping, planning and governance",
+        "Running several projects at once",
+        "Financial and contract management, bid responses",
         "Leading multidisciplinary teams",
+        "Project risk management",
         "Agile at scale (SAFe, Scrum)"
       ]
     },
@@ -18,8 +18,28 @@
       "id": "cyber",
       "libelle": "Cybersecurity",
       "elements": [
-        "Security Officer on defence projects",
-        "Building security in from pre-sales and scoping onwards"
+        "Cyber risk assessments (EBIOS Risk Manager)",
+        "Security architecture studies",
+        "Building security in from scoping and pre-sales",
+        "Security Officer on sensitive projects"
+      ]
+    },
+    {
+      "id": "souverainete",
+      "libelle": "Digital sovereignty",
+      "elements": [
+        "SecNumCloud-qualified trusted cloud",
+        "On-premise solutions at the client's site",
+        "Hosting choices grounded in risk assessment"
+      ]
+    },
+    {
+      "id": "metier",
+      "libelle": "Public-sector missions",
+      "elements": [
+        "Government ministries and the public sector",
+        "Reserve officer, French Army",
+        "Translating business needs for technical teams"
       ]
     },
     {
@@ -33,13 +53,12 @@
     },
     {
       "id": "relation",
-      "libelle": "Client relations and communications",
+      "libelle": "Client relations and communication",
       "elements": [
-        "Client relationship management, from pre-sales to delivery",
+        "Client relations, from scoping to delivery",
         "B2B sales",
-        "Internal and corporate communications",
-        "Media relations",
-        "Adobe software (Illustrator, XD, Photoshop)"
+        "Internal and institutional communication",
+        "Press relations"
       ]
     }
   ]
