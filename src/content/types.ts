@@ -67,9 +67,12 @@ export interface Competences extends Fichier {
 
 export interface EtudeDeCas {
   id: string;
+  /** Thème du cas (analyse de risque, architecture…), null pour l'annexe. */
+  theme: string | null;
   titre: string;
   organisation: string;
-  debut: Mois;
+  /** null pour un cas anonymisé, qui n'est pas daté. */
+  debut: Mois | null;
   fin: Mois | null;
   contexte: string;
   role: string;
@@ -83,6 +86,7 @@ export interface EtudeDeCas {
 export interface Portfolio extends Fichier {
   intro: string;
   etudes: EtudeDeCas[];
+  annexe: EtudeDeCas[];
   autres: { titre: string; texte: string; lien: { libelle: string; chemin: string } };
 }
 
@@ -114,6 +118,7 @@ export interface Interface {
   portfolio: {
     titre: string;
     etudes: string;
+    annexe: string;
     contexte: string;
     role: string;
     enjeux: string;

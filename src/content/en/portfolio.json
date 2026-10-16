@@ -1,10 +1,95 @@
 {
   "statut": "brouillon",
   "langue": "en",
-  "intro": "A few projects I have led, presented the way I would present them to a client: the context, my role, what I did and what came out of it.",
+  "intro": "Three situations I often deal with for French government ministries and the public sector, presented as I would for a client: the context, my role, what I did and what came out of it. For confidentiality, no client or programme is named and some details have been changed.",
   "etudes": [
     {
+      "id": "analyse-risque",
+      "theme": "Cyber risk assessment",
+      "titre": "Deciding whether to open a sensitive service",
+      "organisation": "Capgemini, for a French government ministry",
+      "debut": null,
+      "fin": null,
+      "contexte": "A digital service was about to open to new users, some of them outside the ministry's network. Before deciding, senior management wanted to know the real risks and what it would cost to address them.",
+      "role": "Project manager for the assessment: scoping with the CISO and business teams, running the workshops, summarising for senior management.",
+      "enjeux": [
+        "Speak the language of the business as well as that of security",
+        "Get decisions within the project schedule without holding up delivery",
+        "Produce a file that can be reused for security accreditation"
+      ],
+      "actions": [
+        "Workshops with business, operations and security teams, following the EBIOS Risk Manager method",
+        "Risk scenarios ranked by severity and likelihood",
+        "Costed measures sorted into three groups: before opening, to schedule, to accept",
+        "A short decision note for senior management alongside the full report"
+      ],
+      "resultats": [
+        "Opening decided on the basis of identified and accepted risks",
+        "A treatment plan built into the project schedule",
+        "A file reused for security accreditation"
+      ],
+      "note": null,
+      "liens": []
+    },
+    {
+      "id": "architecture-souveraine",
+      "theme": "Sovereign architecture",
+      "titre": "Choosing trusted hosting for a sensitive application",
+      "organisation": "Capgemini, for the public sector",
+      "debut": null,
+      "fin": null,
+      "contexte": "An existing application had to leave its original hosting. Two paths were open: a SecNumCloud-qualified trusted cloud, or an on-premise deployment at the client's site.",
+      "role": "Project manager for the architecture study, working with an architect and a security expert.",
+      "enjeux": [
+        "Compare two options on criteria that management can decide on",
+        "Meet sovereignty and data protection requirements",
+        "Anticipate the full cost: migration, operations, reversibility"
+      ],
+      "actions": [
+        "Inventory of the application's data flows, data and dependencies",
+        "Two target architectures described and compared on security, cost, lead time and reversibility",
+        "Risk assessment of each option",
+        "Migration roadmap for the chosen option"
+      ],
+      "resultats": [
+        "One option chosen and justified before the steering committee",
+        "A migration roadmap the teams could work from"
+      ],
+      "note": null,
+      "liens": []
+    },
+    {
+      "id": "pilotage-applicatif",
+      "theme": "Public-sector application delivery",
+      "titre": "Delivering a business application under security requirements",
+      "organisation": "Capgemini, for a French government ministry",
+      "debut": null,
+      "fin": null,
+      "contexte": "A business application to build for a ministry's staff, with high security requirements, a tight schedule and a budget between €500k and €2M.",
+      "role": "Project manager, accountable for the client, the budget, the contract and a team of five to ten people.",
+      "enjeux": [
+        "Hold the schedule and the budget",
+        "Build security in from the first iterations",
+        "Keep business users at the centre of decisions"
+      ],
+      "actions": [
+        "Scoping with business teams and splitting the work into deliverable releases",
+        "Agile delivery (Scrum) with regular steering meetings with the client",
+        "Security requirements tracked in the backlog alongside features",
+        "Financial tracking, contract amendments and risk management"
+      ],
+      "resultats": [
+        "Releases put into production at a steady pace",
+        "A relationship that continued into further phases"
+      ],
+      "note": null,
+      "liens": []
+    }
+  ],
+  "annexe": [
+    {
       "id": "nclsmgr",
+      "theme": null,
       "titre": "This website, run as a client project",
       "organisation": "Personal project",
       "debut": "2026-10",
@@ -35,52 +120,6 @@
           "url": "https://github.com/nic0lasm/nclsmgr.com"
         }
       ]
-    },
-    {
-      "id": "capgemini-defense",
-      "titre": "Digital projects for the public sector",
-      "organisation": "Capgemini",
-      "debut": "2020-03",
-      "fin": null,
-      "contexte": "Since 2020, I have been running application development, cybersecurity and trusted cloud projects for French government ministries and the public sector.",
-      "role": "Senior project manager (Engagement Manager), accountable for each project from scoping to delivery.",
-      "enjeux": [
-        "Deliver software to clients with high security requirements",
-        "Hold budget, margin and contractual commitments across several projects at once",
-        "Get development teams and business stakeholders working together"
-      ],
-      "actions": [
-        "Bid responses and scoping of engagements",
-        "Built and managed teams of 5 to 10 people",
-        "Project governance using agile at scale (SAFe, Scrum) and risk management",
-        "Financial and contract management: budget, margin, contract amendments",
-        "Protection of information and access on projects, as Security Officer"
-      ],
-      "resultats": ["More than 30 projects led, worth €500k to €2M each"],
-      "note": "For confidentiality reasons, no client, programme or detailed figures are named here.",
-      "liens": []
-    },
-    {
-      "id": "rh-terre",
-      "titre": "RH-Terre website",
-      "organisation": "French Army",
-      "debut": "2017-09",
-      "fin": "2018-08",
-      "contexte": "During my gap year, I was a communications officer in the French Army's human resources chain, in Tours.",
-      "role": "Editor-in-chief and functional lead for RH-Terre, the French Army's HR website, heading the editorial unit.",
-      "enjeux": [
-        "Keep French Army personnel informed on human resources matters",
-        "Develop the website together with the departments concerned"
-      ],
-      "actions": [
-        "Set the editorial line and managed the editorial unit",
-        "Functional management of the website",
-        "Photo reports, events and communication materials",
-        "External relations"
-      ],
-      "resultats": [],
-      "note": null,
-      "liens": []
     }
   ],
   "autres": {
