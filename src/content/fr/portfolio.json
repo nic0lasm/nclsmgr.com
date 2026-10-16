@@ -38,16 +38,16 @@
     },
     {
       "id": "capgemini-defense",
-      "titre": "Projets logiciels pour le secteur Défense",
+      "titre": "Projets numériques pour le secteur régalien",
       "organisation": "Capgemini",
       "debut": "2020-03",
       "fin": null,
-      "contexte": "Depuis 2020, je pilote des projets de développement applicatif, de cybersécurité et web pour des clients du secteur Défense.",
-      "role": "Engagement Manager et officier de sécurité, responsable de chaque projet de l'avant-vente à la livraison.",
+      "contexte": "Depuis 2020, je pilote des projets de développement applicatif, de cybersécurité et de cloud de confiance pour les ministères régaliens et le secteur public.",
+      "role": "Chef de projet senior (Engagement Manager), responsable de chaque projet du cadrage à la livraison.",
       "enjeux": [
         "Livrer des logiciels à des clients aux exigences de sécurité élevées",
         "Tenir budget, marge et engagements contractuels sur plusieurs projets en parallèle",
-        "Faire travailler ensemble équipes de développement et interlocuteurs militaires"
+        "Faire travailler ensemble équipes de développement et interlocuteurs métier"
       ],
       "actions": [
         "Réponse aux appels d'offres et cadrage des engagements",
@@ -56,7 +56,7 @@
         "Pilotage financier et contractuel : budget, marge, avenants",
         "Protection des informations et des accès sur les projets, en tant qu'officier de sécurité"
       ],
-      "resultats": ["Plus de 40 projets pilotés de l'avant-vente à la livraison"],
+      "resultats": ["Plus de 30 projets pilotés, de 500 k€ à 2 M€"],
       "note": "Par confidentialité, aucun client, programme ni chiffre détaillé n'est cité ici.",
       "liens": []
     },

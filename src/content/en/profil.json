@@ -2,22 +2,22 @@
   "statut": "brouillon",
   "langue": "en",
   "nom": "Nicolas Maigre",
-  "intitule": "Cybersecurity Project Manager",
+  "intitule": "Cybersecurity and Digital Sovereignty Project Manager",
   "localisation": "Paris and the Île-de-France region",
-  "accroche": "I run sensitive digital projects from pre-sales to delivery, with security as a requirement from day one.",
+  "accroche": "An engineer by training and an army officer, I connect public-sector missions, cybersecurity and the teams that deliver.",
   "resume": [
-    "I have been an Engagement Manager at Capgemini since 2020 and have led more than 40 projects for the defence sector, covering application development, cybersecurity and web. I take each project from pre-sales to delivery and I am accountable for the client, the budget, the contract and the teams, often on several projects at once.",
-    "I also act as Security Officer there. As a reserve Lieutenant in the French Army, deployed for three months on an overseas operation, I bridge two cultures: the protection requirements of the armed forces and the delivery constraints of a digital services company.",
-    "My background is deliberately varied: a technical degree in electrical engineering and computing, business school, a year as a communications officer in the French Army, then B2B sales at JCDecaux. It gave me a way of working that has stayed with me: understand the client's business, talk technology with the teams and report plainly to decision-makers."
+    "I have been a senior project manager at Capgemini since 2020, running digital projects for French government ministries and the public sector: application development, cyber risk assessments, architecture studies and sovereign solutions. I have led more than 30 projects worth €500k to €2M each, and I currently run three to seven at once with five to ten people.",
+    "Sovereignty sits at the heart of this work. The question is whether to use a SecNumCloud-qualified trusted cloud or an on-premise deployment at the client's site, and then to back that choice with a risk assessment the decision-makers can follow. I take each engagement from scoping to delivery and I am accountable for the client, the budget, the contract and the teams.",
+    "As a reserve Lieutenant in the French Army, deployed for three months on an overseas operation, I know the missions my projects serve from the inside. My background combines technical training in electrical engineering and computing, business school with a year in Mexico, leading student associations and two years at JCDecaux. It left me with a method: understand the mission, talk technology with the teams, report plainly to decision-makers."
   ],
   "chiffres_cles": [
     {
-      "valeur": "40+",
-      "libelle": "projects led from pre-sales to delivery"
+      "valeur": "30+",
+      "libelle": "projects led, worth €500k to €2M"
     },
     {
-      "valeur": "Since 2020",
-      "libelle": "Engagement Manager at Capgemini"
+      "valeur": "3 to 7",
+      "libelle": "projects at once, with 5 to 10 people"
     },
     {
       "valeur": "Lieutenant",

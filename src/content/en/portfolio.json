@@ -38,16 +38,16 @@
     },
     {
       "id": "capgemini-defense",
-      "titre": "Software projects for the defence sector",
+      "titre": "Digital projects for the public sector",
       "organisation": "Capgemini",
       "debut": "2020-03",
       "fin": null,
-      "contexte": "Since 2020, I have led application development, cybersecurity and web projects for clients in the defence sector.",
-      "role": "Engagement Manager and Security Officer, responsible for each project from pre-sales to delivery.",
+      "contexte": "Since 2020, I have been running application development, cybersecurity and trusted cloud projects for French government ministries and the public sector.",
+      "role": "Senior project manager (Engagement Manager), accountable for each project from scoping to delivery.",
       "enjeux": [
         "Deliver software to clients with high security requirements",
         "Hold budget, margin and contractual commitments across several projects at once",
-        "Get development teams and military stakeholders working together"
+        "Get development teams and business stakeholders working together"
       ],
       "actions": [
         "Bid responses and scoping of engagements",
@@ -56,7 +56,7 @@
         "Financial and contract management: budget, margin, contract amendments",
         "Protection of information and access on projects, as Security Officer"
       ],
-      "resultats": ["More than 40 projects led from pre-sales to delivery"],
+      "resultats": ["More than 30 projects led, worth €500k to €2M each"],
       "note": "For confidentiality reasons, no client, programme or detailed figures are named here.",
       "liens": []
     },

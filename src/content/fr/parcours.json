@@ -4,36 +4,38 @@
   "experiences": [
     {
       "id": "capgemini",
-      "poste": "Engagement Manager",
+      "poste": "Chef de projet senior, Engagement Manager",
       "organisation": "Capgemini",
       "secteur": "Conseil et services numériques",
       "lieu": "Issy-les-Moulineaux",
       "debut": "2020-03",
       "fin": null,
-      "contexte": "Pilotage de projets de développement applicatif, de cybersécurité et web pour des clients du secteur Défense.",
+      "contexte": "Projets numériques pour les ministères régaliens et le secteur public : développement applicatif, cybersécurité, cloud de confiance.",
       "realisations": [
-        "Plus de 40 projets pilotés, de l'avant-vente à la livraison",
-        "Responsabilité de la relation client et de la satisfaction sur toute la durée des engagements",
+        "Business analyst pendant deux ans, puis chef de projet junior, confirmé et aujourd'hui senior",
+        "Plus de 30 projets pilotés du cadrage à la livraison, de 500 k€ à 2 M€",
+        "Aujourd'hui trois à sept projets en parallèle, avec des équipes de cinq à dix personnes",
+        "Analyses de risques cyber et études d'architecture de sécurité",
+        "Solutions souveraines : cloud de confiance qualifié SecNumCloud ou installation sur site chez le bénéficiaire",
         "Pilotage financier et contractuel : budget, marge, avenants, réponses aux appels d'offres",
-        "Constitution et management de plusieurs équipes de 5 à 10 personnes en parallèle",
-        "Gouvernance des projets et gestion des risques, en agilité à l'échelle (SAFe, Scrum)",
-        "Officier de sécurité : protection des informations et des accès sur les projets Défense"
+        "Gouvernance et gestion des risques, en agilité à l'échelle (SAFe, Scrum)",
+        "Officier de sécurité : protection des informations et des accès sur les projets"
       ],
       "outils": ["SAFe", "Scrum"]
     },
     {
       "id": "jcdecaux",
-      "poste": "Chef de publicité",
+      "poste": "Analyste data, puis chef de publicité",
       "organisation": "JCDecaux",
       "secteur": "Communication extérieure",
       "lieu": "Gennevilliers",
       "debut": "2018-09",
       "fin": "2020-02",
-      "contexte": "Vente de campagnes d'affichage aux annonceurs du sud des Hauts-de-Seine.",
+      "contexte": "Master 2 en alternance. D'abord analyste data au service publicité, puis chef de publicité chargé de commercialiser le mobilier urbain du sud des Hauts-de-Seine (Boulogne-Billancourt, Meudon, Issy-les-Moulineaux).",
       "realisations": [
+        "Analyse de données pour le service publicité",
         "Développement d'un portefeuille d'annonceurs B2B",
-        "Conseil en stratégie de communication extérieure",
-        "Responsabilité du mobilier urbain du sud des Hauts-de-Seine"
+        "Conseil en stratégie de communication extérieure"
       ],
       "outils": []
     },
@@ -45,9 +47,9 @@
       "lieu": "Tours",
       "debut": "2017-09",
       "fin": "2018-08",
-      "contexte": "Volontariat d'un an dans la chaîne ressources humaines de l'armée de Terre.",
+      "contexte": "Un an comme officier dans la chaîne ressources humaines de l'armée de Terre, après sélection sur concours.",
       "realisations": [
-        "Rédacteur en chef et responsable fonctionnel du site RH-Terre, management de la cellule éditoriale",
+        "Rédacteur en chef de la cellule éditoriale et responsable fonctionnel du site RH-Terre",
         "Relations extérieures, reportages photo, événementiel et supports de communication"
       ],
       "outils": []
@@ -63,6 +65,21 @@
       "contexte": "Réserve opérationnelle de l'armée de Terre, en parallèle de mon activité civile.",
       "realisations": ["Engagement de trois mois en opération extérieure"],
       "outils": []
+    },
+    {
+      "id": "associatif",
+      "poste": "Président d'associations étudiantes",
+      "organisation": "Vie associative étudiante",
+      "secteur": "Associatif",
+      "lieu": "Lyon",
+      "debut": "2013-09",
+      "fin": "2015-07",
+      "contexte": "Engagement mené en parallèle de mon DUT.",
+      "realisations": [
+        "Présidence de trois associations étudiantes",
+        "Présidence d'une fédération d'associations regroupant plusieurs milliers d'étudiants"
+      ],
+      "outils": []
     }
   ],
   "formations": [
@@ -73,7 +90,7 @@
       "lieu": "Montpellier",
       "debut": "2015-09",
       "fin": "2019-12",
-      "detail": "Programme Grande École et double licence de l'IAE de Montpellier. Spécialisation entrepreneuriat et conseil en environnement numérique."
+      "detail": "Programme Grande École et double licence de l'IAE de Montpellier, Master 2 en alternance chez JCDecaux. Spécialisation entrepreneuriat et conseil en environnement numérique."
     },
     {
       "id": "monterrey",

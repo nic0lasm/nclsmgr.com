@@ -2,22 +2,22 @@
   "statut": "brouillon",
   "langue": "fr",
   "nom": "Nicolas Maigre",
-  "intitule": "Chef de projet cyber",
+  "intitule": "Chef de projet cyber et souveraineté numérique",
   "localisation": "Paris et Île-de-France",
-  "accroche": "Je pilote des projets numériques sensibles, de l'avant-vente à la livraison, avec la sécurité comme exigence de départ.",
+  "accroche": "Ingénieur de formation et officier, je fais le lien entre les métiers régaliens, la cybersécurité et les équipes qui livrent.",
   "resume": [
-    "Engagement Manager chez Capgemini depuis 2020, j'ai piloté plus de 40 projets pour le secteur Défense : développement applicatif, cybersécurité, web. Je suis chaque projet de l'avant-vente à la livraison, avec la responsabilité du client, du budget, du contrat et des équipes, souvent plusieurs à la fois.",
-    "J'y exerce aussi le rôle d'officier de sécurité. Lieutenant de réserve dans l'armée de Terre, engagé trois mois en opération extérieure, je fais le lien entre deux cultures : les exigences de protection du monde militaire et les contraintes de livraison d'une entreprise de services numériques.",
-    "Mon parcours est volontairement varié : une formation en génie électrique et informatique, une école de commerce, une année comme officier communication dans l'armée de Terre, puis la vente B2B chez JCDecaux. J'en ai gardé une façon de travailler : comprendre le métier du client, parler technique avec les équipes et rendre compte simplement aux décideurs."
+    "Chef de projet senior chez Capgemini depuis 2020, je pilote des projets numériques pour les ministères régaliens et le secteur public : développement applicatif, analyses de risques cyber, études d'architecture et solutions souveraines. J'ai conduit plus de 30 projets, de 500 k€ à 2 M€, et j'en mène aujourd'hui trois à sept en parallèle avec cinq à dix personnes.",
+    "La souveraineté est au cœur de ces projets. Il s'agit de choisir entre un cloud de confiance qualifié SecNumCloud et une installation sur site chez le bénéficiaire, puis d'étayer ce choix par une analyse de risques lisible pour ceux qui décident. Je suis chaque engagement du cadrage à la livraison, avec la responsabilité du client, du budget, du contrat et des équipes.",
+    "Lieutenant de réserve dans l'armée de Terre, engagé trois mois en opération extérieure, je connais de l'intérieur les métiers que servent mes projets. Mon parcours mêle une formation technique en génie électrique et informatique, une école de commerce avec une année au Mexique, la présidence d'associations étudiantes et deux ans chez JCDecaux. J'en ai gardé une méthode : comprendre le métier, parler technique avec les équipes, rendre compte simplement aux décideurs."
   ],
   "chiffres_cles": [
     {
-      "valeur": "40+",
-      "libelle": "projets pilotés de l'avant-vente à la livraison"
+      "valeur": "30+",
+      "libelle": "projets pilotés, de 500 k€ à 2 M€"
     },
     {
-      "valeur": "Depuis 2020",
-      "libelle": "Engagement Manager chez Capgemini"
+      "valeur": "3 à 7",
+      "libelle": "projets en parallèle, avec 5 à 10 personnes"
     },
     {
       "valeur": "Lieutenant",

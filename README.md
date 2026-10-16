@@ -2,7 +2,7 @@
 
 Code source de mon site personnel : parcours, projets, réalisations, et un espace privé pour les échanges ciblés.
 
-Je suis chef de projet cyber. Ce dépôt est public par choix : la façon dont un site est conçu, sécurisé et maintenu en dit autant que ce qu'il affiche.
+Je suis chef de projet cyber et souveraineté numérique. Ce dépôt est public par choix : la façon dont un site est conçu, sécurisé et maintenu en dit autant que ce qu'il affiche.
 
 ## Ambition
 

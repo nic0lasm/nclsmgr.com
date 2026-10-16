@@ -4,13 +4,13 @@
   "domaines": [
     {
       "id": "pilotage",
-      "libelle": "Pilotage de projet",
+      "libelle": "Pilotage de projets",
       "elements": [
-        "Avant-vente et réponse aux appels d'offres",
-        "Cadrage et planification",
-        "Pilotage financier et contractuel",
-        "Gestion des risques",
+        "Cadrage, planification et gouvernance",
+        "Conduite de plusieurs projets en parallèle",
+        "Pilotage financier et contractuel, réponse aux appels d'offres",
         "Management d'équipes pluridisciplinaires",
+        "Gestion des risques projet",
         "Agilité à l'échelle (SAFe, Scrum)"
       ]
     },
@@ -18,8 +18,28 @@
       "id": "cyber",
       "libelle": "Cybersécurité",
       "elements": [
-        "Officier de sécurité sur des projets Défense",
-        "Intégration de la sécurité dès l'avant-vente et le cadrage"
+        "Analyses de risques cyber",
+        "Études d'architecture de sécurité",
+        "Sécurité intégrée dès le cadrage et l'avant-vente",
+        "Officier de sécurité sur des projets sensibles"
+      ]
+    },
+    {
+      "id": "souverainete",
+      "libelle": "Souveraineté numérique",
+      "elements": [
+        "Cloud de confiance qualifié SecNumCloud",
+        "Solutions installées sur site chez le bénéficiaire",
+        "Choix d'hébergement argumenté par l'analyse de risques"
+      ]
+    },
+    {
+      "id": "metier",
+      "libelle": "Métiers régaliens",
+      "elements": [
+        "Ministères régaliens et secteur public",
+        "Officier de réserve, armée de Terre",
+        "Traduction des besoins métier pour les équipes techniques"
       ]
     },
     {
@@ -35,11 +55,10 @@
       "id": "relation",
       "libelle": "Relation client et communication",
       "elements": [
-        "Relation client, de l'avant-vente à la livraison",
+        "Relation client, du cadrage à la livraison",
         "Commerce B2B",
         "Communication interne et institutionnelle",
-        "Relations presse",
-        "Suite Adobe (Illustrator, XD, Photoshop)"
+        "Relations presse"
       ]
     }
   ]

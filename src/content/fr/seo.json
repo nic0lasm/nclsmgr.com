@@ -9,13 +9,13 @@
   },
   "pages": {
     "accueil": {
-      "titre": "Nicolas Maigre, chef de projet cyber",
-      "description": "Je pilote des projets numériques sensibles, de l'avant-vente à la livraison, avec la sécurité comme exigence de départ.",
+      "titre": "Nicolas Maigre, chef de projet cyber et souveraineté",
+      "description": "Chef de projet chez Capgemini pour les ministères régaliens et le secteur public : développement applicatif, risques cyber, cloud de confiance.",
       "og_image": null
     },
     "cv": {
       "titre": "CV · Nicolas Maigre",
-      "description": "Parcours, compétences et certifications de Nicolas Maigre, chef de projet en cybersécurité.",
+      "description": "Parcours, compétences et formation de Nicolas Maigre, chef de projet cyber et souveraineté numérique pour le secteur public.",
       "og_image": null
     },
     "dev": {
@@ -25,12 +25,12 @@
     },
     "portfolio": {
       "titre": "Portfolio · Nicolas Maigre",
-      "description": "Études de cas de projets cyber pilotés : contexte, décisions, résultats mesurés.",
+      "description": "Trois cas anonymisés : analyse de risque cyber, architecture souveraine et pilotage applicatif pour le secteur régalien.",
       "og_image": null
     },
     "contact": {
       "titre": "Contact · Nicolas Maigre",
-      "description": "Une opportunité ou un projet en cybersécurité ? Écrivez-moi via le formulaire ou sur LinkedIn.",
+      "description": "Un projet régalien, une question de cybersécurité ou de souveraineté numérique ? Écrivez-moi via le formulaire ou sur LinkedIn.",
       "og_image": null
     },
     "mentions_legales": {

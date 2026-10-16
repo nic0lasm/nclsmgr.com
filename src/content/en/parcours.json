@@ -4,36 +4,38 @@
   "experiences": [
     {
       "id": "capgemini",
-      "poste": "Engagement Manager",
+      "poste": "Senior Project Manager, Engagement Manager",
       "organisation": "Capgemini",
       "secteur": "Consulting and digital services",
       "lieu": "Issy-les-Moulineaux",
       "debut": "2020-03",
       "fin": null,
-      "contexte": "Leading application development, cybersecurity and web projects for clients in the defence sector.",
+      "contexte": "Digital projects for French government ministries and the public sector: application development, cybersecurity, trusted cloud.",
       "realisations": [
-        "Led more than 40 projects from pre-sales to delivery",
-        "Own the client relationship and client satisfaction for the full length of each engagement",
+        "Business analyst for two years, then junior, mid-level and now senior project manager",
+        "Led more than 30 projects from scoping to delivery, worth €500k to €2M each",
+        "Currently run three to seven projects at once, with teams of five to ten people",
+        "Cyber risk assessments and security architecture studies",
+        "Sovereign solutions: SecNumCloud-qualified trusted cloud or on-premise deployment at the client's site",
         "Manage finances and contracts: budget, margin, contract amendments, bid responses",
-        "Build and manage several teams of 5 to 10 people at the same time",
-        "Run project governance and risk management using agile at scale (SAFe, Scrum)",
-        "Security Officer: protection of information and access on defence projects"
+        "Run governance and risk management using agile at scale (SAFe, Scrum)",
+        "Security Officer: protection of information and access on projects"
       ],
       "outils": ["SAFe", "Scrum"]
     },
     {
       "id": "jcdecaux",
-      "poste": "Advertising Sales Executive",
+      "poste": "Data Analyst, then Advertising Sales Executive",
       "organisation": "JCDecaux",
       "secteur": "Outdoor advertising",
       "lieu": "Gennevilliers",
       "debut": "2018-09",
       "fin": "2020-02",
-      "contexte": "Sold outdoor advertising campaigns to advertisers in southern Hauts-de-Seine, west of Paris.",
+      "contexte": "Work-study year for my master's degree. First a data analyst in the advertising department, then a sales executive selling street furniture advertising across southern Hauts-de-Seine, west of Paris (Boulogne-Billancourt, Meudon, Issy-les-Moulineaux).",
       "realisations": [
+        "Data analysis for the advertising department",
         "Built a portfolio of B2B advertisers",
-        "Advised clients on outdoor advertising strategy",
-        "Responsible for street furniture advertising across southern Hauts-de-Seine"
+        "Advised clients on outdoor advertising strategy"
       ],
       "outils": []
     },
@@ -45,9 +47,9 @@
       "lieu": "Tours",
       "debut": "2017-09",
       "fin": "2018-08",
-      "contexte": "One year of volunteer service in the French Army's human resources chain.",
+      "contexte": "One year as an officer in the French Army's human resources chain, selected through a competitive exam.",
       "realisations": [
-        "Editor-in-chief and functional lead for the RH-Terre website (French Army HR), managing the editorial unit",
+        "Editor-in-chief of the editorial unit and functional lead for the RH-Terre website (French Army HR)",
         "Handled external relations, photo reports, events and communication materials"
       ],
       "outils": []
@@ -63,6 +65,21 @@
       "contexte": "French Army operational reserve, alongside my civilian career.",
       "realisations": ["Three-month deployment on an overseas operation"],
       "outils": []
+    },
+    {
+      "id": "associatif",
+      "poste": "President of student associations",
+      "organisation": "Student associations",
+      "secteur": "Non-profit",
+      "lieu": "Lyon",
+      "debut": "2013-09",
+      "fin": "2015-07",
+      "contexte": "Alongside my technical degree.",
+      "realisations": [
+        "Chaired three student associations",
+        "Chaired a federation of student associations representing several thousand students"
+      ],
+      "outils": []
     }
   ],
   "formations": [
@@ -73,7 +90,7 @@
       "lieu": "Montpellier",
       "debut": "2015-09",
       "fin": "2019-12",
-      "detail": "Programme Grande École, the school's flagship master's-level programme in management, with a double bachelor's degree from IAE Montpellier, the university's school of management. Specialisation in entrepreneurship and digital consulting."
+      "detail": "Programme Grande École, the school's flagship master's-level programme in management, with a double bachelor's degree from IAE Montpellier. Final year as a work-study student at JCDecaux. Specialisation in entrepreneurship and digital consulting."
     },
     {
       "id": "monterrey",
