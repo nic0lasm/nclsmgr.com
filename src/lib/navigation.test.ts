@@ -19,6 +19,10 @@ describe("navigation", () => {
     expect(links.every((link) => link.href.startsWith("/fr"))).toBe(true);
   });
 
+  it("garde l'onglet Dev hors du menu principal", () => {
+    expect(navLinks("fr").map((link) => link.href)).not.toContain("/fr/dev");
+  });
+
   it("marque l'accueil uniquement sur sa propre adresse", () => {
     expect(isCurrentPath("/fr", "/fr")).toBe(true);
     expect(isCurrentPath("/fr/", "/fr")).toBe(true);
