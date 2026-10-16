@@ -54,3 +54,27 @@ par le docker-proxy, qui masque l'IP source, et UFW ferme 80 et 443. Après coup
 plus en direct sur l'IP du serveur, y compris pour un `curl --resolve` depuis le poste
 d'administration ; les contrôles locaux sur le serveur restent possibles. Retour arrière :
 `restreindre-origine.sh retirer`.
+
+## Reste à faire avant le lancement
+
+État au 16 octobre 2026 : site servi derrière Cloudflare, origine fermée aux autres adresses,
+Mozilla Observatory et SSL Labs à A+. Le suivi d'ensemble est dans [ROADMAP.md](../../ROADMAP.md),
+chantier 3. Pour reprendre, dans cet ordre :
+
+1. **Certificat d'origine**, puis **Full (strict)** : section ci-dessus. Tant qu'il n'est pas
+   posé, Cloudflare reste en Full (non strict) car le certificat provisoire est auto-signé.
+2. **Contrôle externe** : lancer le workflow _Audit externe_ à la main, puis créer la variable de
+   dépôt `SURVEILLANCE_ACTIVE` à `true` pour l'exécution mensuelle.
+3. **DNSSEC** : Cloudflare, DNS › Settings › **Enable DNSSEC**, puis reporter l'enregistrement DS
+   affiché chez le registrar. Retiré chez l'ancien hébergeur DNS lors de la bascule.
+4. **Noyau** : redémarrer le serveur (`sudo reboot`) pour charger le dernier noyau installé. Les
+   conteneurs et le filtre d'origine repartent seuls ; vérifier ensuite `uname -r` et la page
+   d'accueil.
+5. **Adresse security@** : alias vers la boîte de l'administrateur, chez l'hébergeur de messagerie,
+   puis envoi d'un courriel de test. Elle est annoncée dans `/.well-known/security.txt`.
+6. **Sauvegardes** : bucket R2 dédié et jeton S3 limité à ce bucket, puis
+   `installer-sauvegarde.sh`. Le test de restauration mensuel s'installe avec.
+7. **Poste d'administration** : retirer l'entrée `nclsmgr.com` ajoutée au fichier `/etc/hosts`
+   pendant la bascule DNS, sans quoi le poste continue de joindre l'origine en direct.
+8. **En-têtes de localisation** : vérifier dans Cloudflare, Rules › Settings, que _Add visitor
+   location headers_ est actif (pays du journal de l'espace privé).
