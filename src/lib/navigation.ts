@@ -1,6 +1,6 @@
 import type { Locale } from "@/lib/i18n";
 
-export const siteOwner = "Nicolas Maigre";
+export const siteOwner = "Nicolas M";
 export const sourceUrl = "https://github.com/nic0lasm/nclsmgr.com";
 
 // Pages légales, liées depuis le pied de chaque page.

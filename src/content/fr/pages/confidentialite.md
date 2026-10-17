@@ -6,7 +6,7 @@ maj: 2026-10-15
 
 Ce site collecte le moins de données possible. Il n'utilise aucun cookie publicitaire, aucun traceur tiers et aucun outil de mesure qui vous suit d'un site à l'autre.
 
-Le responsable du traitement est Nicolas Maigre, joignable par le [formulaire de contact](/contact).
+Le responsable du traitement est Nicolas M, joignable par le [formulaire de contact](/contact).
 
 ## Ce qui est traité
 

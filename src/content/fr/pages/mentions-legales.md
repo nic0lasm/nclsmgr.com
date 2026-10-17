@@ -6,7 +6,7 @@ maj: 2026-10-15
 
 ## Éditeur et responsable de publication
 
-Ce site est un site personnel édité par Nicolas Maigre, à titre non professionnel.
+Ce site est un site personnel édité par Nicolas M, à titre non professionnel.
 Pour toute demande, utilisez le [formulaire de contact](/contact).
 
 ## Hébergement
