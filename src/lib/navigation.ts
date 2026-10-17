@@ -62,6 +62,9 @@ export const chrome = {
     source: "Code source",
     legal: "Mentions légales",
     privacy: "Confidentialité",
+    notFoundTitle: "Page introuvable",
+    notFoundText: "Cette page n'existe pas ou n'est plus disponible.",
+    notFoundHome: "Retour à l'accueil",
   },
   en: {
     skipLink: "Skip to content",
@@ -75,5 +78,8 @@ export const chrome = {
     source: "Source code",
     legal: "Legal notice",
     privacy: "Privacy",
+    notFoundTitle: "Page not found",
+    notFoundText: "This page does not exist or is no longer available.",
+    notFoundHome: "Back to the home page",
   },
 } satisfies Record<Locale, Record<string, string>>;

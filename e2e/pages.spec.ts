@@ -45,6 +45,29 @@ for (const lang of ["fr", "en"]) {
   }
 }
 
+for (const [lang, titre] of [
+  ["fr", "Page introuvable"],
+  ["en", "Page not found"],
+] as const) {
+  test(`/${lang} : une adresse inconnue répond 404 avec la page introuvable de sa langue`, async ({
+    page,
+  }) => {
+    const res = await page.goto(`/${lang}/adresse/inconnue`);
+    expect(res?.status()).toBe(404);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(titre);
+    await expect(page.locator("html")).toHaveAttribute("lang", lang);
+    await expect(page).toHaveTitle(`${titre} · Nicolas Maigre`);
+    await expect(
+      page.getByRole("link", {
+        name: lang === "fr" ? "Retour à l'accueil" : "Back to the home page",
+      }),
+    ).toHaveAttribute("href", `/${lang}`);
+
+    const axe = await new AxeBuilder({ page }).analyze();
+    expect(axe.violations).toEqual([]);
+  });
+}
+
 test("les liens internes des pages de texte gardent la langue", async ({ page }) => {
   await page.goto("/en/mentions-legales");
   await page
