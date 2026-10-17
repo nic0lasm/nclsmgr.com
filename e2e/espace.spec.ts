@@ -124,10 +124,14 @@ async function ouvrirSession(request: APIRequestContext, jeton: string): Promise
 }
 
 async function sansViolation(page: Page) {
-  // Après une navigation côté client, le titre peut arriver un peu après le contenu.
-  await expect(page).toHaveTitle(/\S/);
-  const axe = await new AxeBuilder({ page }).analyze();
-  expect(axe.violations).toEqual([]);
+  // Montée côté client, une page de l'espace se redemande au serveur (Rechargement.tsx) : ses
+  // métadonnées, titre compris, sont alors remplacées. L'analyse est refaite tant que ce
+  // remplacement peut tomber dessus ; une violation qui persiste fait toujours échouer le test.
+  await expect(async () => {
+    await expect(page).toHaveTitle(/\S/, { timeout: 1_000 });
+    const axe = await new AxeBuilder({ page }).analyze();
+    expect(axe.violations).toEqual([]);
+  }).toPass({ timeout: 10_000 });
 }
 
 const COOKIE =
