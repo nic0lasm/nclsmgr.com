@@ -59,16 +59,18 @@ describe("proxy : portée du filtre des documents", () => {
     expect(reponse.headers.get("content-security-policy")).toBeNull();
   });
 
-  it("retire x-nonce et Content-Security-Policy envoyés par le client sur les documents", () => {
+  it("retire x-nonce et les politiques envoyés par le client sur les documents", () => {
     const reponse = passer("/fr/espace/documents/cv", {
       "X-Nonce": "nonce-du-client",
       "Content-Security-Policy": "script-src *",
+      "Content-Security-Policy-Report-Only": "script-src 'nonce-du-client'",
       "User-Agent": "test",
     });
     const transmis = enTetesTransmis(reponse);
     expect(transmis["user-agent"]).toBe("test");
     expect(transmis).not.toHaveProperty("x-nonce");
     expect(transmis).not.toHaveProperty("content-security-policy");
+    expect(transmis).not.toHaveProperty("content-security-policy-report-only");
     expect(reponse.headers.get("content-security-policy")).toBe(CSP_DOCUMENT);
   });
 

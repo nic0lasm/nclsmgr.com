@@ -103,7 +103,7 @@
       ],
       "actions": [
         "Full scoping before the first line of code: needs, audiences, site structure, architecture and hosting",
-        "Six-milestone roadmap, each milestone with a verifiable exit criterion",
+        "Four-workstream roadmap, each with a verifiable exit criterion",
         "Monitored delivery pipeline: review of every change, automated tests, code and image scanning, tracked dependencies",
         "Hardened server behind Cloudflare, strict security headers, no third-party trackers",
         "Private area with personal links that expire and can be revoked, tokens stored only as hashes"

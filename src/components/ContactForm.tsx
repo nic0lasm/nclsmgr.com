@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { envoyerMessage } from "@/app/[lang]/contact/actions";
 import { etatInitial } from "@/app/[lang]/contact/etat";
-import { CHAMP_PIEGE, LIMITES, type Champ } from "@/lib/contact/formulaire";
+import { CHAMP_JETON, CHAMP_PIEGE, LIMITES, type Champ } from "@/lib/contact/formulaire";
 import type { Locale } from "@/lib/i18n";
 import type { Interface } from "@/content/types";
 
@@ -11,7 +11,17 @@ type Textes = Interface["contact"]["formulaire"];
 
 // Fonctionne sans JavaScript : sans script, le formulaire est envoyé normalement et la page
 // revient avec le résultat.
-export function ContactForm({ lang, textes }: { lang: Locale; textes: Textes }) {
+// `jeton` date l'affichage de la page (voir src/lib/contact/delai.ts) ; après une erreur, le
+// serveur en renvoie un neuf.
+export function ContactForm({
+  lang,
+  textes,
+  jeton,
+}: {
+  lang: Locale;
+  textes: Textes;
+  jeton: string;
+}) {
   const [etat, action, enCours] = useActionState(envoyerMessage, etatInitial);
 
   // La zone d'annonce existe dès le départ : un lecteur d'écran annonce ce qui y apparaît.
@@ -53,6 +63,11 @@ export function ContactForm({ lang, textes }: { lang: Locale; textes: Textes }) 
       {/* section__body empile les champs avec l'espacement de la charte. */}
       <form className="section__body" action={action} noValidate>
         <input type="hidden" name="langue" value={lang} />
+        <input
+          type="hidden"
+          name={CHAMP_JETON}
+          value={etat.statut === "erreur" ? etat.jeton : jeton}
+        />
         {global ? (
           <p className="field__error" role="alert">
             {textes[global]}

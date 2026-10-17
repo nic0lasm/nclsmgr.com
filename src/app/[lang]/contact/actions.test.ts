@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ouvrirBase, type Base } from "@/lib/espace/base";
 import { migrer } from "@/lib/espace/migrations";
+import { DELAI_MIN, emettreJeton } from "@/lib/contact/delai";
 import { ENVOIS_MAX } from "@/lib/contact/limite";
+import { MAX_CONTACTS_EN_ATTENTE } from "@/lib/espace/courriels";
 import { CHAMP_PIEGE } from "@/lib/contact/formulaire";
 import { etatInitial } from "./etat";
 
@@ -26,6 +28,7 @@ function formulaire(champs: Record<string, string> = {}) {
     courriel: "alex@example.com",
     objet: "Recrutement",
     message: "Bonjour Nico",
+    jeton: emettreJeton(Date.now() - DELAI_MIN - 1000),
     ...champs,
   };
   for (const [cle, valeur] of Object.entries(tout)) donnees.set(cle, valeur);
@@ -104,6 +107,36 @@ describe("envoyerMessage", () => {
     expect(enFile()).toHaveLength(ENVOIS_MAX);
     entetes.set("x-client-ip", "203.0.113.1");
     expect(await envoyerMessage(etatInitial, formulaire())).toEqual({ statut: "envoye" });
+  });
+
+  it("refuse un envoi trop rapide ou sans jeton valide, sans le compter", async () => {
+    for (const jeton of [emettreJeton(), "", "abc.def"]) {
+      const etat = await envoyerMessage(etatInitial, formulaire({ jeton }));
+      expect(etat).toMatchObject({ global: "echec", valeurs: { message: "Bonjour Nico" } });
+      // Le jeton renvoyé est neuf : le visiteur peut renvoyer son formulaire.
+      expect(etat.statut === "erreur" && etat.jeton).toMatch(/^[0-9a-z]+\./);
+    }
+    expect(enFile()).toEqual([]);
+    for (let i = 0; i < ENVOIS_MAX; i++) {
+      expect(await envoyerMessage(etatInitial, formulaire())).toEqual({ statut: "envoye" });
+    }
+  });
+
+  it("alerte Nico une seule fois quand la file des messages est pleine", async () => {
+    const insertion = db.prepare(
+      "INSERT INTO courriels (modele, donnees, cree_le) VALUES ('contact', '{}', ?)",
+    );
+    for (let i = 0; i < MAX_CONTACTS_EN_ATTENTE; i++) insertion.run(Date.now() - 1000);
+    for (let i = 0; i < 2; i++) {
+      entetes.set("x-client-ip", `192.0.2.${i + 1}`);
+      expect(await envoyerMessage(etatInitial, formulaire())).toMatchObject({ global: "echec" });
+    }
+    const alertes = enFile().filter((c) => c.modele === "alerte");
+    expect(alertes).toHaveLength(1);
+    expect(JSON.parse(alertes[0]?.donnees ?? "{}")).toMatchObject({
+      motif: "file_contact",
+      refus: MAX_CONTACTS_EN_ATTENTE,
+    });
   });
 
   it("répond de façon neutre si la file est indisponible", async () => {

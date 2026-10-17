@@ -2,14 +2,15 @@ import { createHash, randomBytes } from "node:crypto";
 
 // Limitation de débit en mémoire, par adresse IP. Les adresses ne sont gardées que sous forme
 // d'empreinte salée, avec un sel tiré au démarrage du processus, et oubliées après la fenêtre.
-// Une adresse IPv6 compte pour son préfixe /64, que reçoit d'ordinaire un seul abonné.
+// Une adresse IPv6 compte pour son préfixe /48 : un abonné reçoit souvent un /56 ou un /48 entier,
+// qu'un /64 laisserait découper en milliers d'adresses distinctes.
 
 export const ENVOIS_MAX = 5;
 export const FENETRE = 60 * 60 * 1000;
 /** Au-delà, les entrées les plus anciennes sont oubliées pour borner la mémoire. */
 const ENTREES_MAX = 10_000;
 
-/** Préfixe /64 d'une adresse IPv6, ou l'adresse telle quelle. */
+/** Préfixe /48 d'une adresse IPv6, ou l'adresse telle quelle. */
 export function reseau(ip: string): string {
   if (!ip.includes(":")) return ip;
   // Adresse IPv4 écrite en IPv6 (::ffff:203.0.113.7) : c'est l'adresse IPv4 qui compte.
@@ -23,9 +24,9 @@ export function reseau(ip: string): string {
     ...Array<string>(Math.max(0, 8 - debut.length - fin.length)).fill("0"),
     ...fin,
   ];
-  const prefixe = groupes.slice(0, 4).map((g) => Number.parseInt(g, 16));
+  const prefixe = groupes.slice(0, 3).map((g) => Number.parseInt(g, 16));
   if (prefixe.some((g) => !Number.isInteger(g) || g < 0 || g > 0xffff)) return ip;
-  return `${prefixe.map((g) => g.toString(16)).join(":")}::/64`;
+  return `${prefixe.map((g) => g.toString(16)).join(":")}::/48`;
 }
 
 export class Limiteur {

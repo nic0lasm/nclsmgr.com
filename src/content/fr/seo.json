@@ -5,36 +5,36 @@
     "nom": "nclsmgr.com",
     "url": "https://nclsmgr.com",
     "locale": "fr_FR",
-    "auteur": "Nicolas Maigre"
+    "auteur": "Nicolas M"
   },
   "pages": {
     "accueil": {
-      "titre": "Nicolas Maigre, chef de projet cyber et souveraineté",
+      "titre": "Nicolas M, chef de projet cyber et souveraineté",
       "description": "Chef de projet chez Capgemini pour les ministères régaliens et le secteur public : développement applicatif, risques cyber, cloud de confiance.",
       "og_image": null
     },
     "cv": {
-      "titre": "CV · Nicolas Maigre",
-      "description": "Parcours, compétences et formation de Nicolas Maigre, chef de projet cyber et souveraineté numérique pour le secteur public.",
+      "titre": "CV · Nicolas M",
+      "description": "Parcours, compétences et formation de Nicolas M, chef de projet cyber et souveraineté numérique pour le secteur public.",
       "og_image": null
     },
     "dev": {
-      "titre": "Dev · Nicolas Maigre",
+      "titre": "Dev · Nicolas M",
       "description": "Projets techniques et dépôts publics : le code est consultable, les choix sont expliqués.",
       "og_image": null
     },
     "portfolio": {
-      "titre": "Portfolio · Nicolas Maigre",
+      "titre": "Portfolio · Nicolas M",
       "description": "Trois cas anonymisés : analyse de risque cyber, architecture souveraine et pilotage applicatif pour le secteur régalien.",
       "og_image": null
     },
     "articles": {
-      "titre": "Articles · Nicolas Maigre",
+      "titre": "Articles · Nicolas M",
       "description": "Retours d'expérience sur le pilotage de projets cyber, l'analyse de risques et la souveraineté numérique dans le secteur public.",
       "og_image": null
     },
     "contact": {
-      "titre": "Contact · Nicolas Maigre",
+      "titre": "Contact · Nicolas M",
       "description": "Un projet régalien, une question de cybersécurité ou de souveraineté numérique ? Écrivez-moi via le formulaire ou sur LinkedIn.",
       "og_image": null
     },

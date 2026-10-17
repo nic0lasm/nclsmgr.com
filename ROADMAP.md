@@ -17,18 +17,18 @@ Le site est en ligne sur https://nclsmgr.com, derrière Cloudflare, et redéploy
 
 Le chemin jusqu'au lancement tient en quatre chantiers.
 
-## Chantier 1 : Repositionnement du site · 25 octobre 2026
+## Chantier 1 : Repositionnement du site · livré le 16 octobre 2026
 
 Recentrer le site sur le pilotage de projets cyber et la souveraineté numérique, pour des décideurs du secteur public.
 
-- [ ] Accueil : intitulé, phrase clé, résumé et chiffres clés revus
-- [ ] CV : parcours complet, compétences cyber et souveraineté (analyse de risques, architecture, cloud qualifié, solutions sur site)
-- [ ] Portfolio refait par thème, avec des études de cas anonymisées
-- [ ] Navigation : Dev sort du menu principal, accessible depuis le pied de page et le portfolio
-- [ ] Référencement et aperçu de partage alignés sur le nouveau positionnement
-- [ ] Rubrique Articles, avec un premier article d'expertise prêt pour le lancement
-- [ ] Version anglaise retraduite après validation du français
-- [ ] CV PDF français et anglais régénérés
+- [x] Accueil : intitulé, phrase clé, résumé et chiffres clés revus
+- [x] CV : parcours complet, compétences cyber et souveraineté (analyse de risques, architecture, cloud qualifié, solutions sur site)
+- [x] Portfolio refait par thème, avec des études de cas anonymisées
+- [x] Navigation : Dev sort du menu principal, accessible depuis le pied de page et le portfolio
+- [x] Référencement et aperçu de partage alignés sur le nouveau positionnement
+- [x] Version anglaise retraduite après validation du français
+- [x] CV PDF français et anglais régénérés
+- [ ] Rubrique Articles et premier article d'expertise, prêts et publiés le jour du lancement
 
 **Critère de sortie** : les textes français et anglais sont validés et publiés.
 
@@ -44,14 +44,14 @@ Rendre l'espace privé utilisable avec de vraies données.
 
 ## Chantier 3 : Fin de sécurisation · avant le 5 novembre 2026
 
-Fermer les derniers écarts avant d'ouvrir le site au public.
+Fermer les derniers écarts de sécurité. Le chantier a repris le 17 octobre 2026.
 
-- [ ] Certificat d'origine Cloudflare installé et chiffrement en Full (strict)
-- [ ] DNSSEC réactivé via Cloudflare
+- [x] Certificat d'origine Cloudflare installé et chiffrement en Full (strict)
+- [x] DNSSEC réactivé via Cloudflare
 - [ ] Redémarrage du serveur sur le dernier noyau
 - [ ] Adresse security@nclsmgr.com opérationnelle
 - [ ] Sauvegardes chiffrées hors site et alerte de disponibilité
-- [ ] Audit de sécurité complet et correction des écarts
+- [x] Audit de sécurité complet et correction des écarts
 
 **Critère de sortie** : A+ sur Mozilla Observatory et SSL Labs en Full (strict), aucune vulnérabilité critique ou haute connue, sauvegarde restaurée avec succès.
 
@@ -60,8 +60,10 @@ Fermer les derniers écarts avant d'ouvrir le site au public.
 Vérifier le site refait avant de l'annoncer.
 
 - [ ] Relecture finale de toutes les pages, en français puis en anglais, vers le 29 octobre
-- [ ] Recette sur ordinateur et sur mobile : liens, affichage, navigation au clavier
+- [x] Recette technique sur ordinateur et sur mobile : liens, affichage, navigation au clavier, accessibilité
+- [ ] Contrôle sur de vrais appareils : Safari sur Mac et iPhone, Firefox
 - [ ] Envoi réel d'un message par le formulaire de contact
+- [ ] Le 5 novembre : ouverture de la rubrique Articles avec son premier article, puis contrôle après déploiement
 
 **Critère de sortie** : toutes les pages publiques sont relues et validées, accessibles au clavier et sans lien cassé.
 

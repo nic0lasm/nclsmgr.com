@@ -1,0 +1,32 @@
+name: Analyse de l'image publiée
+
+# L'image en ligne n'est reconstruite qu'à la fusion d'un changement : une vulnérabilité publiée
+# après coup dans Node, Alpine ou une dépendance n'apparaîtrait qu'à la publication suivante.
+# Chaque semaine, l'image étiquetée latest est donc analysée à nouveau. Un échec envoie un
+# courriel au propriétaire.
+on:
+  schedule:
+    - cron: "29 5 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  analyse:
+    name: Image ${{ matrix.arch }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [amd64, arm64]
+    steps:
+      # Le paquet est public : aucune connexion au registre n'est nécessaire.
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        env:
+          TRIVY_PLATFORM: linux/${{ matrix.arch }}
+        with:
+          image-ref: ghcr.io/${{ github.repository }}:latest
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"

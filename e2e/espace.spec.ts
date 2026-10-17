@@ -94,7 +94,8 @@ function expirer(jeton: string) {
 
 // Chaque test compte dans son propre compartiment de limitation de débit.
 function ipUnique(): string {
-  return `2001:db8:${randomBytes(2).toString("hex")}:${randomBytes(2).toString("hex")}::1`;
+  // Le limiteur regroupe l'IPv6 par /48 : seuls les trois premiers groupes distinguent les clés.
+  return `2001:${randomBytes(2).toString("hex")}:${randomBytes(2).toString("hex")}::1`;
 }
 
 const MEME_ORIGINE = { "Sec-Fetch-Site": "same-origin" };
@@ -255,18 +256,18 @@ test.describe("échange du jeton", () => {
   test("au-delà de 10 requêtes en 10 minutes, la réponse est 429 avec Retry-After", async ({
     request,
   }) => {
-    // Toutes les adresses d'un même bloc /64 partagent le compteur.
-    const bloc = `2001:db8:${randomBytes(2).toString("hex")}:${randomBytes(2).toString("hex")}`;
+    // Toutes les adresses d'un même bloc /48 partagent le compteur.
+    const bloc = `2001:${randomBytes(2).toString("hex")}:${randomBytes(2).toString("hex")}`;
     for (let i = 1; i <= 10; i++) {
       const reponse = await request.post("/fr/p/acces", {
-        headers: { ...MEME_ORIGINE, "X-Client-IP": `${bloc}::${i.toString(16)}` },
+        headers: { ...MEME_ORIGINE, "X-Client-IP": `${bloc}:${i.toString(16)}::1` },
         data: { jeton: "x" },
       });
       expect(reponse.status()).toBe(403);
     }
     const debut = Date.now();
     const bloquee = await request.post("/fr/p/acces", {
-      headers: { ...MEME_ORIGINE, "X-Client-IP": `${bloc}:aaaa:bbbb:cccc:dddd` },
+      headers: { ...MEME_ORIGINE, "X-Client-IP": `${bloc}:aaaa:bbbb:cccc:dddd:eeee` },
       data: { jeton: creerLien("actif") },
     });
     expect(Date.now() - debut).toBeGreaterThanOrEqual(240);
@@ -398,6 +399,21 @@ test.describe("espace", () => {
     }
   });
 
+  test("sans session valide, la page 404 ne trahit pas l'espace", async ({ request }) => {
+    const faux = { Cookie: `__Host-espace=${randomBytes(32).toString("base64url")}` };
+    for (const langue of ["fr", "en"]) {
+      for (const enTetes of [{}, faux]) {
+        const reponse = await request.get(`/${langue}/espace`, { headers: enTetes });
+        expect(reponse.status()).toBe(404);
+        // Seul le segment d'adresse demandé peut rester, dans les données de routage de Next.js.
+        const html = (await reponse.text())
+          .replaceAll('\\"espace\\"', "")
+          .replaceAll('"espace"', "");
+        expect(html, `/${langue}/espace`).not.toMatch(/espace|private space/i);
+      }
+    }
+  });
+
   test("une session dont le lien est révoqué après l'ouverture ne montre plus rien", async ({
     request,
   }) => {
@@ -500,6 +516,8 @@ test.describe("page /fr/p", () => {
 
     await bouton.click();
     await page.waitForURL("**/fr/espace");
+    // Le titre arrive avec les métadonnées, après le contenu : attendre le bon, pas l'ancien.
+    await expect(page).toHaveTitle(/Espace privé|Private space/);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Votre espace privé");
     await expect(page.getByText("Bonjour Claire Martin,")).toBeVisible();
 
@@ -663,6 +681,8 @@ test.describe("contenu par profil", () => {
     const bouton = langue === "fr" ? "Accéder à mon espace" : "Enter my space";
     await page.getByRole("button", { name: bouton }).click();
     await page.waitForURL(`**/${langue}/espace`);
+    // Le titre arrive avec les métadonnées, après le contenu : attendre le bon, pas l'ancien.
+    await expect(page).toHaveTitle(/Espace privé|Private space/);
   }
 
   // Les intitulés de section disent à eux seuls quels blocs sont présents, et dans quel ordre.

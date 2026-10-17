@@ -1,9 +1,17 @@
 name: nclsmgr
 
+# Journaux des conteneurs dans journald, qui les garde 30 jours au plus (conserver-journaux.sh).
+# docker logs les lit toujours.
+x-journal: &journal
+  driver: journald
+  options:
+    tag: "{{.Name}}"
+
 services:
   web:
     image: ghcr.io/nic0lasm/nclsmgr.com:${IMAGE_TAG:-latest}
     restart: unless-stopped
+    logging: *journal
     read_only: true
     tmpfs:
       - /tmp
@@ -32,6 +40,7 @@ services:
     # Un envoi en cours peut durer jusqu'à 60 s : on le laisse finir pour ne pas l'envoyer deux fois.
     stop_grace_period: 75s
     restart: unless-stopped
+    logging: *journal
     read_only: true
     tmpfs:
       - /tmp
@@ -62,6 +71,7 @@ services:
     image: ghcr.io/umami-software/umami:3.4.0@sha256:85909afc45bdcda1917394594a087421fdbb05610fded0fa9f6fb861abb2f367
     profiles: [statistiques]
     restart: unless-stopped
+    logging: *journal
     depends_on:
       umami-db:
         condition: service_healthy
@@ -92,6 +102,7 @@ services:
     image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
     profiles: [statistiques]
     restart: unless-stopped
+    logging: *journal
     env_file:
       - path: /etc/nclsmgr/umami-db.env
         required: false
@@ -110,6 +121,7 @@ services:
   caddy:
     image: caddy:2-alpine@sha256:d8542f48d34a9cf4e4c11a478865229840e87e4c96ea3f439101f31a5d35f75f
     restart: unless-stopped
+    logging: *journal
     depends_on: [web]
     ports:
       - "443:443"

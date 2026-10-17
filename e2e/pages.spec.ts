@@ -53,6 +53,29 @@ for (const lang of ["fr", "en"]) {
   }
 }
 
+for (const [lang, titre] of [
+  ["fr", "Page introuvable"],
+  ["en", "Page not found"],
+] as const) {
+  test(`/${lang} : une adresse inconnue répond 404 avec la page introuvable de sa langue`, async ({
+    page,
+  }) => {
+    const res = await page.goto(`/${lang}/adresse/inconnue`);
+    expect(res?.status()).toBe(404);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(titre);
+    await expect(page.locator("html")).toHaveAttribute("lang", lang);
+    await expect(page).toHaveTitle(`${titre} · Nicolas M`);
+    await expect(
+      page.getByRole("link", {
+        name: lang === "fr" ? "Retour à l'accueil" : "Back to the home page",
+      }),
+    ).toHaveAttribute("href", `/${lang}`);
+
+    const axe = await new AxeBuilder({ page }).analyze();
+    expect(axe.violations).toEqual([]);
+  });
+}
+
 test("les liens internes des pages de texte gardent la langue", async ({ page }) => {
   await page.goto("/en/mentions-legales");
   await page
@@ -95,4 +118,26 @@ test("la liste des articles mène à l'article dans la même langue", async ({ p
   await page.goto("/en/articles");
   await page.getByRole("main").getByRole("link").first().click();
   await expect(page).toHaveURL(/\/en\/articles\/cloud-de-confiance-ou-sur-site$/);
+});
+
+test("robots.txt, sitemap.xml et icônes sont servis", async ({ request }) => {
+  const robots = await request.get("/robots.txt");
+  expect(robots.status()).toBe(200);
+  const texteRobots = await robots.text();
+  expect(texteRobots).toContain("Disallow: /fr/espace");
+  expect(texteRobots).toContain("Disallow: /fr/p$");
+  expect(texteRobots).not.toMatch(/^Disallow: \/fr\/p$/m);
+  expect(texteRobots).toContain("Sitemap: https://nclsmgr.com/sitemap.xml");
+
+  const sitemap = await request.get("/sitemap.xml");
+  expect(sitemap.status()).toBe(200);
+  const xml = await sitemap.text();
+  for (const chemin of ["/fr", "/en/cv", "/fr/dev", "/en/confidentialite"]) {
+    expect(xml).toContain(`<loc>https://nclsmgr.com${chemin}</loc>`);
+  }
+  expect(xml).not.toContain("/espace");
+
+  for (const icone of ["/favicon.ico", "/apple-icon.png"]) {
+    expect((await request.get(icone)).status()).toBe(200);
+  }
 });

@@ -23,6 +23,7 @@ export function proxy(request: NextRequest) {
     const requestHeaders = new Headers(request.headers);
     requestHeaders.delete("x-nonce");
     requestHeaders.delete("Content-Security-Policy");
+    requestHeaders.delete("Content-Security-Policy-Report-Only");
     const response = NextResponse.next({ request: { headers: requestHeaders } });
     response.headers.set("Content-Security-Policy", EN_TETES_DOCUMENT["Content-Security-Policy"]);
     return response;
@@ -43,7 +44,8 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     {
-      source: "/((?!_next/static|_next/image|healthz|favicon.ico|robots.txt|\\.well-known).*)",
+      source:
+        "/((?!_next/static|_next/image|healthz|favicon.ico|apple-icon.png|robots.txt|sitemap.xml|\\.well-known).*)",
       missing: [
         { type: "header", key: "next-router-prefetch" },
         { type: "header", key: "purpose", value: "prefetch" },

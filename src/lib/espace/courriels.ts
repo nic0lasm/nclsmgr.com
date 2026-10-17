@@ -25,7 +25,9 @@ export type DonneesCourriel = {
     finLe: number;
     le: number;
   };
-  alerte: { refus: number; depuis: number; jusqua: number };
+  // Sans motif : essais refusés sur l'espace privé. « file_contact » : file des messages de
+  // contact pleine, `refus` compte alors les messages en attente.
+  alerte: { refus: number; depuis: number; jusqua: number; motif?: "file_contact" };
   contact: { nom: string; courriel: string; message: string; le: number };
 };
 
@@ -117,6 +119,11 @@ function motif(valeur: unknown): "expire" | "revoque" {
   return valeur;
 }
 
+function motifAlerte(valeur: unknown): "file_contact" {
+  if (valeur !== "file_contact") throw new CourrielInvalide("Motif d'alerte invalide.");
+  return valeur;
+}
+
 function nom(valeur: unknown): string {
   // Sans chevrons ni guillemets, un nom ne peut pas imiter une adresse dans le courriel.
   const propre = texte(valeur, 120).replace(/[<>"]/g, "").trim();
@@ -147,7 +154,12 @@ const valideurs: { [M in Modele]: (d: Record<string, unknown>) => DonneesCourrie
     finLe: date(d.finLe),
     le: date(d.le),
   }),
-  alerte: (d) => ({ refus: entier(d.refus), depuis: date(d.depuis), jusqua: date(d.jusqua) }),
+  alerte: (d) => ({
+    refus: entier(d.refus),
+    depuis: date(d.depuis),
+    jusqua: date(d.jusqua),
+    ...(d.motif === undefined ? {} : { motif: motifAlerte(d.motif) }),
+  }),
   contact: (d) => ({
     nom: nom(d.nom),
     courriel: adresse(d.courriel),
@@ -185,14 +197,24 @@ const redacteurs: { [M in Modele]: (d: DonneesCourriel[M]) => MessageCourriel } 
       "Tu peux le prolonger avec la commande liens si l'accès doit reprendre.",
     ].join("\n"),
   }),
-  alerte: (d) => ({
-    sujet: "Espace privé : essais refusés en nombre",
-    texte: [
-      `${d.refus} essais d'accès refusés entre le ${dateParis.format(d.depuis)} et le ${dateParis.format(d.jusqua)}.`,
-      "",
-      "La limitation de débit reste active. Cette alerte part au plus une fois par heure.",
-    ].join("\n"),
-  }),
+  alerte: (d) =>
+    d.motif === "file_contact"
+      ? {
+          sujet: "Formulaire de contact : file d'envoi pleine",
+          texte: [
+            `${d.refus} messages de contact attendent l'envoi depuis le ${dateParis.format(d.depuis)}.`,
+            "",
+            "Les nouveaux messages sont refusés jusqu'à ce que la file se vide. Cette alerte part au plus une fois par heure.",
+          ].join("\n"),
+        }
+      : {
+          sujet: "Espace privé : essais refusés en nombre",
+          texte: [
+            `${d.refus} essais d'accès refusés entre le ${dateParis.format(d.depuis)} et le ${dateParis.format(d.jusqua)}.`,
+            "",
+            "La limitation de débit reste active. Cette alerte part au plus une fois par heure.",
+          ].join("\n"),
+        },
   contact: (d) => ({
     sujet: "Message depuis nclsmgr.com",
     repondreA: d.courriel,
@@ -236,6 +258,42 @@ export function mettreEnFile<M extends Modele>(
         .prepare("INSERT INTO courriels (modele, donnees, cree_le) VALUES (?, ?, ?)")
         .run(modele, JSON.stringify(verifiees), maintenant);
       return Number(lastInsertRowid);
+    })
+    .immediate();
+}
+
+/**
+ * Prévient Nico que la file des messages de contact est pleine, au plus une fois par heure.
+ * Les alertes ne sont pas soumises au plafond des messages de contact et partent en premier.
+ */
+export function alerterFilePleine(db: Base, maintenant: number): boolean {
+  return db
+    .transaction(() => {
+      const recente = db
+        .prepare<[number], { n: number }>(
+          `SELECT count(*) AS n FROM courriels WHERE modele = 'alerte'
+           AND json_extract(donnees, '$.motif') = 'file_contact' AND cree_le > ?`,
+        )
+        .get(maintenant - HEURE) as { n: number };
+      if (recente.n > 0) return false;
+      const attente = db
+        .prepare<[], { n: number; depuis: number | null }>(
+          `SELECT count(*) AS n, min(cree_le) AS depuis FROM courriels
+           WHERE modele = 'contact' AND ${EN_ATTENTE}`,
+        )
+        .get() as { n: number; depuis: number | null };
+      mettreEnFile(
+        db,
+        "alerte",
+        {
+          refus: attente.n,
+          depuis: attente.depuis ?? maintenant,
+          jusqua: maintenant,
+          motif: "file_contact",
+        },
+        maintenant,
+      );
+      return true;
     })
     .immediate();
 }

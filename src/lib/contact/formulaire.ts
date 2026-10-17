@@ -8,6 +8,9 @@ export const LIMITES = { nom: 120, courriel: 254, message: 4000 } as const;
 /** Champ piège : invisible pour un visiteur, souvent rempli par les robots. */
 export const CHAMP_PIEGE = "verification";
 
+/** Champ caché portant le jeton de délai (src/lib/contact/delai.ts). */
+export const CHAMP_JETON = "jeton";
+
 // Mêmes règles que la file de courriels (src/lib/espace/courriels.ts), qui ne peut pas être
 // importée ici : adresse en ASCII seulement, caractères invisibles retirés.
 const FORMAT_COURRIEL =

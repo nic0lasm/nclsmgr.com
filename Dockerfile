@@ -19,8 +19,9 @@ ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     PORT=3000 \
     HOSTNAME=0.0.0.0
-# npm, npx et corepack ne servent pas à l'exécution : on les retire pour réduire la surface d'attaque.
+# npm, npx, corepack et yarn ne servent pas à l'exécution : on les retire pour réduire la surface d'attaque.
 RUN rm -rf /usr/local/lib/node_modules /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
+     /opt/yarn-v* /usr/local/bin/yarn /usr/local/bin/yarnpkg \
   && mkdir -p /data/base /data/prive \
   && chown node:node /data/base /data/prive \
   && chmod 700 /data/base /data/prive

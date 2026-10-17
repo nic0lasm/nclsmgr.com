@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { exigerSession } from "@/lib/espace/acces";
+import { notFound } from "next/navigation";
+import { exigerSession, sessionCourante } from "@/lib/espace/acces";
 import { documentsAffiches, lireCatalogue } from "@/lib/espace/documents";
 import { lirePrive, vide } from "@/lib/espace/prive";
 import { blocsParProfil, type Bloc } from "@/lib/espace/profils";
@@ -21,6 +22,8 @@ import { textes } from "./textes";
 export async function generateMetadata({ params }: PageProps<"/[lang]/espace">): Promise<Metadata> {
   const { lang } = await params;
   if (!isLocale(lang)) return {};
+  // Sans session, le titre de l'espace ne doit pas figurer dans la page 404.
+  if (!(await sessionCourante())) notFound();
   return {
     title: textes[lang].metaTitre,
     robots: { index: false, follow: false, noarchive: true, nosnippet: true },

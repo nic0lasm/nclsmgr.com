@@ -132,7 +132,9 @@ describe("POST /[lang]/p/acces", () => {
   it("seuls les échanges de jeton refusés comptent pour l'alerte, pas les refus d'origine ni les 429", async () => {
     const ajouter = vi.spyOn(CompteurRefus.prototype, "ajouter");
     const expire = lien("expire");
+    const revoque = lien("revoque");
     const corps = (r: Response) => r.text();
+    const enTetes = (r: Response) => [...r.headers.entries()].sort();
 
     // Écartés avant l'échange : page tierce (qui ne lit pas la réponse) et débit dépassé.
     const ecartees = [
@@ -147,7 +149,7 @@ describe("POST /[lang]/p/acces", () => {
     // Les 10 essais passés par le limiteur comptent ; ni le 429 ni les refus d'origine.
     expect(ajouter).toHaveBeenCalledTimes(10);
 
-    // Échanges refusés : corps invalide, jeton mal formé, inconnu, expiré.
+    // Échanges refusés : corps invalide, jeton mal formé, inconnu, expiré, révoqué.
     const nonJson = new Request("http://127.0.0.1/fr/p/acces", {
       method: "POST",
       headers: { "Content-Type": "text/plain", "Sec-Fetch-Site": "same-origin" },
@@ -159,15 +161,19 @@ describe("POST /[lang]/p/acces", () => {
       await POST(requete("pas-un-jeton")),
       await POST(requete(randomBytes(32).toString("base64url"))),
       await POST(requete(expire.jeton)),
+      await POST(requete(revoque.jeton)),
     ];
     await apresReponse();
-    expect(ajouter).toHaveBeenCalledTimes(15);
+    expect(ajouter).toHaveBeenCalledTimes(16);
     expect(compter("consultations", expire.lien.id)).toBe(1);
+    expect(compter("consultations", revoque.lien.id)).toBe(1);
 
-    // La réponse reste la même, comptée ou non.
+    // La réponse reste la même, comptée ou non : statut, corps et en-têtes.
+    const reference = enTetes(refusees[0]);
     for (const reponse of [...ecartees, ...rafale.slice(0, 10), ...refusees]) {
       expect(reponse.status).toBe(403);
       expect(await corps(reponse)).toBe('{"ok":false}');
+      expect(enTetes(reponse)).toEqual(reference);
     }
   });
 
