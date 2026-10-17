@@ -103,7 +103,7 @@
       ],
       "actions": [
         "Cadrage complet avant la première ligne de code : besoins, publics, arborescence, architecture et hébergement",
-        "Feuille de route en six jalons, chacun avec un critère de sortie vérifiable",
+        "Feuille de route en quatre chantiers, chacun avec un critère de sortie vérifiable",
         "Chaîne de livraison surveillée : revue de chaque changement, tests automatisés, analyse du code et des images, dépendances suivies",
         "Serveur durci derrière Cloudflare, en-têtes de sécurité stricts, aucun traceur tiers",
         "Espace privé à liens personnels expirables et révocables, jetons conservés sous forme d'empreinte"
