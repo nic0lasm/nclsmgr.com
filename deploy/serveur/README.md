@@ -21,6 +21,7 @@ Le déploiement courant ne passe pas par ces scripts : GitHub Actions publie l'i
 | 5. Mesure d'audience     | `installer-statistiques.sh`                         | Premier déploiement fait        |
 | 6. Sauvegardes et sonde  | `installer-sauvegarde.sh`                           | Bucket R2, jeton S3, sondes     |
 | 7. Origine fermée        | `restreindre-origine.sh`                            | Full (strict), aucun AAAA       |
+| 8. Journaux sur 30 jours | `conserver-journaux.sh`                             | Aucun                           |
 
 Tous sont idempotents, sauf `installer-certificat.sh` qui remplace le certificat à chaque appel.
 
@@ -133,6 +134,15 @@ jeton R2, puis `restic restore latest --host nclsmgr --target /root/restauration
 déploiement, `espace.db`, `prive/` et `caddy/` vont dans les volumes `nclsmgr_base`,
 `nclsmgr_prive` et `nclsmgr_caddy_data`, et `umami.dump` se recharge par `pg_restore` dans le
 conteneur `umami-db`.
+
+## Conservation des journaux
+
+La page Confidentialité annonce 30 jours pour les journaux techniques du serveur.
+`conserver-journaux.sh` le fait respecter : journald garde 30 jours au plus, en un fichier par
+jour, et fail2ban y écrit au lieu de `/var/log/fail2ban.log`. Les conteneurs écrivent aussi dans
+journald (pilote `journald` de `compose.yaml`) : leurs journaux suivent la même durée et
+`docker logs` les lit toujours. Le passage à ce pilote recrée les conteneurs au déploiement
+suivant, soit quelques secondes d'interruption. Caddy ne tient pas de journal d'accès.
 
 ## Reste à faire avant le lancement
 
