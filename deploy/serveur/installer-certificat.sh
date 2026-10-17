@@ -39,9 +39,11 @@ case "${1:-}" in
     openssl x509 -in "$D/origin.new.pem" -noout -issuer | grep -q "CloudFlare Origin" \
       || { echo "Émetteur inattendu : ce n'est pas un certificat d'origine Cloudflare." >&2; exit 1; }
     noms=$(openssl x509 -in "$D/origin.new.pem" -noout -ext subjectAltName)
-    for nom in nclsmgr.com www.nclsmgr.com; do
-      printf '%s' "$noms" | grep -q "DNS:$nom\(,\|$\)" || { echo "Nom absent du certificat : $nom" >&2; exit 1; }
-    done
+    # www est aussi couvert par le joker *.nclsmgr.com, proposé par défaut chez Cloudflare.
+    printf '%s' "$noms" | grep -q 'DNS:nclsmgr\.com\(,\|$\)' \
+      || { echo "Nom absent du certificat : nclsmgr.com" >&2; exit 1; }
+    printf '%s' "$noms" | grep -q 'DNS:\(www\|\*\)\.nclsmgr\.com\(,\|$\)' \
+      || { echo "Nom absent du certificat : www.nclsmgr.com ou *.nclsmgr.com" >&2; exit 1; }
     [ "$(empreinte_cle "$D/origin-key.new")" = "$(empreinte_cert "$D/origin.new.pem")" ] \
       || { echo "Le certificat ne correspond pas à la clé en attente." >&2; exit 1; }
 
