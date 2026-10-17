@@ -6,7 +6,7 @@ maj: 2026-10-15
 
 This site collects as little data as possible. It uses no advertising cookies, no third-party trackers and no analytics tool that follows you from one site to another.
 
-The data controller is Nicolas Maigre, who can be reached through the [contact form](/contact).
+The data controller is Nicolas M, who can be reached through the [contact form](/contact).
 
 ## What is processed
 

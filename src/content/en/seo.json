@@ -5,31 +5,31 @@
     "nom": "nclsmgr.com",
     "url": "https://nclsmgr.com",
     "locale": "en_GB",
-    "auteur": "Nicolas Maigre"
+    "auteur": "Nicolas M"
   },
   "pages": {
     "accueil": {
-      "titre": "Nicolas Maigre, cyber and sovereignty project manager",
+      "titre": "Nicolas M, cyber and sovereignty project manager",
       "description": "Project manager at Capgemini for French government ministries and the public sector: application development, cyber risk, trusted cloud.",
       "og_image": null
     },
     "cv": {
-      "titre": "CV · Nicolas Maigre",
-      "description": "Career history, skills and education of Nicolas Maigre, cybersecurity and digital sovereignty project manager for the public sector.",
+      "titre": "CV · Nicolas M",
+      "description": "Career history, skills and education of Nicolas M, cybersecurity and digital sovereignty project manager for the public sector.",
       "og_image": null
     },
     "dev": {
-      "titre": "Dev · Nicolas Maigre",
+      "titre": "Dev · Nicolas M",
       "description": "Technical projects and public repositories: the code is open to read and the choices behind it are explained.",
       "og_image": null
     },
     "portfolio": {
-      "titre": "Portfolio · Nicolas Maigre",
+      "titre": "Portfolio · Nicolas M",
       "description": "Three anonymised cases: cyber risk assessment, sovereign architecture and application delivery for the public sector.",
       "og_image": null
     },
     "contact": {
-      "titre": "Contact · Nicolas Maigre",
+      "titre": "Contact · Nicolas M",
       "description": "A public-sector project, or a question on cybersecurity or digital sovereignty? Get in touch through the form or on LinkedIn.",
       "og_image": null
     },

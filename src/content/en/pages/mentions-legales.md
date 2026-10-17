@@ -6,7 +6,7 @@ maj: 2026-10-15
 
 ## Publisher and publication director
 
-This is a personal website published by Nicolas Maigre in a private, non-professional capacity.
+This is a personal website published by Nicolas M in a private, non-professional capacity.
 For any request, please use the [contact form](/contact).
 
 ## Hosting

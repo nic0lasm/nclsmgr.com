@@ -56,7 +56,7 @@ for (const [lang, titre] of [
     expect(res?.status()).toBe(404);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(titre);
     await expect(page.locator("html")).toHaveAttribute("lang", lang);
-    await expect(page).toHaveTitle(`${titre} · Nicolas Maigre`);
+    await expect(page).toHaveTitle(`${titre} · Nicolas M`);
     await expect(
       page.getByRole("link", {
         name: lang === "fr" ? "Retour à l'accueil" : "Back to the home page",
