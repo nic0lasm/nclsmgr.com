@@ -54,6 +54,8 @@ jobs:
           printf '%s\n' "$page"
           attendu "HSTS deux ans, sous-domaines compris" "$page" '^strict-transport-security: max-age=63072000; includeSubDomains'
           attendu "CSP à nonce" "$page" "^content-security-policy: .*script-src 'self' 'nonce-[A-Za-z0-9+/=]+' 'strict-dynamic'"
+          # Deux politiques s'appliqueraient toutes les deux : celle de repli bloquerait les scripts.
+          attendu "une seule CSP" "$(printf '%s\n' "$page" | grep -ci '^content-security-policy:')" '^1$'
           attendu "CSP sans cadre parent" "$page" "^content-security-policy: .*frame-ancestors 'none'"
           attendu "X-Content-Type-Options" "$page" '^x-content-type-options: nosniff'
           attendu "X-Frame-Options" "$page" '^x-frame-options: DENY'
@@ -64,11 +66,12 @@ jobs:
           # Un nonce resservi (page mise en cache) annulerait la politique.
           n1=$(printf '%s\n' "$page" | grep -oE "'nonce-[^']+'" | head -1)
           n2=$(lire https://nclsmgr.com/fr | grep -oE "'nonce-[^']+'" | head -1)
-          if [ -n "$n1" ] && [ "$n1" != "$n2" ]; then echo "ok nonce renouvelé à chaque réponse"; else echo "ÉCHEC nonce absent ou resservi"; echecs=$((echecs + 1)); fi
+          if [ -n "$n1" ] && [ -n "$n2" ] && [ "$n1" != "$n2" ]; then echo "ok nonce renouvelé à chaque réponse"; else echo "ÉCHEC nonce absent ou resservi"; echecs=$((echecs + 1)); fi
 
-          # Un en-tête interne de Next.js envoyé de l'extérieur ne doit pas contourner le proxy.
+          # Un en-tête interne de Next.js envoyé de l'extérieur ne doit pas contourner le proxy :
+          # la page garde sa politique à nonce, à moins que Cloudflare ne bloque la requête (403).
           contournement=$(lire -H "X-Middleware-Subrequest: $(printf 'middleware:src/middleware:proxy:src/proxy:%.0s' 1 2 3 4 5)" https://nclsmgr.com/fr)
-          attendu "X-Middleware-Subrequest sans effet" "$contournement" "^content-security-policy: .*'nonce-"
+          attendu "X-Middleware-Subrequest sans effet" "$contournement" "^content-security-policy: .*'nonce-|^HTTP/[0-9.]+ 403"
 
           acces=$(lire https://nclsmgr.com/fr/p)
           attendu "page d'accès : noindex" "$acces" '^x-robots-tag: noindex'
@@ -81,9 +84,9 @@ jobs:
 
           attendu "HTTP renvoyé vers HTTPS" "$(lire http://nclsmgr.com/fr)" '^location: https://nclsmgr\.com/fr$'
           attendu "www renvoyé vers le domaine nu" "$(lire https://www.nclsmgr.com/fr)" '^location: https://nclsmgr\.com/fr$'
-          stats=$(curl -sS -L --max-time 20 -o /dev/null -w '%{http_code}' https://nclsmgr.com/stats/api/websites)
+          stats=$(curl -sS -L --max-time 20 -o /dev/null -w '%{http_code}' https://nclsmgr.com/stats/api/websites || true)
           attendu "tableau de bord des statistiques fermé" "$stats" '^404$'
-          attendu "security.txt" "$(curl -sS --max-time 20 https://nclsmgr.com/.well-known/security.txt)" '^Contact: '
+          attendu "security.txt" "$(curl -sS --max-time 20 https://nclsmgr.com/.well-known/security.txt || true)" '^Contact: '
 
           [ "$echecs" -eq 0 ]
 

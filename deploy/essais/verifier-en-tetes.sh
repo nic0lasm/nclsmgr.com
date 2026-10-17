@@ -29,7 +29,7 @@ attendre() {
 
 # En-têtes reçus par le service factice pour une requête qui tente de les imposer.
 recus() {
-	curl -sk --noproxy "*" --resolve "nclsmgr.com:$1:127.0.0.1" \
+	curl -sSk --noproxy "*" --resolve "nclsmgr.com:$1:127.0.0.1" \
 		-H "X-Middleware-Subrequest: middleware" \
 		-H "CF-IPCountry: FR" \
 		-H "CF-Connecting-IP: 203.0.113.7" \
@@ -37,7 +37,8 @@ recus() {
 		-H "X-Forwarded-For: 198.51.100.9" \
 		-H "X-Nonce: essai" \
 		-H "Content-Security-Policy: script-src 'nonce-essai'" \
-		"https://nclsmgr.com:$1/essai/en-tetes"
+		-H "Content-Security-Policy-Report-Only: script-src 'nonce-essai'" \
+		"https://nclsmgr.com:$1/essai/en-tetes" || echo "requête impossible"
 }
 
 # contient <nom> <corps> <motif attendu> [<motif interdit>...]
@@ -74,7 +75,7 @@ contient "X-Middleware-Subrequest retiré" "$corps" "subrequest=|"
 contient "CF-IPCountry retiré hors Cloudflare" "$corps" "|pays=|"
 contient "X-Client-IP réécrit avec l'IP de la connexion" "$corps" "|ip=" "|ip=|" "203.0.113.7" "198.51.100.9"
 contient "X-Nonce retiré" "$corps" "|nonce=|"
-contient "Content-Security-Policy de requête retiré" "$corps" "|csp=" "nonce-essai"
+contient "politiques de requête retirées" "$corps" "|csp=|csp-ro=" "nonce-essai"
 
 # Depuis une plage de confiance : IP et pays viennent des en-têtes de Cloudflare.
 if [ -n "$port_cf" ]; then
@@ -83,6 +84,7 @@ if [ -n "$port_cf" ]; then
 	contient "CF-IPCountry conservé depuis Cloudflare" "$corps" "|pays=FR|"
 	contient "X-Middleware-Subrequest retiré depuis Cloudflare" "$corps" "subrequest=|"
 	contient "X-Nonce retiré depuis Cloudflare" "$corps" "|nonce=|"
+	contient "politiques de requête retirées depuis Cloudflare" "$corps" "|csp=|csp-ro=" "nonce-essai"
 fi
 
 [ "$echecs" -eq 0 ]

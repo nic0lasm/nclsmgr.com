@@ -9,7 +9,7 @@
 
 	# Renvoie les en-têtes de requête que Caddy doit retirer ou réécrire avant l'application.
 	handle /essai/en-tetes {
-		respond "subrequest={header.X-Middleware-Subrequest}|pays={header.CF-IPCountry}|ip={header.X-Client-IP}|nonce={header.X-Nonce}|csp={header.Content-Security-Policy}"
+		respond "subrequest={header.X-Middleware-Subrequest}|pays={header.CF-IPCountry}|ip={header.X-Client-IP}|nonce={header.X-Nonce}|csp={header.Content-Security-Policy}|csp-ro={header.Content-Security-Policy-Report-Only}"
 	}
 
 	respond "ok"
