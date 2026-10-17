@@ -23,6 +23,7 @@ export function proxy(request: NextRequest) {
     const requestHeaders = new Headers(request.headers);
     requestHeaders.delete("x-nonce");
     requestHeaders.delete("Content-Security-Policy");
+    requestHeaders.delete("Content-Security-Policy-Report-Only");
     const response = NextResponse.next({ request: { headers: requestHeaders } });
     response.headers.set("Content-Security-Policy", EN_TETES_DOCUMENT["Content-Security-Policy"]);
     return response;

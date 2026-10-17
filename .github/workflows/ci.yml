@@ -58,7 +58,7 @@ jobs:
             -v "/tmp/cloudflare-ips.caddy:/etc/caddy/cloudflare-ips.caddy:ro" \
             -v /tmp/certs:/certs:ro \
             "$image" caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
-      - name: Vérifier les politiques CSP servies
+      - name: Vérifier les en-têtes servis et transmis
         run: |
           image=$(grep -oE 'image: caddy:[^ ]+' deploy/compose.yaml | cut -d' ' -f2)
           docker network create essai
@@ -68,11 +68,19 @@ jobs:
             -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
             -v "/tmp/cloudflare-ips.caddy:/etc/caddy/cloudflare-ips.caddy:ro" \
             -v /tmp/certs:/certs:ro "$image"
-          for _ in $(seq 30); do
-            curl -sk --resolve nclsmgr.com:8443:127.0.0.1 -o /dev/null https://nclsmgr.com:8443/fr && break
-            sleep 1
+          # Seconde instance qui tient les adresses privées, donc l'essai, pour une plage Cloudflare.
+          echo "trusted_proxies static private_ranges" > /tmp/cloudflare-essai.caddy
+          docker run -d --name caddy-cf --network essai -p 8444:443 \
+            -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
+            -v "/tmp/cloudflare-essai.caddy:/etc/caddy/cloudflare-ips.caddy:ro" \
+            -v /tmp/certs:/certs:ro "$image"
+          for p in 8443 8444; do
+            for _ in $(seq 30); do
+              curl -sk --resolve "nclsmgr.com:$p:127.0.0.1" -o /dev/null "https://nclsmgr.com:$p/fr" && break
+              sleep 1
+            done
           done
-          sh deploy/essais/verifier-en-tetes.sh 8443 || { docker logs caddy; exit 1; }
+          sh deploy/essais/verifier-en-tetes.sh 8443 8444 || { docker logs caddy; docker logs caddy-cf; exit 1; }
 
   image:
     name: Image et analyse de vulnérabilités
