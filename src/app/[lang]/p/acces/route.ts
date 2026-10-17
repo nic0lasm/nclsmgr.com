@@ -19,7 +19,7 @@ export const dynamic = "force-dynamic";
 // écarts de temps de la base ne disent rien de l'état du lien.
 const PLANCHER_MS = 250;
 
-// 10 échanges par IP (bloc /64 en IPv6) et par 10 minutes. À part, les échanges refusés de
+// 10 échanges par IP (bloc /48 en IPv6) et par 10 minutes. À part, les échanges refusés de
 // l'heure, toutes IP confondues, sont comptés pour l'alerte à Nico : seulement ceux qui ont
 // passé le contrôle d'origine et le limiteur, donc de vrais essais de jeton.
 const globale = globalThis as typeof globalThis & {

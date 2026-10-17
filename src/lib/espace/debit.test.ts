@@ -77,15 +77,22 @@ describe("cleIp", () => {
     expect(cleIp(" 203.0.113.7 ")).toBe("203.0.113.7");
   });
 
-  it("regroupe les IPv6 par bloc /64", () => {
+  it("regroupe les IPv6 par bloc /48", () => {
     const cle = cleIp("2001:db8:1:2:aaaa:bbbb:cccc:dddd");
-    expect(cle).toBe("2001:db8:1:2::/64");
+    expect(cle).toBe("2001:db8:1::/48");
     expect(cleIp("2001:db8:1:2::1")).toBe(cle);
+    expect(cleIp("2001:db8:1:ffff::1")).toBe(cle);
     expect(cleIp("2001:0DB8:0001:0002:0:0:0:ffff")).toBe(cle);
-    expect(cleIp("2001:db8:1:3::1")).not.toBe(cle);
-    expect(cleIp("::1")).toBe("0:0:0:0::/64");
-    expect(cleIp("2001:db8::")).toBe("2001:db8:0:0::/64");
-    expect(cleIp("fe80::1%eth0")).toBe("fe80:0:0:0::/64");
+    expect(cleIp("2001:db8:2::1")).not.toBe(cle);
+    expect(cleIp("::1")).toBe("0:0:0::/48");
+    expect(cleIp("2001:db8::")).toBe("2001:db8:0::/48");
+    expect(cleIp("fe80::1%eth0")).toBe("fe80:0:0::/48");
+
+    // Les 65 536 blocs /64 d'un /48 ne prennent qu'une place dans la table du limiteur.
+    const limiteur = new LimiteurDebit(10, 60_000);
+    for (let i = 0; i < 20_000; i++)
+      limiteur.consommer(cleIp(`2001:db8:7:${i.toString(16)}::1`), 0);
+    expect(limiteur.taille).toBe(1);
   });
 
   it("ramène une IPv4 encapsulée en IPv6 à l'IPv4", () => {
