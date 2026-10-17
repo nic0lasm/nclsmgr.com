@@ -81,7 +81,10 @@ tableau de bord Cloudflare restent hors du serveur.
 **Alertes.** Le service de surveillance (Healthchecks.io) attend deux signaux et prévient par
 courriel s'il en manque un ou s'il reçoit un échec : la sauvegarde quotidienne, et la sonde du site
 toutes les cinq minutes. Un serveur arrêté ou injoignable cesse de se signaler et déclenche donc
-l'alerte. Un test de restauration en échec fait passer la sonde des sauvegardes en alerte.
+l'alerte. Un test de restauration en échec fait passer la sonde des sauvegardes en alerte. La sonde
+du site part du serveur : le workflow _Disponibilité_ de GitHub Actions, actif quand la variable de
+dépôt `SURVEILLANCE_ACTIVE` vaut `true`, la double d'un contrôle mené depuis l'extérieur toutes les
+quinze minutes, certificat compris.
 
 ### Mise en place
 
@@ -101,6 +104,9 @@ l'alerte. Un test de restauration en échec fait passer la sonde des sauvegardes
    (_Ping URL_) de chaque contrôle. Le script affiche une seule fois le mot de passe de
    chiffrement : le ranger aussitôt dans le gestionnaire de mots de passe. Il lance ensuite la
    première sauvegarde et le test de restauration, puis affiche leur résultat.
+5. **Sonde extérieure.** GitHub, Settings › Secrets and variables › Actions › onglet
+   **Variables** › **New repository variable** : `SURVEILLANCE_ACTIVE`, valeur `true`. Lancer
+   ensuite une fois le workflow _Disponibilité_ à la main pour vérifier qu'il passe.
 
 ### Test de restauration
 
@@ -110,7 +116,9 @@ ssh -t debian@<serveur> sudo nclsmgr-verif-restauration
 
 La commande restaure le dernier instantané dans un dossier temporaire, recalcule l'empreinte de
 chaque fichier et la compare à celle prise lors de la sauvegarde, contrôle l'intégrité de la base,
-relit 10 % des données stockées sur R2, puis efface le dossier. Elle termine par
+relit 10 % des données stockées sur R2, puis efface le dossier. Ce dossier est pris dans `/tmp`,
+en mémoire sur Debian 13 : la copie déchiffrée reste hors du disque et disparaît au plus tard
+au redémarrage, même après un arrêt brutal. La commande termine par
 `Restauration vérifiée : <n> fichiers identiques, instantané <id> <date>`, ou s'arrête sur l'écart
 trouvé.
 
