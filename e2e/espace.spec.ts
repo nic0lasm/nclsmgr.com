@@ -399,6 +399,21 @@ test.describe("espace", () => {
     }
   });
 
+  test("sans session valide, la page 404 ne trahit pas l'espace", async ({ request }) => {
+    const faux = { Cookie: `__Host-espace=${randomBytes(32).toString("base64url")}` };
+    for (const langue of ["fr", "en"]) {
+      for (const enTetes of [{}, faux]) {
+        const reponse = await request.get(`/${langue}/espace`, { headers: enTetes });
+        expect(reponse.status()).toBe(404);
+        // Seul le segment d'adresse demandé peut rester, dans les données de routage de Next.js.
+        const html = (await reponse.text())
+          .replaceAll('\\"espace\\"', "")
+          .replaceAll('"espace"', "");
+        expect(html, `/${langue}/espace`).not.toMatch(/espace|private space/i);
+      }
+    }
+  });
+
   test("une session dont le lien est révoqué après l'ouverture ne montre plus rien", async ({
     request,
   }) => {
