@@ -65,3 +65,25 @@ test("sur mobile, le tableau de la confidentialité reste accessible au clavier"
   const axe = await new AxeBuilder({ page }).analyze();
   expect(axe.violations).toEqual([]);
 });
+
+test("robots.txt, sitemap.xml et icônes sont servis", async ({ request }) => {
+  const robots = await request.get("/robots.txt");
+  expect(robots.status()).toBe(200);
+  const texteRobots = await robots.text();
+  expect(texteRobots).toContain("Disallow: /fr/espace");
+  expect(texteRobots).toContain("Disallow: /fr/p$");
+  expect(texteRobots).not.toMatch(/^Disallow: \/fr\/p$/m);
+  expect(texteRobots).toContain("Sitemap: https://nclsmgr.com/sitemap.xml");
+
+  const sitemap = await request.get("/sitemap.xml");
+  expect(sitemap.status()).toBe(200);
+  const xml = await sitemap.text();
+  for (const chemin of ["/fr", "/en/cv", "/fr/dev", "/en/confidentialite"]) {
+    expect(xml).toContain(`<loc>https://nclsmgr.com${chemin}</loc>`);
+  }
+  expect(xml).not.toContain("/espace");
+
+  for (const icone of ["/favicon.ico", "/apple-icon.png"]) {
+    expect((await request.get(icone)).status()).toBe(200);
+  }
+});
