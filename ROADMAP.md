@@ -42,16 +42,16 @@ Rendre l'espace privé utilisable avec de vraies données.
 
 **Critère de sortie** : un lien valide affiche le bon profil et ses documents, un lien expiré ou révoqué ne donne plus accès à rien.
 
-## Chantier 3 : Fin de sécurisation · reportée
+## Chantier 3 : Fin de sécurisation · avant le 5 novembre 2026
 
-Fermer les derniers écarts de sécurité. Ce chantier est mis en attente et reprendra à une date à fixer.
+Fermer les derniers écarts de sécurité. Le chantier a repris le 17 octobre 2026.
 
-- [ ] Certificat d'origine Cloudflare installé et chiffrement en Full (strict)
-- [ ] DNSSEC réactivé via Cloudflare
+- [x] Certificat d'origine Cloudflare installé et chiffrement en Full (strict)
+- [x] DNSSEC réactivé via Cloudflare
 - [ ] Redémarrage du serveur sur le dernier noyau
 - [ ] Adresse security@nclsmgr.com opérationnelle
 - [ ] Sauvegardes chiffrées hors site et alerte de disponibilité
-- [ ] Audit de sécurité complet et correction des écarts
+- [x] Audit de sécurité complet et correction des écarts
 
 **Critère de sortie** : A+ sur Mozilla Observatory et SSL Labs en Full (strict), aucune vulnérabilité critique ou haute connue, sauvegarde restaurée avec succès.
 
@@ -60,7 +60,8 @@ Fermer les derniers écarts de sécurité. Ce chantier est mis en attente et rep
 Vérifier le site refait avant de l'annoncer.
 
 - [ ] Relecture finale de toutes les pages, en français puis en anglais, vers le 29 octobre
-- [ ] Recette sur ordinateur et sur mobile : liens, affichage, navigation au clavier
+- [x] Recette technique sur ordinateur et sur mobile : liens, affichage, navigation au clavier, accessibilité
+- [ ] Contrôle sur de vrais appareils : Safari sur Mac et iPhone, Firefox
 - [ ] Envoi réel d'un message par le formulaire de contact
 - [ ] Le 5 novembre : ouverture de la rubrique Articles avec son premier article, puis contrôle après déploiement
 
