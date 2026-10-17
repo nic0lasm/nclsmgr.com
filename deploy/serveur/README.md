@@ -19,7 +19,7 @@ Le déploiement courant ne passe pas par ces scripts : GitHub Actions publie l'i
 | 3. Envoi de courriels    | `configurer-smtp.sh`                                | Compte de messagerie du domaine |
 | 4. Compte `liens`        | `installer-liens.sh "<clé publique dédiée>"`        | Service courrier déployé        |
 | 5. Mesure d'audience     | `installer-statistiques.sh`                         | Premier déploiement fait        |
-| 6. Sauvegardes           | `installer-sauvegarde.sh`                           | Bucket R2 et jeton S3           |
+| 6. Sauvegardes et sonde  | `installer-sauvegarde.sh`                           | Bucket R2, jeton S3, sondes     |
 | 7. Origine fermée        | `restreindre-origine.sh`                            | Full (strict), aucun AAAA       |
 
 Tous sont idempotents, sauf `installer-certificat.sh` qui remplace le certificat à chaque appel.
@@ -54,6 +54,75 @@ par le docker-proxy, qui masque l'IP source, et UFW ferme 80 et 443. Après coup
 plus en direct sur l'IP du serveur, y compris pour un `curl --resolve` depuis le poste
 d'administration ; les contrôles locaux sur le serveur restent possibles. Retour arrière :
 `restreindre-origine.sh retirer`.
+
+## Sauvegardes et surveillance
+
+`installer-sauvegarde.sh` installe trois minuteries systemd :
+
+| Minuterie                    | Quand                   | Rôle                                               |
+| ---------------------------- | ----------------------- | -------------------------------------------------- |
+| `nclsmgr-sauvegarde`         | chaque nuit vers 3 h 30 | instantané chiffré envoyé vers R2                  |
+| `nclsmgr-verif-restauration` | le 1er du mois vers 5 h | restauration complète dans un dossier temporaire   |
+| `nclsmgr-sonde`              | toutes les cinq minutes | appel du site par Cloudflare, compte rendu externe |
+
+**Contenu.** `/etc/nclsmgr` (certificats, secrets SMTP et Umami), `/opt/nclsmgr` (version
+déployée), la base de l'espace privé (copie cohérente par l'API de sauvegarde SQLite), les
+documents réservés, les données de Caddy et un export PostgreSQL d'Umami. Chaque fichier est
+accompagné de son empreinte SHA-256. Les accès au dépôt de sauvegarde (`sauvegarde.env`,
+`restic.motdepasse`) en sont exclus : ils sont conservés hors du serveur.
+
+**Chiffrement et conservation.** restic chiffre sur le serveur (AES-256 et Poly1305) avant
+l'envoi ; R2 ne reçoit que des blocs chiffrés. Sept sauvegardes quotidiennes, quatre
+hebdomadaires et deux mensuelles : rien au-delà de trois mois, la durée annoncée dans la
+politique de confidentialité. Limite connue : le jeton R2 du serveur peut supprimer, une prise de
+contrôle du serveur peut donc effacer les sauvegardes. Le mot de passe de chiffrement et l'accès au
+tableau de bord Cloudflare restent hors du serveur.
+
+**Alertes.** Le service de surveillance (Healthchecks.io) attend deux signaux et prévient par
+courriel s'il en manque un ou s'il reçoit un échec : la sauvegarde quotidienne, et la sonde du site
+toutes les cinq minutes. Un serveur arrêté ou injoignable cesse de se signaler et déclenche donc
+l'alerte. Un test de restauration en échec fait passer la sonde des sauvegardes en alerte.
+
+### Mise en place
+
+1. **Bucket.** Cloudflare, R2 Object Storage › **Create bucket** : nom `nclsmgr-sauvegardes`,
+   juridiction **EU**. La première fois, R2 demande un moyen de paiement ; l'usage du site reste
+   dans l'offre gratuite (10 Go).
+2. **Jeton.** R2 Object Storage › **Manage API tokens** › **Create Account API token** :
+   permission **Object Read & Write**, limitée au bucket `nclsmgr-sauvegardes`, durée illimitée,
+   filtrage sur les adresses IPv4 et IPv6 du serveur. Garder ouverte la page qui affiche
+   l'_Access Key ID_, le _Secret Access Key_ et le point d'accès S3 de la juridiction EU.
+3. **Sondes.** Healthchecks.io, compte gratuit : créer deux contrôles, `sauvegarde` (période
+   1 jour, délai de grâce 2 heures) et `site` (période 5 minutes, délai de grâce 10 minutes).
+   L'alerte par courriel vers l'adresse du compte est active par défaut. Ne pas publier de page
+   de statut.
+4. **Installation.** Lancer `installer-sauvegarde.sh` et répondre aux questions : dépôt
+   `s3:<point d'accès>/nclsmgr-sauvegardes`, clé et secret du jeton, puis l'adresse de sonde
+   (_Ping URL_) de chaque contrôle. Le script affiche une seule fois le mot de passe de
+   chiffrement : le ranger aussitôt dans le gestionnaire de mots de passe. Il lance ensuite la
+   première sauvegarde et le test de restauration, puis affiche leur résultat.
+
+### Test de restauration
+
+```sh
+ssh -t debian@<serveur> sudo nclsmgr-verif-restauration
+```
+
+La commande restaure le dernier instantané dans un dossier temporaire, recalcule l'empreinte de
+chaque fichier et la compare à celle prise lors de la sauvegarde, contrôle l'intégrité de la base,
+relit 10 % des données stockées sur R2, puis efface le dossier. Elle termine par
+`Restauration vérifiée : <n> fichiers identiques, instantané <id> <date>`, ou s'arrête sur l'écart
+trouvé.
+
+### Restauration après perte du serveur
+
+Sur le nouveau serveur, durci et avec Docker : installer restic, créer `/etc/nclsmgr/sauvegarde.env`
+et `/etc/nclsmgr/restic.motdepasse` (mode 600) à partir du mot de passe conservé et d'un nouveau
+jeton R2, puis `restic restore latest --host nclsmgr --target /root/restauration`. Dans
+`courant/`, `etc/` va dans `/etc/nclsmgr` et `opt/` dans `/opt/nclsmgr` ; après un premier
+déploiement, `espace.db`, `prive/` et `caddy/` vont dans les volumes `nclsmgr_base`,
+`nclsmgr_prive` et `nclsmgr_caddy_data`, et `umami.dump` se recharge par `pg_restore` dans le
+conteneur `umami-db`.
 
 ## Reste à faire avant le lancement
 
