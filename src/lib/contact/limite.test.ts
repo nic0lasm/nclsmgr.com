@@ -15,11 +15,11 @@ describe("Limiteur", () => {
     expect(limiteur.autorise("203.0.113.7", T0 + 60 * MINUTE + 1)).toBe(true);
   });
 
-  it("compte ensemble les adresses IPv6 d'un même /64", () => {
+  it("compte ensemble les adresses IPv6 d'un même /48", () => {
     const limiteur = new Limiteur(1, 60 * MINUTE);
     limiteur.noter("2001:db8:1:2::1", T0);
-    expect(limiteur.autorise("2001:db8:1:2:ffff::9", T0)).toBe(false);
-    expect(limiteur.autorise("2001:db8:1:3::1", T0)).toBe(true);
+    expect(limiteur.autorise("2001:db8:1:ffff::9", T0)).toBe(false);
+    expect(limiteur.autorise("2001:db8:2::1", T0)).toBe(true);
   });
 
   it("ne garde aucune adresse en clair", () => {
@@ -32,10 +32,10 @@ describe("Limiteur", () => {
 });
 
 describe("reseau", () => {
-  it("réduit une adresse IPv6 à son /64", () => {
-    expect(reseau("2001:0db8:0001:0002:0000:0000:0000:0001")).toBe("2001:db8:1:2::/64");
-    expect(reseau("2001:db8::1")).toBe("2001:db8:0:0::/64");
-    expect(reseau("::1")).toBe("0:0:0:0::/64");
+  it("réduit une adresse IPv6 à son /48", () => {
+    expect(reseau("2001:0db8:0001:0002:0000:0000:0000:0001")).toBe("2001:db8:1::/48");
+    expect(reseau("2001:db8::1")).toBe("2001:db8:0::/48");
+    expect(reseau("::1")).toBe("0:0:0::/48");
   });
 
   it("ramène une adresse IPv4 écrite en IPv6 à l'adresse IPv4", () => {

@@ -1,11 +1,17 @@
 "use server";
 
 import { headers } from "next/headers";
-import { composerMessage, lireFormulaire, type Valeurs } from "@/lib/contact/formulaire";
+import { emettreJeton, jetonValide } from "@/lib/contact/delai";
+import {
+  CHAMP_JETON,
+  composerMessage,
+  lireFormulaire,
+  type Valeurs,
+} from "@/lib/contact/formulaire";
 import { Limiteur } from "@/lib/contact/limite";
 import { getContent } from "@/lib/content";
 import { base } from "@/lib/espace/base";
-import { FileSaturee, mettreEnFile } from "@/lib/espace/courriels";
+import { alerterFilePleine, FileSaturee, mettreEnFile } from "@/lib/espace/courriels";
 import { isLocale } from "@/lib/i18n";
 import type { EtatContact } from "./etat";
 
@@ -23,6 +29,8 @@ export async function envoyerMessage(
   donnees: FormData,
 ): Promise<EtatContact> {
   const entetes = await headers();
+  const maintenant = Date.now();
+  const jeton = emettreJeton(maintenant);
   const langue = donnees.get("langue");
   // Une requête qu'un navigateur dit venue d'un autre site est refusée sans détail. Next.js
   // vérifie de son côté que l'origine de toute action serveur est celle du site.
@@ -32,7 +40,7 @@ export async function envoyerMessage(
     typeof langue !== "string" ||
     !isLocale(langue)
   ) {
-    return { statut: "erreur", valeurs: vide, erreurs: {}, global: "echec" };
+    return { statut: "erreur", valeurs: vide, erreurs: {}, global: "echec", jeton };
   }
 
   const { formulaire } = getContent(langue).ui.contact;
@@ -40,15 +48,19 @@ export async function envoyerMessage(
   // Un robot qui remplit le champ piège croit son message parti.
   if (lecture.type === "piege") return { statut: "envoye" };
   if (lecture.type === "erreurs") {
-    return { statut: "erreur", valeurs: lecture.valeurs, erreurs: lecture.erreurs };
+    return { statut: "erreur", valeurs: lecture.valeurs, erreurs: lecture.erreurs, jeton };
   }
 
   const { valeurs } = lecture;
-  const maintenant = Date.now();
+  // Envoi plus rapide qu'une saisie humaine, ou formulaire d'avant un redémarrage : le visiteur
+  // renvoie le sien, avec un jeton neuf. Rien n'est compté pour son adresse.
+  if (!jetonValide(donnees.get(CHAMP_JETON), maintenant)) {
+    return { statut: "erreur", valeurs, erreurs: {}, global: "echec", jeton };
+  }
   // Derrière Caddy, X-Client-IP est toujours réécrit avec l'adresse réelle du visiteur.
   const ip = entetes.get("x-client-ip") ?? "inconnue";
   if (!limiteur.autorise(ip, maintenant)) {
-    return { statut: "erreur", valeurs, erreurs: {}, global: "tropDEnvois" };
+    return { statut: "erreur", valeurs, erreurs: {}, global: "tropDEnvois", jeton };
   }
 
   try {
@@ -65,10 +77,16 @@ export async function envoyerMessage(
     );
   } catch (erreur) {
     // Ni le message ni l'adresse ne sont journalisés.
-    if (!(erreur instanceof FileSaturee)) {
+    if (erreur instanceof FileSaturee) {
+      try {
+        alerterFilePleine(base(), maintenant);
+      } catch (echec) {
+        console.error("Contact : alerte de file pleine impossible.", (echec as Error).name);
+      }
+    } else {
       console.error("Contact : mise en file impossible.", (erreur as Error).name);
     }
-    return { statut: "erreur", valeurs, erreurs: {}, global: "echec" };
+    return { statut: "erreur", valeurs, erreurs: {}, global: "echec", jeton };
   }
   limiteur.noter(ip, maintenant);
   return { statut: "envoye" };

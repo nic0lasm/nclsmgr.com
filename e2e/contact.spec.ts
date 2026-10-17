@@ -22,6 +22,11 @@ function messagesEnFile(repere: string): string[] {
   }
 }
 
+// Le serveur refuse un formulaire envoyé moins de 3 s après son affichage (src/lib/contact/delai.ts).
+async function patienter(page: Page) {
+  await page.waitForTimeout(3100);
+}
+
 async function remplir(page: Page, repere: string) {
   await page.getByLabel("Nom").fill("Alex Martin");
   await page.getByLabel("E-mail").fill("alex@example.com");
@@ -33,6 +38,7 @@ test("le message part et rejoint la file d'envoi", async ({ page }) => {
   const repere = `essai-js-${Date.now()}`;
   await page.goto("/fr/contact");
   await remplir(page, repere);
+  await patienter(page);
   await page.getByRole("button", { name: "Envoyer" }).click();
   await expect(page.getByRole("status")).toHaveText(/Message bien reçu/);
   expect(messagesEnFile(repere)).toEqual([
@@ -64,6 +70,21 @@ test.describe("sans JavaScript", () => {
     await expect(page.getByText("Cette adresse e-mail ne semble pas valide.")).toBeVisible();
 
     await remplir(page, repere);
+    await patienter(page);
+    await page.getByRole("button", { name: "Envoyer" }).click();
+    await expect(page.getByRole("status")).toHaveText(/Message bien reçu/);
+    expect(messagesEnFile(repere)).toHaveLength(1);
+  });
+
+  test("un envoi trop rapide est refusé et peut être renvoyé", async ({ page }) => {
+    const repere = `essai-rapide-${Date.now()}`;
+    await page.goto("/fr/contact");
+    await remplir(page, repere);
+    await page.getByRole("button", { name: "Envoyer" }).click();
+    await expect(page.getByRole("alert")).toBeVisible();
+    await expect(page.getByLabel("Message")).toHaveValue(`Bonjour, ${repere}`);
+    expect(messagesEnFile(repere)).toEqual([]);
+    await patienter(page);
     await page.getByRole("button", { name: "Envoyer" }).click();
     await expect(page.getByRole("status")).toHaveText(/Message bien reçu/);
     expect(messagesEnFile(repere)).toHaveLength(1);

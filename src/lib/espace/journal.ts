@@ -319,6 +319,7 @@ export function noterRefus(db: Base, compteur: CompteurRefus, maintenant: number
       const recente = db
         .prepare<[number], { cree_le: number }>(
           `SELECT cree_le FROM courriels WHERE modele = 'alerte' AND cree_le > ?
+           AND json_extract(donnees, '$.motif') IS NULL
            ORDER BY cree_le DESC LIMIT 1`,
         )
         .get(maintenant - HEURE);

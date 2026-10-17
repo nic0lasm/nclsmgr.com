@@ -367,7 +367,7 @@ describe("noterEssaiRefuse", () => {
     prepare.mockRestore();
     expect(requetes).toHaveLength(2);
     for (const sql of requetes) {
-      const parametres = sql.includes("json_extract") ? [0, lien.id] : [0];
+      const parametres = sql.includes("$.lienId") ? [0, lien.id] : [0];
       const plan = db.prepare(`EXPLAIN QUERY PLAN ${sql}`).all(...parametres) as {
         detail: string;
       }[];
