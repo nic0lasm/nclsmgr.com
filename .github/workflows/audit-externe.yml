@@ -52,7 +52,7 @@ jobs:
 
           page=$(lire https://nclsmgr.com/fr)
           printf '%s\n' "$page"
-          attendu "HSTS deux ans, sous-domaines compris" "$page" '^strict-transport-security: max-age=63072000; includeSubDomains'
+          attendu "HSTS deux ans, sous-domaines et preload" "$page" '^strict-transport-security: max-age=63072000; includeSubDomains; preload$'
           attendu "CSP à nonce" "$page" "^content-security-policy: .*script-src 'self' 'nonce-[A-Za-z0-9+/=]+' 'strict-dynamic'"
           # Deux politiques s'appliqueraient toutes les deux : celle de repli bloquerait les scripts.
           attendu "une seule CSP" "$(printf '%s\n' "$page" | grep -ci '^content-security-policy:')" '^1$'

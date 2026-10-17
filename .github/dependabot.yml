@@ -13,6 +13,10 @@ updates:
       # Les types Node suivent la version majeure de Node utilisée (.nvmrc).
       - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]
+    # Une version compromise est en général retirée dans les jours qui suivent sa publication :
+    # on attend une semaine avant de la proposer. Les alertes de sécurité ne sont pas retardées.
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: chore
   - package-ecosystem: docker
@@ -31,6 +35,11 @@ updates:
     target-branch: main
     schedule:
       interval: weekly
+    ignore:
+      # Une version majeure de PostgreSQL demande de migrer les données de la base Umami :
+      # elle se fait à la main (deploy/serveur/README.md, montées de version différées).
+      - dependency-name: postgres
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: chore
   - package-ecosystem: github-actions
@@ -41,5 +50,7 @@ updates:
     groups:
       actions:
         patterns: ["*"]
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: ci

@@ -167,3 +167,22 @@ Le certificat d'origine est valable 15 ans. Pour le remplacer, reprendre la sect
 « Certificat d'origine Cloudflare » ; la clé DNSSEC est gérée et renouvelée par Cloudflare, sans
 action tant que la zone y reste. Pour quitter Cloudflare, retirer d'abord l'enregistrement DS chez
 le registrar et attendre un jour avant de changer de serveurs de noms.
+
+## Montées de version différées
+
+### PostgreSQL 17 vers 18 (base Umami)
+
+Reportée après le lancement ; Dependabot ne propose plus les versions majeures de PostgreSQL. Les
+données ne passent pas d'une version majeure à l'autre, et l'image 18 range la base dans
+`/var/lib/postgresql/18/docker` : elle refuse de démarrer sur l'ancien volume monté en
+`/var/lib/postgresql/data`. Depuis `/opt/nclsmgr`, en root :
+
+1. **Sauvegarde logique** :
+   `docker compose exec -T umami-db pg_dump -U umami -Fc umami > /root/umami-pg17.dump`.
+2. **PR** : image `postgres:18-alpine` épinglée par empreinte, et un nouveau volume monté en
+   `/var/lib/postgresql` à la place de `umami_db`. Au déploiement, Umami crée un schéma vide.
+3. **Restauration** : `docker compose stop umami`, puis
+   `docker compose exec -T umami-db pg_restore -U umami -d umami --clean --if-exists < /root/umami-pg17.dump`,
+   puis `docker compose start umami`.
+4. **Contrôle** : tableau de bord par le tunnel SSH, avec l'historique. Une semaine plus tard,
+   `docker volume rm nclsmgr_umami_db` et suppression de la sauvegarde.
