@@ -88,8 +88,9 @@ function groupesIPv6(adresse: string): number[] {
 
 /**
  * Clé de limitation pour l'en-tête X-Client-IP, que Caddy écrase lui-même : une IPv4 telle
- * quelle, une IPv6 réduite à son bloc /64 (un abonné en reçoit souvent un entier), une IPv4
- * encapsulée en IPv6 ramenée à l'IPv4. Tout le reste tombe dans un compartiment commun.
+ * quelle, une IPv6 réduite à son bloc /48 (un abonné ou un hébergeur en reçoit souvent un
+ * entier : par /64, un seul /48 suffirait à remplir la table du limiteur), une IPv4 encapsulée
+ * en IPv6 ramenée à l'IPv4. Tout le reste tombe dans un compartiment commun.
  */
 export function cleIp(enTete: string | null): string {
   const adresse = (enTete ?? "").trim().replace(/%.*$/, "");
@@ -101,7 +102,7 @@ export function cleIp(enTete: string | null): string {
     return [groupes[6] >> 8, groupes[6] & 0xff, groupes[7] >> 8, groupes[7] & 0xff].join(".");
   }
   return `${groupes
-    .slice(0, 4)
+    .slice(0, 3)
     .map((g) => g.toString(16))
-    .join(":")}::/64`;
+    .join(":")}::/48`;
 }

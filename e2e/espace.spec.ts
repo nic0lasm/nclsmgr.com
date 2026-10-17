@@ -94,7 +94,8 @@ function expirer(jeton: string) {
 
 // Chaque test compte dans son propre compartiment de limitation de débit.
 function ipUnique(): string {
-  return `2001:db8:${randomBytes(2).toString("hex")}:${randomBytes(2).toString("hex")}::1`;
+  // Le limiteur regroupe l'IPv6 par /48 : seuls les trois premiers groupes distinguent les clés.
+  return `2001:${randomBytes(2).toString("hex")}:${randomBytes(2).toString("hex")}::1`;
 }
 
 const MEME_ORIGINE = { "Sec-Fetch-Site": "same-origin" };
@@ -255,18 +256,18 @@ test.describe("échange du jeton", () => {
   test("au-delà de 10 requêtes en 10 minutes, la réponse est 429 avec Retry-After", async ({
     request,
   }) => {
-    // Toutes les adresses d'un même bloc /64 partagent le compteur.
-    const bloc = `2001:db8:${randomBytes(2).toString("hex")}:${randomBytes(2).toString("hex")}`;
+    // Toutes les adresses d'un même bloc /48 partagent le compteur.
+    const bloc = `2001:${randomBytes(2).toString("hex")}:${randomBytes(2).toString("hex")}`;
     for (let i = 1; i <= 10; i++) {
       const reponse = await request.post("/fr/p/acces", {
-        headers: { ...MEME_ORIGINE, "X-Client-IP": `${bloc}::${i.toString(16)}` },
+        headers: { ...MEME_ORIGINE, "X-Client-IP": `${bloc}:${i.toString(16)}::1` },
         data: { jeton: "x" },
       });
       expect(reponse.status()).toBe(403);
     }
     const debut = Date.now();
     const bloquee = await request.post("/fr/p/acces", {
-      headers: { ...MEME_ORIGINE, "X-Client-IP": `${bloc}:aaaa:bbbb:cccc:dddd` },
+      headers: { ...MEME_ORIGINE, "X-Client-IP": `${bloc}:aaaa:bbbb:cccc:dddd:eeee` },
       data: { jeton: creerLien("actif") },
     });
     expect(Date.now() - debut).toBeGreaterThanOrEqual(240);
