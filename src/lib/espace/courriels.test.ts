@@ -105,12 +105,19 @@ describe("rediger", () => {
     expect(() => rediger("contact", { ...contact, ...modification })).toThrow(CourrielInvalide);
   });
 
+  it("rédige l'alerte de file de contact pleine", () => {
+    const message = rediger("alerte", { ...alerte, refus: 50, motif: "file_contact" });
+    expect(message.sujet).toBe("Formulaire de contact : file d'envoi pleine");
+    expect(message.texte).toContain("50 messages de contact attendent l'envoi");
+  });
+
   it("refuse des données mal formées", () => {
     expect(() => rediger("ouverture", null)).toThrow(CourrielInvalide);
     expect(() => rediger("ouverture", { ...ouverture, lienId: "../x" })).toThrow(CourrielInvalide);
     expect(() => rediger("alerte", { refus: -1, depuis: T0, jusqua: T0 })).toThrow(
       CourrielInvalide,
     );
+    expect(() => rediger("alerte", { ...alerte, motif: "autre" })).toThrow(CourrielInvalide);
     expect(() => rediger("inconnu" as "alerte", {})).toThrow(CourrielInvalide);
     expect(() => rediger("toString" as "alerte", {})).toThrow(CourrielInvalide);
   });
