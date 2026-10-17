@@ -6,5 +6,11 @@
 		not header Next-Router-Prefetch *
 	}
 	header @normal Content-Security-Policy "default-src 'self'; script-src 'self' 'nonce-essai' 'strict-dynamic'"
+
+	# Renvoie les en-têtes de requête que Caddy doit retirer ou réécrire avant l'application.
+	handle /essai/en-tetes {
+		respond "subrequest={header.X-Middleware-Subrequest}|pays={header.CF-IPCountry}|ip={header.X-Client-IP}|nonce={header.X-Nonce}|csp={header.Content-Security-Policy}"
+	}
+
 	respond "ok"
 }

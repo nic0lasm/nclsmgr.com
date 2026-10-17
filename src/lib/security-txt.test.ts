@@ -9,6 +9,14 @@ describe("securityTxt", () => {
     expect(texte).toMatch(/^Expires: 2027-01-13T00:00:00Z$/m);
   });
 
+  it("propose d'abord le signalement privé de GitHub", () => {
+    const contacts = [...texte.matchAll(/^Contact: (.+)$/gm)].map((ligne) => ligne[1]);
+    expect(contacts).toEqual([
+      "https://github.com/nic0lasm/nclsmgr.com/security/advisories/new",
+      "mailto:security@nclsmgr.com",
+    ]);
+  });
+
   it("annonce son adresse canonique", () => {
     expect(texte).toMatch(/^Canonical: https:\/\/nclsmgr\.com\/\.well-known\/security\.txt$/m);
   });

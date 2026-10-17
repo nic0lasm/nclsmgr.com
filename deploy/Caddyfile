@@ -73,6 +73,10 @@ nclsmgr.com {
 
 	# Next.js ne doit jamais recevoir cet en-tête interne depuis l'extérieur (famille CVE-2025-29927).
 	request_header -X-Middleware-Subrequest
+	# Nonce et politique de la requête : seul le proxy Next.js les pose, en interne. Une requête
+	# marquée prefetch ne passe pas par lui : elle ne doit pas pouvoir imposer les siens au rendu.
+	request_header -X-Nonce
+	request_header -Content-Security-Policy
 
 	# Pays du visiteur : seulement si la requête vient de Cloudflare (trusted_proxies).
 	@horsCloudflare not vars trusted_proxy true

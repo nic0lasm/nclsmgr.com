@@ -8,7 +8,10 @@ export function securityTxt(maintenant: Date, validiteJours = 90): string {
     maintenant.getUTCDate(),
   );
   const expiration = new Date(minuit + validiteJours * JOUR);
+  // Deux canaux, par ordre de préférence : le signalement privé de GitHub, actif sur le dépôt, puis
+  // l'adresse dédiée.
   return [
+    "Contact: https://github.com/nic0lasm/nclsmgr.com/security/advisories/new",
     "Contact: mailto:security@nclsmgr.com",
     `Expires: ${expiration.toISOString().replace(".000Z", "Z")}`,
     "Preferred-Languages: fr, en",
