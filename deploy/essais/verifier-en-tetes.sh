@@ -69,6 +69,15 @@ attendre "prefetch Next.js : repli" "script-src 'none'" -H "Next-Router-Prefetch
 attendre "documents réservés : politique fermée" "sandbox allow-downloads" "$u/fr/espace/documents/essai"
 attendre "documents réservés en prefetch" "sandbox allow-downloads" -H "Purpose: prefetch" "$u/en/espace/documents/essai"
 
+# Rien ne nomme le serveur dans la réponse.
+reponse=$(curl -sk --noproxy "*" --resolve "nclsmgr.com:$port:127.0.0.1" -o /dev/null -D - "$u/fr/cv" | tr -d '\r')
+if printf '%s\n' "$reponse" | grep -qiE '^(server|via):'; then
+	echo "ÉCHEC réponse anonyme : $(printf '%s\n' "$reponse" | grep -iE '^(server|via):' | tr '\n' ' ')"
+	echecs=$((echecs + 1))
+else
+	echo "ok réponse sans Server ni Via"
+fi
+
 # Hors Cloudflare : rien de ce que le client envoie ne passe, l'IP est celle de la connexion.
 corps=$(recus "$port")
 contient "X-Middleware-Subrequest retiré" "$corps" "subrequest=|"

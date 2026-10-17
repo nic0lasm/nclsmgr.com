@@ -62,7 +62,7 @@ jobs:
           attendu "Referrer-Policy" "$page" '^referrer-policy: strict-origin-when-cross-origin'
           attendu "Permissions-Policy" "$page" '^permissions-policy: camera=\(\)'
           interdit "aucun X-Powered-By" "$page" '^x-powered-by:'
-          interdit "ni Caddy ni Next.js dans Server" "$page" '^server: .*(caddy|next)'
+          interdit "ni Caddy ni Next.js dans Server ou Via" "$page" '^(server|via): .*(caddy|next)'
           # Un nonce resservi (page mise en cache) annulerait la politique.
           n1=$(printf '%s\n' "$page" | grep -oE "'nonce-[^']+'" | head -1)
           n2=$(lire https://nclsmgr.com/fr | grep -oE "'nonce-[^']+'" | head -1)
