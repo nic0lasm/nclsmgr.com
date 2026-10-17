@@ -516,6 +516,8 @@ test.describe("page /fr/p", () => {
 
     await bouton.click();
     await page.waitForURL("**/fr/espace");
+    // Le titre arrive avec les métadonnées, après le contenu : attendre le bon, pas l'ancien.
+    await expect(page).toHaveTitle(/Espace privé|Private space/);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Votre espace privé");
     await expect(page.getByText("Bonjour Claire Martin,")).toBeVisible();
 
@@ -679,6 +681,8 @@ test.describe("contenu par profil", () => {
     const bouton = langue === "fr" ? "Accéder à mon espace" : "Enter my space";
     await page.getByRole("button", { name: bouton }).click();
     await page.waitForURL(`**/${langue}/espace`);
+    // Le titre arrive avec les métadonnées, après le contenu : attendre le bon, pas l'ancien.
+    await expect(page).toHaveTitle(/Espace privé|Private space/);
   }
 
   // Les intitulés de section disent à eux seuls quels blocs sont présents, et dans quel ordre.
