@@ -22,7 +22,7 @@ const vide: Valeurs = { nom: "", courriel: "", objet: "", message: "" };
 
 /**
  * Met un message de contact en file d'envoi. Le service web n'envoie rien lui-même : le
- * service courrier vide la file vers la boîte de Nico. Rien d'autre n'est conservé.
+ * service courrier vide la file vers la boîte de l'administrateur. Rien d'autre n'est conservé.
  */
 export async function envoyerMessage(
   _precedent: EtatContact,

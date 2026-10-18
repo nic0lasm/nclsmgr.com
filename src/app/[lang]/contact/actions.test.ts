@@ -122,7 +122,7 @@ describe("envoyerMessage", () => {
     }
   });
 
-  it("alerte Nico une seule fois quand la file des messages est pleine", async () => {
+  it("alerte l'administrateur une seule fois quand la file des messages est pleine", async () => {
     const insertion = db.prepare(
       "INSERT INTO courriels (modele, donnees, cree_le) VALUES ('contact', '{}', ?)",
     );
