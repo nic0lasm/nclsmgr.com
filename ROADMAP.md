@@ -50,7 +50,7 @@ Fermer les derniers écarts de sécurité. Le chantier a repris le 17 octobre 20
 - [x] DNSSEC réactivé via Cloudflare
 - [ ] Redémarrage du serveur sur le dernier noyau
 - [ ] Adresse security@nclsmgr.com opérationnelle
-- [ ] Sauvegardes chiffrées hors site et alerte de disponibilité
+- [x] Sauvegardes chiffrées hors site et alerte de disponibilité
 - [x] Audit de sécurité complet et correction des écarts
 
 **Critère de sortie** : A+ sur Mozilla Observatory et SSL Labs en Full (strict), aucune vulnérabilité critique ou haute connue, sauvegarde restaurée avec succès.
