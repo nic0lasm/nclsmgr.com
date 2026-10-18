@@ -1,12 +1,22 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import type { Competences, Interface, Parcours, Portfolio, Profil, Seo } from "@/content/types";
+import type {
+  Accueil,
+  Competences,
+  Interface,
+  Parcours,
+  Portfolio,
+  Profil,
+  Seo,
+} from "@/content/types";
+import enAccueil from "@/content/en/accueil.json";
 import enCompetences from "@/content/en/competences.json";
 import enInterface from "@/content/en/interface.json";
 import enParcours from "@/content/en/parcours.json";
 import enPortfolio from "@/content/en/portfolio.json";
 import enProfil from "@/content/en/profil.json";
 import enSeo from "@/content/en/seo.json";
+import frAccueil from "@/content/fr/accueil.json";
 import frCompetences from "@/content/fr/competences.json";
 import frInterface from "@/content/fr/interface.json";
 import frParcours from "@/content/fr/parcours.json";
@@ -17,6 +27,7 @@ import type { Locale } from "@/lib/i18n";
 import { parseMarkdown, type Document } from "@/lib/markdown";
 
 export interface Contenu {
+  accueil: Accueil;
   profil: Profil;
   parcours: Parcours;
   portfolio: Portfolio;
@@ -27,6 +38,7 @@ export interface Contenu {
 
 // Les JSON importés sont typés largement par TypeScript : leur forme exacte est vérifiée par content.test.ts.
 const fr: Contenu = {
+  accueil: frAccueil as Accueil,
   profil: frProfil as Profil,
   parcours: frParcours as Parcours,
   portfolio: frPortfolio as Portfolio,
@@ -35,6 +47,7 @@ const fr: Contenu = {
   ui: frInterface as Interface,
 };
 const en: Contenu = {
+  accueil: enAccueil as Accueil,
   profil: enProfil as Profil,
   parcours: enParcours as Parcours,
   portfolio: enPortfolio as Portfolio,

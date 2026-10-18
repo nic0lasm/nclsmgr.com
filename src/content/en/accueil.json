@@ -1,0 +1,146 @@
+{
+  "statut": "brouillon",
+  "langue": "en",
+  "presentation": [
+    "At Capgemini, I run digital projects for French government ministries and the public sector: application development, cyber risk assessments and sovereign solutions.",
+    "I built this site the way I run those projects: security as a starting requirement, explained choices and checks anyone can verify. Its code is public. My full background is on the résumé page."
+  ],
+  "securite": {
+    "intro": "A personal website does not need this level of protection. I still treated it as a sensitive service exposed to the Internet: the smallest possible attack surface, defence in depth and evidence for every measure.",
+    "mesures": [
+      {
+        "titre": "Small attack surface",
+        "texte": "No third-party scripts or trackers, no exposed admin interface. The server only accepts web traffic from Cloudflare and the domain is signed with DNSSEC."
+      },
+      {
+        "titre": "Hardened browser side",
+        "texte": "Strict Content Security Policy with a fresh nonce on every page, two-year HSTS, framing forbidden and isolation headers. The server does not disclose any of its software."
+      },
+      {
+        "titre": "Isolation",
+        "texte": "Each service runs in a read-only container, without privileges, under a dedicated user. The application has no outbound access; only a separate mail service holds the mailbox credentials."
+      },
+      {
+        "titre": "Private access",
+        "texte": "Personal links to the private area rely on 256-bit random tokens, stored as hashes, time-limited and revocable. An invalid link gets the same response as an expired one, and attempts are rate-limited."
+      },
+      {
+        "titre": "Delivery pipeline",
+        "texte": "Every change goes through a pull request: strict typing, unit and end-to-end tests, accessibility checks, code analysis with CodeQL and image scanning with Trivy. Actions are pinned by hash, dependencies are tracked by Dependabot, and deployment follows the merge automatically."
+      },
+      {
+        "titre": "Operations",
+        "texte": "Server access by SSH key only, firewall, automatic banning and automatic security updates. Logs are deleted after 30 days. An automated external audit checks DNS, headers and security grades."
+      }
+    ]
+  },
+  "referentiels": {
+    "intro": "The guides and standards I relied on. The site is not certified by any body: “applied” means a requirement implemented and checked, “inspired by” an approach followed without claiming full compliance.",
+    "colonnes": {
+      "referentiel": "Standard",
+      "application": "What is implemented",
+      "niveau": "Level"
+    },
+    "niveaux": {
+      "applique": "Applied",
+      "inspire": "Inspired by"
+    },
+    "elements": [
+      {
+        "id": "anssi-docker",
+        "nom": "ANSSI recommendations for deploying Docker containers",
+        "application": "Read-only containers without capabilities or privilege escalation, internal network with no outbound access, images pinned by digest.",
+        "niveau": "inspire"
+      },
+      {
+        "id": "anssi-linux",
+        "nom": "ANSSI configuration recommendations for GNU/Linux systems",
+        "application": "Minimal server, key-based SSH, firewall, automatic security updates, controlled logging.",
+        "niveau": "inspire"
+      },
+      {
+        "id": "anssi-tls",
+        "nom": "ANSSI security recommendations for TLS",
+        "application": "TLS 1.2 minimum, encryption all the way to the server with a verified certificate, HSTS.",
+        "niveau": "inspire"
+      },
+      {
+        "id": "owasp",
+        "nom": "OWASP ASVS and OWASP cheat sheets",
+        "application": "Sessions through a __Host-, HttpOnly, SameSite cookie, cross-site request forgery protection, hashed tokens, rate limiting, uniform error responses.",
+        "niveau": "inspire"
+      },
+      {
+        "id": "iso-27001",
+        "nom": "ISO/IEC 27001",
+        "application": "Vulnerability management, logging, secure development and a pre-launch audit, modelled on the Annex A controls.",
+        "niveau": "inspire"
+      },
+      {
+        "id": "rgpd",
+        "nom": "GDPR",
+        "application": "Data minimisation, published retention periods, cookie-free analytics, no IP address in the private area log.",
+        "niveau": "applique"
+      },
+      {
+        "id": "csp",
+        "nom": "Content Security Policy Level 3 (W3C)",
+        "application": "Nonce and strict-dynamic policy, no unsafe-inline, checked on every change.",
+        "niveau": "applique"
+      },
+      {
+        "id": "hsts-dnssec",
+        "nom": "HSTS (RFC 6797) and DNSSEC",
+        "application": "Two-year HSTS including subdomains; signed DNS zone.",
+        "niveau": "applique"
+      },
+      {
+        "id": "security-txt",
+        "nom": "security.txt (RFC 9116)",
+        "application": "Published security contact and a responsible disclosure policy in the repository.",
+        "niveau": "applique"
+      },
+      {
+        "id": "wcag",
+        "nom": "WCAG 2.1, level AA",
+        "application": "Automated axe check of every page, contrast verified in both themes.",
+        "niveau": "inspire"
+      }
+    ]
+  },
+  "controles": [
+    {
+      "valeur": "A+",
+      "libelle": "Mozilla Observatory, 140/100"
+    },
+    {
+      "valeur": "A+",
+      "libelle": "Qualys SSL Labs, on all four site addresses"
+    },
+    {
+      "valeur": "0",
+      "libelle": "high-severity finding in the October 2026 audit"
+    }
+  ],
+  "code": {
+    "texte": "The repository is public by choice: how a site is designed, secured and maintained says as much as what it displays. Every change is tracked, tested and analysed before it goes live.",
+    "liens": [
+      {
+        "libelle": "The repository on GitHub",
+        "url": "https://github.com/nic0lasm/nclsmgr.com"
+      },
+      {
+        "libelle": "Security policy",
+        "url": "https://github.com/nic0lasm/nclsmgr.com/blob/main/SECURITY.md"
+      },
+      {
+        "libelle": "Automated checks",
+        "url": "https://github.com/nic0lasm/nclsmgr.com/actions"
+      },
+      {
+        "libelle": "Roadmap",
+        "url": "https://github.com/nic0lasm/nclsmgr.com/blob/main/ROADMAP.md"
+      }
+    ]
+  }
+}

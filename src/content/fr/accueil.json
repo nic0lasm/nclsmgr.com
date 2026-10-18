@@ -1,0 +1,146 @@
+{
+  "statut": "brouillon",
+  "langue": "fr",
+  "presentation": [
+    "Je pilote chez Capgemini des projets numériques pour les ministères régaliens et le secteur public : développement applicatif, analyses de risques cyber et solutions souveraines.",
+    "J'ai conçu ce site comme je mène ces projets : la sécurité comme exigence de départ, des choix expliqués et des contrôles que chacun peut vérifier. Son code est public. Mon parcours détaillé est sur la page CV."
+  ],
+  "securite": {
+    "intro": "Un site personnel n'exige pas un tel niveau de protection. Je l'ai pourtant traité comme un service sensible exposé sur Internet : une surface réduite au minimum, une défense en profondeur et une preuve pour chaque mesure.",
+    "mesures": [
+      {
+        "titre": "Surface réduite",
+        "texte": "Aucun script ni traceur tiers, aucune interface d'administration exposée. Le serveur n'accepte le trafic web que depuis Cloudflare et le domaine est signé par DNSSEC."
+      },
+      {
+        "titre": "Navigateur protégé",
+        "texte": "Politique de sécurité du contenu stricte avec un nonce renouvelé à chaque page, HSTS sur deux ans, affichage dans un cadre interdit et en-têtes d'isolation. Le serveur ne révèle aucun de ses logiciels."
+      },
+      {
+        "titre": "Cloisonnement",
+        "texte": "Chaque service tourne dans un conteneur en lecture seule, sans privilège, sous un utilisateur dédié. L'application n'a aucun accès sortant ; seul un service d'envoi séparé détient les accès à la messagerie."
+      },
+      {
+        "titre": "Accès privés",
+        "texte": "Les liens personnels vers l'espace privé reposent sur des jetons aléatoires de 256 bits, conservés sous forme d'empreinte, limités dans le temps et révocables. Un lien invalide reçoit la même réponse qu'un lien expiré et les tentatives sont limitées."
+      },
+      {
+        "titre": "Chaîne de livraison",
+        "texte": "Toute modification passe par une demande de fusion : typage strict, tests unitaires et de bout en bout, contrôle d'accessibilité, analyse du code par CodeQL et de l'image par Trivy. Les actions sont épinglées par empreinte, les dépendances suivies par Dependabot, et la mise en ligne suit automatiquement la fusion."
+      },
+      {
+        "titre": "Exploitation",
+        "texte": "Accès au serveur par clé SSH uniquement, pare-feu, bannissement automatique et mises à jour de sécurité automatiques. Les journaux sont effacés après 30 jours. Un audit externe automatisé contrôle le DNS, les en-têtes et les notes de sécurité."
+      }
+    ]
+  },
+  "referentiels": {
+    "intro": "Les guides et normes sur lesquels je me suis appuyé. Le site n'est certifié par aucun organisme : « appliqué » désigne une exigence mise en œuvre et contrôlée, « inspiré de » une démarche reprise sans prétendre à une conformité complète.",
+    "colonnes": {
+      "referentiel": "Référentiel",
+      "application": "Ce qui est mis en œuvre",
+      "niveau": "Niveau"
+    },
+    "niveaux": {
+      "applique": "Appliqué",
+      "inspire": "Inspiré de"
+    },
+    "elements": [
+      {
+        "id": "anssi-docker",
+        "nom": "ANSSI, recommandations pour le déploiement de conteneurs Docker",
+        "application": "Conteneurs en lecture seule, sans capacité ni élévation de privilèges, réseau interne sans sortie, images épinglées par empreinte.",
+        "niveau": "inspire"
+      },
+      {
+        "id": "anssi-linux",
+        "nom": "ANSSI, recommandations de configuration d'un système GNU/Linux",
+        "application": "Serveur minimal, SSH par clé, pare-feu, mises à jour de sécurité automatiques, journalisation maîtrisée.",
+        "niveau": "inspire"
+      },
+      {
+        "id": "anssi-tls",
+        "nom": "ANSSI, recommandations de sécurité relatives à TLS",
+        "application": "TLS 1.2 au minimum, chiffrement jusqu'au serveur avec certificat vérifié, HSTS.",
+        "niveau": "inspire"
+      },
+      {
+        "id": "owasp",
+        "nom": "OWASP ASVS et fiches de l'OWASP",
+        "application": "Sessions par cookie __Host-, HttpOnly et SameSite, protection contre la falsification de requêtes, jetons stockés hachés, limitation de débit, réponses d'erreur uniformes.",
+        "niveau": "inspire"
+      },
+      {
+        "id": "iso-27001",
+        "nom": "ISO/IEC 27001",
+        "application": "Gestion des vulnérabilités, journalisation, développement sécurisé et audit avant mise en service, sur le modèle des mesures de l'annexe A.",
+        "niveau": "inspire"
+      },
+      {
+        "id": "rgpd",
+        "nom": "RGPD",
+        "application": "Minimisation des données, durées de conservation publiées, mesure d'audience sans cookie, aucune adresse IP dans le journal de l'espace privé.",
+        "niveau": "applique"
+      },
+      {
+        "id": "csp",
+        "nom": "Content Security Policy niveau 3 (W3C)",
+        "application": "Politique à nonce et strict-dynamic, sans unsafe-inline, vérifiée à chaque modification.",
+        "niveau": "applique"
+      },
+      {
+        "id": "hsts-dnssec",
+        "nom": "HSTS (RFC 6797) et DNSSEC",
+        "application": "HSTS sur deux ans, sous-domaines compris ; zone DNS signée.",
+        "niveau": "applique"
+      },
+      {
+        "id": "security-txt",
+        "nom": "security.txt (RFC 9116)",
+        "application": "Contact de sécurité publié et politique de divulgation responsable dans le dépôt.",
+        "niveau": "applique"
+      },
+      {
+        "id": "wcag",
+        "nom": "WCAG 2.1, niveau AA",
+        "application": "Contrôle automatique de chaque page avec axe, contrastes vérifiés dans les deux thèmes.",
+        "niveau": "inspire"
+      }
+    ]
+  },
+  "controles": [
+    {
+      "valeur": "A+",
+      "libelle": "Mozilla Observatory, 140/100"
+    },
+    {
+      "valeur": "A+",
+      "libelle": "Qualys SSL Labs, sur les quatre adresses du site"
+    },
+    {
+      "valeur": "0",
+      "libelle": "écart de gravité élevée à l'audit d'octobre 2026"
+    }
+  ],
+  "code": {
+    "texte": "Le dépôt est public par choix : la façon dont un site est conçu, sécurisé et maintenu en dit autant que ce qu'il affiche. Chaque modification y est tracée, testée et analysée avant sa mise en ligne.",
+    "liens": [
+      {
+        "libelle": "Le dépôt sur GitHub",
+        "url": "https://github.com/nic0lasm/nclsmgr.com"
+      },
+      {
+        "libelle": "La politique de sécurité",
+        "url": "https://github.com/nic0lasm/nclsmgr.com/blob/main/SECURITY.md"
+      },
+      {
+        "libelle": "Les contrôles automatiques",
+        "url": "https://github.com/nic0lasm/nclsmgr.com/actions"
+      },
+      {
+        "libelle": "La feuille de route",
+        "url": "https://github.com/nic0lasm/nclsmgr.com/blob/main/ROADMAP.md"
+      }
+    ]
+  }
+}
