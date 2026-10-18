@@ -10,8 +10,8 @@ Le dépôt est public par choix : la façon dont un site est conçu, sécurisé 
 
 | Rubrique     | Contenu                                                                    | Accès              |
 | ------------ | -------------------------------------------------------------------------- | ------------------ |
-| Accueil      | Positionnement, chiffres clés, domaines d'intervention                     | Public             |
-| CV           | Parcours, compétences cyber et souveraineté, formations                    | Public             |
+| Accueil      | Présentation courte, sécurité du site, référentiels suivis, code source    | Public             |
+| CV           | Présentation, parcours, compétences cyber et souveraineté, formations      | Public             |
 | Portfolio    | Études de cas anonymisées, classées par thème                              | Public             |
 | Articles     | Notes d'expertise sur le pilotage, la cybersécurité et la souveraineté     | Au lancement       |
 | Contact      | Formulaire auto-hébergé                                                    | Public             |

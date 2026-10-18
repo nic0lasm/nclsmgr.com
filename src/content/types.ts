@@ -90,6 +90,22 @@ export interface Portfolio extends Fichier {
   autres: { titre: string; texte: string; lien: { libelle: string; chemin: string } };
 }
 
+export interface Accueil extends Fichier {
+  presentation: string[];
+  securite: { intro: string; mesures: { titre: string; texte: string }[] };
+  referentiels: {
+    intro: string;
+    colonnes: { referentiel: string; application: string; niveau: string };
+    /** « appliqué » : exigence mise en œuvre et contrôlée ; « inspiré de » : sans conformité revendiquée. */
+    niveaux: Record<NiveauReferentiel, string>;
+    elements: { id: string; nom: string; application: string; niveau: NiveauReferentiel }[];
+  };
+  controles: { valeur: string; libelle: string }[];
+  code: { texte: string; liens: { libelle: string; url: string }[] };
+}
+
+export type NiveauReferentiel = "applique" | "inspire";
+
 export const pagesSeo = [
   "accueil",
   "cv",
@@ -110,10 +126,14 @@ export interface Interface {
   langue: "fr" | "en";
   accueil: {
     profil: string;
+    securite: string;
+    referentiels: string;
+    controles: string;
+    code: string;
+    /** Aussi utilisé par l'espace privé. */
     parcours: string;
     voirCv: string;
     meContacter: string;
-    chiffresCles: string;
   };
   portfolio: {
     titre: string;
@@ -135,6 +155,8 @@ export interface Interface {
     centresInteret: string;
     enCours: string;
     realisations: string;
+    presentation: string;
+    chiffresCles: string;
   };
   contact: {
     linkedin: string;
