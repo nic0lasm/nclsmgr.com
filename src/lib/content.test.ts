@@ -98,7 +98,7 @@ describe("contenus", () => {
       }
       expect(c.portfolio.autres.lien.chemin).toMatch(/^\/[a-z-]+$/);
       for (const lien of c.accueil.code.liens) {
-        expect(lien.url).toMatch(/^https:\/\/github\.com\/nic0lasm\/nclsmgr\.com/);
+        expect(lien.url).toMatch(/^https:\/\/github\.com\/nic0lasm\/nclsmgr\.com(?:\/|$)/);
       }
       for (const r of c.accueil.referentiels.elements) {
         expect(Object.keys(c.accueil.referentiels.niveaux)).toContain(r.niveau);
