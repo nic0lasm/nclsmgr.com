@@ -7,7 +7,10 @@ export type Expediteur = {
   fermer: () => void;
 };
 
-/** Connexion SMTP chiffrée et certificat vérifié ; les courriels ne partent que vers Nico. */
+/**
+ * Connexion SMTP chiffrée et certificat vérifié ; les courriels ne partent que vers
+ * l'administrateur.
+ */
 export function creerExpediteur(config: ConfigurationSmtp): Expediteur {
   const transport = createTransport({
     host: config.hote,

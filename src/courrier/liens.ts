@@ -76,7 +76,7 @@ principal().then(
   },
   (erreur) => {
     clearTimeout(delai);
-    // La sortie d'erreur revient dans le terminal de Nico, jamais dans un journal public.
+    // La sortie d'erreur revient dans le terminal de l'administrateur, jamais dans un journal.
     process.stderr.write(
       erreur instanceof ErreurCommande ? `${erreur.message}\n` : `Erreur interne : ${erreur}\n`,
     );

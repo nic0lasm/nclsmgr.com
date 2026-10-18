@@ -61,7 +61,7 @@ const NOM_PDF = /\/((?:[A-Za-z]|#[0-9A-Fa-f]{2})+)(?=[\0\t\n\f\r ()<>[\]{}/%]|$)
  * Vrai si le fichier nomme une action ou un contenu actif en clair. Les objets rangés dans des
  * flux compressés (object streams, PDF 1.5 et suivants) échappent à cette recherche : c'est
  * une barrière contre une erreur de génération ou de dépôt, pas une garantie. La protection
- * tient d'abord à des PDF de confiance, produits par Nico.
+ * tient d'abord à des PDF de confiance, produits par l'administrateur.
  */
 export function contenuActif(contenu: Uint8Array): boolean {
   const texte = Buffer.from(contenu.buffer, contenu.byteOffset, contenu.byteLength).toString(

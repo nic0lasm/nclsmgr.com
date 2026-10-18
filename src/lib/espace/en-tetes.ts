@@ -1,6 +1,6 @@
 // En-têtes des chemins de l'espace privé, partagés par next.config.ts et les routes.
-// Ils sont à doubler par Caddy selon le chemin (spécification transmise au fil qui gère
-// deploy/), pour que la protection tienne si l'une des deux couches les oublie.
+// Caddy les pose aussi sur les mêmes chemins (deploy/Caddyfile), pour que la protection tienne
+// si l'une des deux couches les oublie.
 // Pas de « server-only » ici : next.config.ts importe ce fichier, d'où l'import relatif.
 
 import { locales } from "../i18n";
@@ -32,8 +32,9 @@ export const EN_TETES_ESPACE = {
  * /fr/espace/documents/<id> : en plus de ceux de l'espace, pour le PDF comme pour le 404.
  *
  * La protection du PDF tient au type application/pdf, à nosniff, à la signature %PDF- vérifiée
- * par la route et à des PDF de confiance (produits par Nico, sans JavaScript ni action, ce que
- * la route vérifie aussi pour les objets en clair). Elle ne tient pas à la politique de sécurité :
+ * par la route et à des PDF de confiance (produits par l'administrateur, sans JavaScript ni
+ * action, ce que la route vérifie aussi pour les objets en clair). Elle ne tient pas à la
+ * politique de sécurité :
  * sous Chromium, la visionneuse PDF remplace la réponse par sa propre page, à laquelle ni
  * default-src 'none' ni sandbox ne s'appliquent, et le JavaScript d'un PDF y est exécuté.
  *

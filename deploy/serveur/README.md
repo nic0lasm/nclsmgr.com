@@ -146,21 +146,18 @@ suivant, soit quelques secondes d'interruption. Caddy ne tient pas de journal d'
 
 ## Reste à faire avant le lancement
 
-État au 17 octobre 2026 : site servi derrière Cloudflare en **Full (strict)** avec le certificat
+État au 18 octobre 2026 : site servi derrière Cloudflare en **Full (strict)** avec le certificat
 d'origine, origine fermée aux autres adresses, DNSSEC signé par Cloudflare et enregistrement DS
-publié chez le registrar, Mozilla Observatory et SSL Labs à A+. Le suivi d'ensemble est dans
-[ROADMAP.md](../../ROADMAP.md), chantier 3. Pour reprendre, dans cet ordre :
+publié chez le registrar, Mozilla Observatory et SSL Labs à A+, sauvegardes chiffrées vers R2 et
+sondes de disponibilité en service. Le suivi d'ensemble est dans [ROADMAP.md](../../ROADMAP.md),
+chantier 3. Pour terminer, dans cet ordre :
 
-1. **Contrôle externe** : créer la variable de dépôt `SURVEILLANCE_ACTIVE` à `true` pour
-   l'exécution mensuelle du workflow _Audit externe_.
-2. **Noyau** : redémarrer le serveur (`sudo reboot`) pour charger le dernier noyau installé. Les
+1. **Noyau** : redémarrer le serveur (`sudo reboot`) pour charger le dernier noyau installé. Les
    conteneurs et le filtre d'origine repartent seuls ; vérifier ensuite `uname -r` et la page
    d'accueil.
-3. **Adresse security@** : alias vers la boîte de l'administrateur, chez l'hébergeur de messagerie,
+2. **Adresse security@** : alias vers la boîte de l'administrateur, chez l'hébergeur de messagerie,
    puis envoi d'un courriel de test. Elle est annoncée dans `/.well-known/security.txt`.
-4. **Sauvegardes** : bucket R2 dédié et jeton S3 limité à ce bucket, puis
-   `installer-sauvegarde.sh`. Le test de restauration mensuel s'installe avec.
-5. **Poste d'administration** : retirer l'entrée `nclsmgr.com` ajoutée au fichier `/etc/hosts`
+3. **Poste d'administration** : retirer l'entrée `nclsmgr.com` ajoutée au fichier `/etc/hosts`
    pendant la bascule DNS, sans quoi le poste continue de joindre l'origine en direct.
 
 Le certificat d'origine est valable 15 ans. Pour le remplacer, reprendre la section
