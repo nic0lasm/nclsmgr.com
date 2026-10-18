@@ -16,7 +16,9 @@ apt-get install -y -qq restic sqlite3 > /dev/null
 install -m 755 -o root -g root sauvegarde.sh /usr/local/sbin/nclsmgr-sauvegarde
 install -m 755 -o root -g root verifier-restauration.sh /usr/local/sbin/nclsmgr-verif-restauration
 install -m 755 -o root -g root sonde-disponibilite.sh /usr/local/sbin/nclsmgr-sonde
-install -d -m 700 -o root -g root /etc/nclsmgr
+# Ne pas toucher aux droits d'un dossier existant : le déployeur (compte deploy) et le service
+# courrier y lisent leurs fichiers, comme le prévoit configurer-smtp.sh.
+[ -d /etc/nclsmgr ] || install -d -m 755 -o root -g root /etc/nclsmgr
 
 ENV=/etc/nclsmgr/sauvegarde.env
 SONDE=/etc/nclsmgr/sonde.env
@@ -57,6 +59,9 @@ if [ ! -f "$MDP" ]; then
   cat "$MDP"
   echo
 fi
+# Secrets de la sauvegarde : lisibles par root seul, quel que soit l'état laissé par une version antérieure.
+chown root:root "$ENV" "$SONDE" "$MDP"
+chmod 600 "$ENV" "$SONDE" "$MDP"
 
 umask 022
 set -a; . "$ENV"; set +a
