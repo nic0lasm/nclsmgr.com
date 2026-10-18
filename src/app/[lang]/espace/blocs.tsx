@@ -35,7 +35,7 @@ function LienExterne({ href, children }: { href: string; children: ReactNode }) 
   );
 }
 
-/** Message nominatif : salutation, puis le message de Nico découpé en paragraphes. */
+/** Message nominatif : salutation, puis le message personnel découpé en paragraphes. */
 export function Message({ lien, lang, t }: Commun & { lien: Lien }) {
   // Le message est écrit dans la langue du lien, qui peut différer de celle de la page.
   const langueMessage = lien.langue === lang ? undefined : lien.langue;

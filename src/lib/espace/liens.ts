@@ -223,7 +223,7 @@ export function enregistrerLien(db: Base, { lien, jeton }: LienPrepare): void {
 
 /**
  * Crée un lien et rend son jeton, qui n'est jamais stocké : seule son empreinte l'est.
- * L'appelant le transmet directement à Nico puis l'oublie.
+ * L'appelant le transmet directement à l'administrateur puis l'oublie.
  */
 export function creerLien(db: Base, entree: NouveauLien, maintenant: number): LienPrepare {
   const prepare = preparerLien(db, entree, maintenant);

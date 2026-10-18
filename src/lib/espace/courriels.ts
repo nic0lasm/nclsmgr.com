@@ -2,7 +2,7 @@ import "server-only";
 import type { Base } from "./base";
 import { estIdLien } from "./jetons";
 
-// Les courriels partent tous vers Nico, en texte brut, avec un sujet fixe par modèle.
+// Les courriels partent tous vers l'administrateur, en texte brut, avec un sujet fixe par modèle.
 // La file ne contient que le nom du modèle et ses données vérifiées et nettoyées : aucun texte
 // libre n'y est rédigé.
 export const modeles = ["ouverture", "essai_refuse", "alerte", "contact"] as const;
@@ -263,7 +263,8 @@ export function mettreEnFile<M extends Modele>(
 }
 
 /**
- * Prévient Nico que la file des messages de contact est pleine, au plus une fois par heure.
+ * Prévient l'administrateur que la file des messages de contact est pleine, au plus une fois
+ * par heure.
  * Les alertes ne sont pas soumises au plafond des messages de contact et partent en premier.
  */
 export function alerterFilePleine(db: Base, maintenant: number): boolean {

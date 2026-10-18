@@ -18,8 +18,9 @@ import {
 } from "@/lib/espace/liens";
 import { purger } from "@/lib/espace/purge";
 
-// Commande « liens » : reçoit un objet JSON venu du Mac de Nico par SSH. Seules les actions
-// et les champs listés ici sont acceptés ; le jeton d'un lien n'apparaît jamais dans la sortie.
+// Commande « liens » : reçoit un objet JSON venu du poste d'administration par SSH. Seuls les
+// actions et les champs listés ici sont acceptés ; le jeton d'un lien n'apparaît jamais dans la
+// sortie.
 
 export class ErreurCommande extends Error {}
 

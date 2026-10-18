@@ -154,8 +154,8 @@ function notifier(lien: Lien, envoyer: (identite: Identite) => void): boolean {
 
 /**
  * Ouverture réussie : une ligne au journal ; à la première ouverture seulement, la date
- * ouvert_le du lien et une notification à Nico. La condition « ouvert_le IS NULL » est
- * vérifiée par la base : deux premières ouvertures simultanées ne notifient qu'une fois.
+ * ouvert_le du lien et une notification à l'administrateur. La condition « ouvert_le IS NULL »
+ * est vérifiée par la base : deux premières ouvertures simultanées ne notifient qu'une fois.
  */
 export function noterOuverture(
   db: Base,
