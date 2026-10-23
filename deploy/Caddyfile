@@ -95,6 +95,27 @@ nclsmgr.com {
 		}
 	}
 
+	# Frontfall, jeu multijoueur publié par son propre dépôt (nic0lasm/frontfall) dans un projet
+	# Compose distinct ; Caddy le joint sur le réseau frontfall. Le jeu ignore son préfixe : ses
+	# ressources sont relatives et le websocket se trouve sous /frontfall/ws.
+	redir /frontfall /frontfall/ permanent
+	@frontfall path /frontfall/*
+	header @frontfall >Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' wss://nclsmgr.com; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
+	# Les fichiers de assets/ portent leur empreinte dans leur nom ; le reste se revalide.
+	@frontfallAssets path /frontfall/assets/*
+	header @frontfallAssets >Cache-Control "public, max-age=31536000, immutable"
+	@frontfallPages {
+		path /frontfall/*
+		not path /frontfall/assets/*
+	}
+	header @frontfallPages >Cache-Control "no-cache"
+	handle /frontfall/* {
+		uri strip_prefix /frontfall
+		reverse_proxy frontfall:8080 {
+			header_up X-Client-IP {client_ip}
+		}
+	}
+
 	handle {
 		reverse_proxy web:3000 {
 			# Seul en-tête d'IP client lu par l'application ; jamais X-Forwarded-For.

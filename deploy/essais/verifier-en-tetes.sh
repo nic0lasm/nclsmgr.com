@@ -69,6 +69,19 @@ attendre "prefetch Next.js : repli" "script-src 'none'" -H "Next-Router-Prefetch
 attendre "documents réservés : politique fermée" "sandbox allow-downloads" "$u/fr/espace/documents/essai"
 attendre "documents réservés en prefetch" "sandbox allow-downloads" -H "Purpose: prefetch" "$u/en/espace/documents/essai"
 
+attendre "jeu : politique du jeu" "connect-src 'self' wss://nclsmgr.com" "$u/frontfall/"
+attendre "jeu en prefetch : politique du jeu" "connect-src 'self' wss://nclsmgr.com" -H "Purpose: prefetch" "$u/frontfall/"
+
+# Jeu : préfixe retiré avant le service, cache selon le chemin, adresse sans barre redirigée.
+jeu() {
+	curl -sk --noproxy "*" --resolve "nclsmgr.com:$port:127.0.0.1" "$@"
+}
+contient "jeu : préfixe retiré" "$(jeu "$u/frontfall/assets/index-abc.js")" "frontfall /assets/index-abc.js"
+contient "jeu : ressources immuables" "$(jeu -o /dev/null -D - "$u/frontfall/assets/index-abc.js" | tr -d '\r' | grep -i '^cache-control:')" "immutable"
+contient "jeu : page revalidée" "$(jeu -o /dev/null -D - "$u/frontfall/" | tr -d '\r' | grep -i '^cache-control:')" "no-cache" "immutable"
+contient "jeu : /frontfall redirigé" "$(jeu -o /dev/null -w '%{http_code} %{redirect_url}' "$u/frontfall")" "301 https://nclsmgr.com:$port/frontfall/"
+contient "site : chemin voisin hors du jeu" "$(jeu "$u/frontfallx")" "ok" "frontfall /"
+
 # Rien ne nomme le serveur dans la réponse.
 reponse=$(curl -sk --noproxy "*" --resolve "nclsmgr.com:$port:127.0.0.1" -o /dev/null -D - "$u/fr/cv" | tr -d '\r')
 if printf '%s\n' "$reponse" | grep -qiE '^(server|via):'; then

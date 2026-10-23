@@ -22,6 +22,7 @@ Le déploiement courant ne passe pas par ces scripts : GitHub Actions publie l'i
 | 6. Sauvegardes et sonde  | `installer-sauvegarde.sh`                           | Bucket R2, jeton S3, sondes     |
 | 7. Origine fermée        | `restreindre-origine.sh`                            | Full (strict), aucun AAAA       |
 | 8. Journaux sur 30 jours | `conserver-journaux.sh`                             | Aucun                           |
+| 9. Jeu Frontfall         | `installer-frontfall.sh "<clé publique dédiée>"`    | Réseau `frontfall` déployé      |
 
 Tous sont idempotents, sauf `installer-certificat.sh` qui remplace le certificat à chaque appel.
 
@@ -134,6 +135,39 @@ jeton R2, puis `restic restore latest --host nclsmgr --target /root/restauration
 déploiement, `espace.db`, `prive/` et `caddy/` vont dans les volumes `nclsmgr_base`,
 `nclsmgr_prive` et `nclsmgr_caddy_data`, et `umami.dump` se recharge par `pg_restore` dans le
 conteneur `umami-db`.
+
+## Jeu Frontfall
+
+Le jeu (dépôt `nic0lasm/frontfall`) est servi sous `https://nclsmgr.com/frontfall/`, websocket
+compris (`/frontfall/ws`). Il tourne dans son propre projet Compose, `/opt/frontfall`, pour que ses
+publications ne redémarrent ni le site ni Caddy. Caddy le joint sur le réseau `frontfall`, créé par
+le projet du site et sans accès à Internet, retire le préfixe `/frontfall` et lui pose sa propre
+politique CSP.
+
+**Déploiement.** Le workflow de publication du dépôt du jeu construit
+`ghcr.io/nic0lasm/frontfall`, puis appelle `frontfall-deployer` avec l'étiquette de l'image, par
+une clé SSH à commande forcée distincte de celle du site. Le fichier Compose du jeu vient de ce
+dépôt (`deploy/frontfall/compose.yaml`) : le dépôt du jeu ne choisit que l'étiquette.
+
+**Mise en place.**
+
+1. **Réseau.** Déployer une version du site qui contient le réseau `frontfall` (fusion sur
+   `main`). Caddy est recréé une fois pour le rejoindre, soit quelques secondes d'interruption.
+2. **Clé.** Sur le poste d'administration :
+   `ssh-keygen -t ed25519 -N "" -C deploiement-frontfall -f frontfall-deploy`.
+3. **Serveur.** Lancer `installer-frontfall.sh "$(cat frontfall-deploy.pub)"` selon la forme
+   générale ci-dessus.
+4. **Dépôt du jeu.** Settings › Environments › **New environment** `production`, puis les secrets
+   `DEPLOY_SSH_KEY` (contenu de `frontfall-deploy`), `DEPLOY_HOST` et `DEPLOY_KNOWN_HOSTS` (mêmes
+   valeurs que pour le site), et la variable de dépôt `DEPLOIEMENT_ACTIF` à `true`. Supprimer
+   ensuite la clé privée du poste.
+5. **Image publique.** Après la première publication : Packages › `frontfall` › Package settings ›
+   **Change visibility** › Public, sans quoi le serveur ne peut pas la tirer.
+
+Tant que le jeu n'est pas déployé, `/frontfall/` répond 502 ; le reste du site n'est pas touché.
+Une publication du jeu coupe les parties en cours : le serveur du jeu reçoit SIGTERM et dispose de
+30 secondes pour prévenir les joueurs. Le jeu ne garde aucune donnée sur le serveur ; s'il en
+garde un jour, son volume entre dans la sauvegarde.
 
 ## Conservation des journaux
 
