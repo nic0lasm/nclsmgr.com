@@ -1,0 +1,4 @@
+# Remplace le jeu pour l'essai des en-têtes : renvoie le chemin reçu, préfixe retiré ou non.
+:8080 {
+	respond "frontfall {path}"
+}

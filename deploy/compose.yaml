@@ -137,10 +137,15 @@ services:
       - /etc/nclsmgr/certs:/certs:ro
       - caddy_data:/data
       - caddy_config:/config
-    networks: [interne, public]
+    networks: [interne, public, frontfall]
 
 networks:
   interne:
+    internal: true
+  # Partagé avec le projet Compose du jeu (/opt/frontfall), qui le déclare externe. Nom fixe pour
+  # qu'il le trouve ; sans accès à Internet.
+  frontfall:
+    name: frontfall
     internal: true
   public: {}
   sortie: {}
