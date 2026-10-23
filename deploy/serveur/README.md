@@ -153,15 +153,13 @@ dépôt (`deploy/frontfall/compose.yaml`) : le dépôt du jeu ne choisit que l'�
 
 1. **Réseau.** Déployer une version du site qui contient le réseau `frontfall` (fusion sur
    `main`). Caddy est recréé une fois pour le rejoindre, soit quelques secondes d'interruption.
-2. **Clé.** Sur le poste d'administration :
-   `ssh-keygen -t ed25519 -N "" -C deploiement-frontfall -f frontfall-deploy`.
-3. **Serveur.** Lancer `installer-frontfall.sh "$(cat frontfall-deploy.pub)"` selon la forme
-   générale ci-dessus.
-4. **Dépôt du jeu.** Settings › Environments › **New environment** `production`, puis les secrets
-   `DEPLOY_SSH_KEY` (contenu de `frontfall-deploy`), `DEPLOY_HOST` et `DEPLOY_KNOWN_HOSTS` (mêmes
-   valeurs que pour le site), et la variable de dépôt `DEPLOIEMENT_ACTIF` à `true`. Supprimer
-   ensuite la clé privée du poste.
-5. **Image publique.** Après la première publication : Packages › `frontfall` › Package settings ›
+2. **Compte, clé et secrets.** Depuis le poste d'administration, avec `gh` connecté :
+   `sh deploy/poste/activer-frontfall.sh <serveur>`. Le script crée une clé dédiée, lance
+   `installer-frontfall.sh` sur le serveur depuis la dernière version de `main`, puis crée
+   l'environnement `production` du dépôt du jeu avec les secrets `DEPLOY_SSH_KEY`, `DEPLOY_HOST` et
+   `DEPLOY_KNOWN_HOSTS` (tiré du `known_hosts` du poste), et la variable `DEPLOIEMENT_ACTIF`. La clé
+   privée ne reste pas sur le poste.
+3. **Image publique.** Après la première publication : Packages › `frontfall` › Package settings ›
    **Change visibility** › Public, sans quoi le serveur ne peut pas la tirer.
 
 Tant que le jeu n'est pas déployé, `/frontfall/` répond 502 ; le reste du site n'est pas touché.
