@@ -54,7 +54,7 @@ test("le lien d'évitement est le premier élément atteint au clavier", async (
 
 test("le lien de langue mène à la même page dans l'autre langue", async ({ page }) => {
   await page.goto("/fr");
-  await page.getByRole("link", { name: "English (EN)" }).click();
+  await page.getByRole("link", { name: "EN, English" }).click();
   await expect(page).toHaveURL(/\/en$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
 });

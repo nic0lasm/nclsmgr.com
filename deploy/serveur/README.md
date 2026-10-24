@@ -8,7 +8,15 @@ ssh -t debian@<serveur> "set -e; d=\$(mktemp -d); curl -fsSL https://codeload.gi
 ```
 
 Le déploiement courant ne passe pas par ces scripts : GitHub Actions publie l'image puis appelle
-`deployer.sh` par une clé SSH à commande forcée.
+`deployer.sh` par une clé SSH à commande forcée. Après chaque déploiement, le serveur ne garde que
+les 10 images du site les plus récentes, de quoi revenir en arrière sans téléchargement.
+
+**Mise à jour du déployeur.** Après une fusion qui modifie `deployer.sh`, réinstaller ce seul
+fichier ; aucun autre réglage du serveur n'est touché :
+
+```sh
+ssh -t debian@<serveur> 'set -e; d=$(mktemp -d); curl -fsSL https://codeload.github.com/nic0lasm/nclsmgr.com/tar.gz/main | tar -xz -C $d --strip-components=1; sudo install -m 755 -o root -g root $d/deploy/serveur/deployer.sh /usr/local/sbin/nclsmgr-deployer; rm -rf $d'
+```
 
 ## Mise en place, dans l'ordre
 
@@ -22,6 +30,7 @@ Le déploiement courant ne passe pas par ces scripts : GitHub Actions publie l'i
 | 6. Sauvegardes et sonde  | `installer-sauvegarde.sh`                           | Bucket R2, jeton S3, sondes     |
 | 7. Origine fermée        | `restreindre-origine.sh`                            | Full (strict), aucun AAAA       |
 | 8. Journaux sur 30 jours | `conserver-journaux.sh`                             | Aucun                           |
+| 9. Jeu Frontfall         | `installer-frontfall.sh "<clé publique dédiée>"`    | Réseau `frontfall` déployé      |
 
 Tous sont idempotents, sauf `installer-certificat.sh` qui remplace le certificat à chaque appel.
 
@@ -134,6 +143,47 @@ jeton R2, puis `restic restore latest --host nclsmgr --target /root/restauration
 déploiement, `espace.db`, `prive/` et `caddy/` vont dans les volumes `nclsmgr_base`,
 `nclsmgr_prive` et `nclsmgr_caddy_data`, et `umami.dump` se recharge par `pg_restore` dans le
 conteneur `umami-db`.
+
+## Jeu Frontfall
+
+Le jeu (dépôt `nic0lasm/frontfall`) est servi sous `https://nclsmgr.com/frontfall/`, websocket
+compris (`/frontfall/ws`). Il tourne dans son propre projet Compose, `/opt/frontfall`, pour que ses
+publications ne redémarrent ni le site ni Caddy. Caddy le joint sur le réseau `frontfall`, créé par
+le projet du site et sans accès à Internet, retire le préfixe `/frontfall` et lui pose sa propre
+politique CSP. Ce que le jeu et le serveur se garantissent l'un à l'autre, et les demandes de
+chaque côté, sont dans [deploy/frontfall/CONTRAT.md](../frontfall/CONTRAT.md).
+
+**Déploiement.** Le workflow de publication du dépôt du jeu construit
+`ghcr.io/nic0lasm/frontfall`, puis appelle `frontfall-deployer` avec l'étiquette de l'image, par
+une clé SSH à commande forcée distincte de celle du site. Le fichier Compose du jeu vient de ce
+dépôt (`deploy/frontfall/compose.yaml`) : le dépôt du jeu ne choisit que l'étiquette. Après chaque
+déploiement, le serveur ne garde que les 10 images du jeu les plus récentes, de quoi revenir en
+arrière sans téléchargement.
+
+**Mise à jour du déployeur.** Après une fusion qui modifie `deployer-frontfall.sh` ou le fichier
+Compose du jeu, relancer `installer-frontfall.sh` en gardant la clé en place :
+
+```sh
+ssh -t debian@<serveur> 'set -e; d=$(mktemp -d); curl -fsSL https://codeload.github.com/nic0lasm/nclsmgr.com/tar.gz/main | tar -xz -C $d --strip-components=1; sudo sh $d/deploy/serveur/installer-frontfall.sh "$(sudo cut -d" " -f2- /home/frontfall/.ssh/authorized_keys)"; rm -rf $d'
+```
+
+**Mise en place.**
+
+1. **Réseau.** Déployer une version du site qui contient le réseau `frontfall` (fusion sur
+   `main`). Caddy est recréé une fois pour le rejoindre, soit quelques secondes d'interruption.
+2. **Compte, clé et secrets.** Depuis le poste d'administration, avec `gh` connecté :
+   `sh deploy/poste/activer-frontfall.sh <serveur>`. Le script crée une clé dédiée, lance
+   `installer-frontfall.sh` sur le serveur depuis la dernière version de `main`, puis crée
+   l'environnement `production` du dépôt du jeu avec les secrets `DEPLOY_SSH_KEY`, `DEPLOY_HOST` et
+   `DEPLOY_KNOWN_HOSTS` (tiré du `known_hosts` du poste), et la variable `DEPLOIEMENT_ACTIF`. La clé
+   privée ne reste pas sur le poste.
+3. **Image publique.** Après la première publication : Packages › `frontfall` › Package settings ›
+   **Change visibility** › Public, sans quoi le serveur ne peut pas la tirer.
+
+Tant que le jeu n'est pas déployé, `/frontfall/` répond 502 ; le reste du site n'est pas touché.
+Une publication du jeu coupe les parties en cours : le serveur du jeu reçoit SIGTERM et dispose de
+30 secondes pour prévenir les joueurs. Le jeu ne garde aucune donnée sur le serveur ; s'il en
+garde un jour, son volume entre dans la sauvegarde.
 
 ## Conservation des journaux
 
