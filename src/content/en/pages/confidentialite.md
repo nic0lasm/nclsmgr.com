@@ -1,7 +1,7 @@
 ---
 titre: Privacy
 statut: brouillon
-maj: 2026-10-15
+maj: 2026-10-24
 ---
 
 This site collects as little data as possible. It uses no advertising cookies, no third-party trackers and no analytics tool that follows you from one site to another.
@@ -16,6 +16,7 @@ The data controller is Nicolas M, who can be reached through the [contact form](
 | Messages sent through the contact form (name, email address, message)                                                                       | To reply to you                                                                                                                  | Steps taken at your request prior to entering into a contract, or legitimate interests | 12 months after our last exchange                     |
 | Personal link to the private area (name, organisation, welcome message)                                                                     | To show you a version of the site tailored to our conversation                                                                   | Legitimate interests: following up a professional contact                              | Deleted 3 months after the link expires or is revoked |
 | Visits to the private area (date, country, browser and operating system family, page or document viewed). The IP address is never recorded. | To know whether the link has been opened, and to secure access                                                                   | Legitimate interests: following up the contact, and security                           | 3 months                                              |
+| A Frontfall game (chosen nickname, game orders)                                                                                             | To run the game. The nickname is visible to the other players in the same game.                                                  | Legitimate interests: running the game you open                                        | For the length of the game, in memory only            |
 | Server technical logs (IP address, date, page requested)                                                                                    | Site security: detecting and blocking abuse                                                                                      | Legitimate interests: site security                                                    | 30 days                                               |
 
 If you have received a personal link, I am notified by email the first time you open it, then at most once a day if someone tries to use it after it has expired or been revoked. These notifications are sorted and deleted every quarter. The emails I send contain no tracking pixels.
@@ -25,6 +26,8 @@ A message sent through the contact form is kept on the site's server until it is
 This data is neither sold nor passed on to third parties, apart from the technical providers listed below. Only the site's publisher has access to it. Tools that help me organise my correspondence may see a contact's name and organisation, but never their personal link.
 
 Encrypted server backups are kept for no more than 3 months.
+
+The game [Frontfall](https://nclsmgr.com/frontfall/) needs no account and does not record games: they only exist in memory. To limit abuse, it counts the connections opened from the same IP address, in memory only. Its logs never record that address in clear, only a fingerprint that changes every time the game restarts; they are kept for 30 days, like the server's.
 
 ## Where the data is held
 
@@ -40,7 +43,7 @@ Nothing is measured in the private area. If your browser sends the Do Not Track 
 
 ## Cookies
 
-The site sets only one cookie, and only if you open a personal link: `__Host-espace`, a session cookie that is strictly necessary to access the private area and is deleted when it expires. Cookies essential for authentication are exempt from consent (Article 82 of the French Data Protection Act, known as the loi Informatique et Libertés, and the CNIL guidelines of 17 September 2020), so no cookie banner is shown to you.
+The site sets only one cookie, and only if you open a personal link: `__Host-espace`, a session cookie that is strictly necessary to access the private area and is deleted when it expires. The game Frontfall keeps a token in the browser's session storage so that you can take your seat back after a disconnection; it disappears when you close the tab. These strictly necessary trackers are exempt from consent (Article 82 of the French Data Protection Act, known as the loi Informatique et Libertés, and the CNIL guidelines of 17 September 2020), so no cookie banner is shown to you.
 
 ## Your rights
 
