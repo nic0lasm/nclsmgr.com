@@ -8,7 +8,15 @@ ssh -t debian@<serveur> "set -e; d=\$(mktemp -d); curl -fsSL https://codeload.gi
 ```
 
 Le déploiement courant ne passe pas par ces scripts : GitHub Actions publie l'image puis appelle
-`deployer.sh` par une clé SSH à commande forcée.
+`deployer.sh` par une clé SSH à commande forcée. Après chaque déploiement, le serveur ne garde que
+les 10 images du site les plus récentes, de quoi revenir en arrière sans téléchargement.
+
+**Mise à jour du déployeur.** Après une fusion qui modifie `deployer.sh`, réinstaller ce seul
+fichier ; aucun autre réglage du serveur n'est touché :
+
+```sh
+ssh -t debian@<serveur> 'set -e; d=$(mktemp -d); curl -fsSL https://codeload.github.com/nic0lasm/nclsmgr.com/tar.gz/main | tar -xz -C $d --strip-components=1; sudo install -m 755 -o root -g root $d/deploy/serveur/deployer.sh /usr/local/sbin/nclsmgr-deployer; rm -rf $d'
+```
 
 ## Mise en place, dans l'ordre
 
