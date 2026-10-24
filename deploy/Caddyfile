@@ -109,6 +109,10 @@ nclsmgr.com {
 		not path /frontfall/assets/*
 	}
 	header @frontfallPages >Cache-Control "no-cache"
+	# Les métriques du jeu restent sur le serveur, même si le jeu cessait de les refuser.
+	handle /frontfall/metrics* {
+		respond 404
+	}
 	handle /frontfall/* {
 		uri strip_prefix /frontfall
 		reverse_proxy frontfall:8080 {
