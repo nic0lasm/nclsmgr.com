@@ -1,7 +1,7 @@
 ---
 titre: Confidentialité
 statut: brouillon
-maj: 2026-10-15
+maj: 2026-10-24
 ---
 
 Ce site collecte le moins de données possible. Il n'utilise aucun cookie publicitaire, aucun traceur tiers et aucun outil de mesure qui vous suit d'un site à l'autre.
@@ -16,6 +16,7 @@ Le responsable du traitement est Nicolas M, joignable par le [formulaire de cont
 | Messages envoyés par le formulaire de contact (nom, adresse e-mail, message)                                                                         | Vous répondre                                                                                                                                | Mesures précontractuelles prises à votre demande, ou intérêt légitime | 12 mois après le dernier échange                              |
 | Lien personnel vers l'espace privé (nom, organisation, message d'accueil)                                                                            | Vous présenter une version du site adaptée à notre échange                                                                                   | Intérêt légitime : suivi d'une prise de contact professionnelle       | Supprimées 3 mois après l'expiration ou la révocation du lien |
 | Consultations de l'espace privé (date, pays, famille de navigateur et de système, page ou document consulté). L'adresse IP n'est jamais enregistrée. | Savoir si le lien a été ouvert, sécuriser l'accès                                                                                            | Intérêt légitime : suivi de la prise de contact et sécurité           | 3 mois                                                        |
+| Partie de Frontfall (pseudo choisi, ordres de jeu)                                                                                                   | Faire jouer la partie. Le pseudo est visible des autres joueurs de la même partie.                                                           | Intérêt légitime : faire fonctionner le jeu que vous ouvrez           | Durée de la partie, en mémoire seulement                      |
 | Journaux techniques du serveur (adresse IP, date, page demandée)                                                                                     | Sécurité du site : détection et blocage des abus                                                                                             | Intérêt légitime : sécurité du site                                   | 30 jours                                                      |
 
 Si vous avez reçu un lien personnel, je suis averti par e-mail la première fois que vous l'ouvrez, puis au plus une fois par jour si quelqu'un essaie de l'utiliser après son expiration ou sa révocation. Ces notifications sont triées et supprimées chaque trimestre. Les e-mails que j'envoie ne contiennent aucun pixel de suivi.
@@ -25,6 +26,8 @@ Un message envoyé par le formulaire de contact est gardé sur le serveur du sit
 Ces données ne sont ni vendues ni transmises à des tiers, en dehors des prestataires techniques cités plus bas. Seul l'éditeur du site y a accès. Les outils qui m'aident à organiser mes échanges peuvent voir le nom et l'organisation d'un contact, jamais son lien personnel.
 
 Les sauvegardes chiffrées du serveur sont conservées 3 mois au plus.
+
+Le jeu [Frontfall](https://nclsmgr.com/frontfall/) ne demande aucun compte et n'enregistre pas les parties : elles n'existent qu'en mémoire. Pour limiter les abus, il compte les connexions ouvertes depuis une même adresse IP, en mémoire seulement. Ses journaux n'enregistrent jamais cette adresse en clair, seulement une empreinte qui change à chaque redémarrage du jeu ; ils sont gardés 30 jours, comme ceux du serveur.
 
 ## Où sont les données
 
@@ -40,7 +43,7 @@ Aucune mesure n'est faite dans l'espace privé. Si votre navigateur envoie le si
 
 ## Cookies
 
-Le site ne dépose qu'un cookie, et seulement si vous ouvrez un lien personnel : `__Host-espace`, un cookie de session strictement nécessaire à l'accès à l'espace privé, supprimé à son expiration. Les cookies indispensables à l'authentification sont dispensés de consentement (article 82 de la loi Informatique et Libertés, lignes directrices de la CNIL du 17 septembre 2020) : aucun bandeau ne vous est donc présenté.
+Le site ne dépose qu'un cookie, et seulement si vous ouvrez un lien personnel : `__Host-espace`, un cookie de session strictement nécessaire à l'accès à l'espace privé, supprimé à son expiration. Le jeu Frontfall, lui, garde dans le stockage de session du navigateur un jeton qui permet de reprendre sa place après une coupure ; il disparaît à la fermeture de l'onglet. Il garde aussi, dans le stockage local du navigateur, la langue choisie et les derniers réglages de partie, pseudo compris, jusqu'à ce que vous effaciez les données du site. Ces traceurs strictement nécessaires sont dispensés de consentement (article 82 de la loi Informatique et Libertés, lignes directrices de la CNIL du 17 septembre 2020) : aucun bandeau ne vous est donc présenté.
 
 ## Vos droits
 
