@@ -22,7 +22,7 @@ export function LanguageLink({
       hrefLang={target}
       lang={target}
       className={className}
-      aria-label={`${name} (${code})`}
+      aria-label={`${code}, ${name}`}
     >
       {code}
     </a>
