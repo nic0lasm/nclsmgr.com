@@ -142,7 +142,8 @@ Le jeu (dépôt `nic0lasm/frontfall`) est servi sous `https://nclsmgr.com/frontf
 compris (`/frontfall/ws`). Il tourne dans son propre projet Compose, `/opt/frontfall`, pour que ses
 publications ne redémarrent ni le site ni Caddy. Caddy le joint sur le réseau `frontfall`, créé par
 le projet du site et sans accès à Internet, retire le préfixe `/frontfall` et lui pose sa propre
-politique CSP.
+politique CSP. Ce que le jeu et le serveur se garantissent l'un à l'autre, et les demandes de
+chaque côté, sont dans [deploy/frontfall/CONTRAT.md](../frontfall/CONTRAT.md).
 
 **Déploiement.** Le workflow de publication du dépôt du jeu construit
 `ghcr.io/nic0lasm/frontfall`, puis appelle `frontfall-deployer` avec l'étiquette de l'image, par
