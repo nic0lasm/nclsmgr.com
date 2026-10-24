@@ -124,7 +124,7 @@
   ],
   "autres": {
     "titre": "Personal projects",
-    "texte": "My development projects, with their code and documentation, are presented in the Dev section.",
+    "texte": "My development projects are presented in the Dev section, with their code and documentation. The latest, Frontfall, is a multiplayer strategy game that I host and run myself.",
     "lien": {
       "libelle": "See the Dev section",
       "chemin": "/dev"
