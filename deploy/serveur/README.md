@@ -147,7 +147,16 @@ politique CSP.
 **Déploiement.** Le workflow de publication du dépôt du jeu construit
 `ghcr.io/nic0lasm/frontfall`, puis appelle `frontfall-deployer` avec l'étiquette de l'image, par
 une clé SSH à commande forcée distincte de celle du site. Le fichier Compose du jeu vient de ce
-dépôt (`deploy/frontfall/compose.yaml`) : le dépôt du jeu ne choisit que l'étiquette.
+dépôt (`deploy/frontfall/compose.yaml`) : le dépôt du jeu ne choisit que l'étiquette. Après chaque
+déploiement, le serveur ne garde que les 10 images du jeu les plus récentes, de quoi revenir en
+arrière sans téléchargement.
+
+**Mise à jour du déployeur.** Après une fusion qui modifie `deployer-frontfall.sh` ou le fichier
+Compose du jeu, relancer `installer-frontfall.sh` en gardant la clé en place :
+
+```sh
+ssh -t debian@<serveur> 'set -e; d=$(mktemp -d); curl -fsSL https://codeload.github.com/nic0lasm/nclsmgr.com/tar.gz/main | tar -xz -C $d --strip-components=1; sudo sh $d/deploy/serveur/installer-frontfall.sh "$(sudo cut -d" " -f2- /home/frontfall/.ssh/authorized_keys)"; rm -rf $d'
+```
 
 **Mise en place.**
 
