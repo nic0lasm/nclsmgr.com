@@ -14,6 +14,7 @@ Le site est en ligne sur https://nclsmgr.com, derrière Cloudflare, et redéploy
 - [x] Espace privé : liens personnels avec expiration et révocation, profils, documents réservés, journal des consultations, limitation de débit
 - [x] Statistiques Umami auto-hébergées et fichier security.txt
 - [x] A+ sur Mozilla Observatory et sur SSL Labs
+- [x] 23 octobre : jeu [Frontfall](https://github.com/nic0lasm/frontfall) servi sous https://nclsmgr.com/frontfall/, dans un projet séparé du site
 
 Le chemin jusqu'au lancement tient en quatre chantiers.
 
