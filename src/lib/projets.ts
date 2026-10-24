@@ -3,6 +3,7 @@ import depotsGithub from "@/content/projets/depots-github.json";
 import exclus from "@/content/projets/exclus.json";
 import projetsEn from "@/content/projets/en.json";
 import projetsFr from "@/content/projets/fr.json";
+import imageFrontfall from "@/content/projets/images/frontfall.jpg";
 import imageZeus from "@/content/projets/images/zeus-poseidon.jpg";
 import { depotsAutomatiques, lireInstantane, type Depot } from "@/lib/github";
 import type { Locale } from "@/lib/i18n";
@@ -31,6 +32,7 @@ const fichiers: Record<Locale, FichierProjets> = { fr: projetsFr, en: projetsEn 
 // Les images passent par l'import statique : elles sont servies depuis /_next/static,
 // avec une empreinte dans le nom et un cache long.
 const images: Record<string, StaticImageData> = {
+  frontfall: imageFrontfall,
   "zeus-poseidon": imageZeus,
 };
 

@@ -21,9 +21,10 @@ for (const lang of ["fr", "en"]) {
 
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     const fiches = page.locator("article.project");
-    await expect(fiches.first()).toContainText("Zeus + Poseidon");
+    await expect(fiches.first()).toContainText("Frontfall");
+    await expect(fiches.nth(1)).toContainText("Zeus + Poseidon");
     await expect(page.getByRole("img").first()).toBeVisible();
-    await expect(fiches).toHaveCount(3);
+    await expect(fiches).toHaveCount(4);
 
     await page.waitForLoadState("networkidle");
     expect(requetesTierces).toEqual([]);

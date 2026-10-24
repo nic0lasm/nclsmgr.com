@@ -1,11 +1,75 @@
 {
   "statut": "brouillon",
-  "maj": "2026-10-15",
+  "maj": "2026-10-24",
   "projets": [
+    {
+      "id": "frontfall",
+      "depot": "nic0lasm/frontfall",
+      "ordre": 1,
+      "afficher": true,
+      "titre": "Frontfall",
+      "pitch": "Un jeu de stratégie en temps réel dans le navigateur, à jouer seul contre des bots ou en ligne entre amis.",
+      "probleme": "Conduire un service multijoueur en ligne de bout en bout : des règles écrites de zéro, un moteur de jeu déterministe, un serveur qui relaie les ordres sans calculer la partie, et une mise en production sur mon serveur, isolée du reste du site. Le jeu est en bêta : la version 0.2 permet de jouer en ligne, la 1.0 placera la partie sur un globe en 3D.",
+      "stack": [
+        "TypeScript",
+        "Three.js (WebGL 2)",
+        "Node.js",
+        "WebSocket",
+        "zod",
+        "Vitest et Playwright",
+        "Docker",
+        "GitHub Actions"
+      ],
+      "role": "Auteur et mainteneur : spécification des règles, architecture, développement, tests et exploitation du serveur public.",
+      "points_forts": [
+        "La même simulation tourne chez chaque joueur : le serveur ne fait que numéroter les ordres, dix tours par seconde.",
+        "Conteneur en lecture seule, sans privilège ni accès à Internet, déployé par une clé dédiée qui ne peut lancer qu'une commande.",
+        "Adresses des joueurs pseudonymisées dans les journaux, aucune donnée conservée sur le serveur.",
+        "Règles écrites de zéro, sous une politique de salle blanche que l'intégration continue fait respecter.",
+        "90 % des lignes couvertes par les tests au minimum, CodeQL, analyse de l'image avant chaque publication et OpenSSF Scorecard."
+      ],
+      "chiffres": [
+        {
+          "valeur": "8",
+          "libelle": "cartes, dont cinq tirées de Natural Earth"
+        },
+        {
+          "valeur": "10",
+          "libelle": "tours par seconde"
+        },
+        {
+          "valeur": "2",
+          "libelle": "versions jouables publiées"
+        }
+      ],
+      "image": {
+        "src": "images/frontfall.jpg",
+        "alt": "Une partie sur la carte du Monde : une douzaine d'empires avec leurs troupes, le classement et le curseur d'attaque"
+      },
+      "contribuer": "Jouer et signaler ce qui casse, proposer une carte ou un réglage d'équilibrage, ou prendre un ticket « good first issue ».",
+      "liens": [
+        {
+          "libelle": "Jouer",
+          "url": "https://nclsmgr.com/frontfall/"
+        },
+        {
+          "libelle": "Code source",
+          "url": "https://github.com/nic0lasm/frontfall"
+        },
+        {
+          "libelle": "Feuille de route",
+          "url": "https://github.com/nic0lasm/frontfall/blob/main/docs/roadmap.md"
+        },
+        {
+          "libelle": "Guide de contribution",
+          "url": "https://github.com/nic0lasm/frontfall/blob/main/CONTRIBUTING.md"
+        }
+      ]
+    },
     {
       "id": "zeus-poseidon",
       "depot": "nic0lasm/zeus-poseidon-arm64",
-      "ordre": 1,
+      "ordre": 2,
       "afficher": true,
       "titre": "Zeus + Poseidon sur Mac Apple Silicon",
       "pitch": "Faire tourner un jeu Windows de 2000 sur les Mac récents, avec son code d'origine et sans machine virtuelle.",
@@ -72,7 +136,7 @@
     {
       "id": "nclsmgr",
       "depot": "nic0lasm/nclsmgr.com",
-      "ordre": 2,
+      "ordre": 3,
       "afficher": true,
       "titre": "nclsmgr.com",
       "pitch": "Ce site, conçu comme un projet à part entière : ouvert, auto-hébergé et sécurisé dès la conception.",
@@ -106,7 +170,7 @@
     {
       "id": "as2c",
       "depot": "nic0lasm/as2c",
-      "ordre": 3,
+      "ordre": 4,
       "afficher": true,
       "titre": "AS2C Patrimoine",
       "pitch": "Reprise et mise en ligne automatisée du site d'un cabinet de gestion de patrimoine.",

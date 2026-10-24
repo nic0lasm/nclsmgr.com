@@ -1,11 +1,75 @@
 {
   "statut": "brouillon",
-  "maj": "2026-10-15",
+  "maj": "2026-10-24",
   "projets": [
+    {
+      "id": "frontfall",
+      "depot": "nic0lasm/frontfall",
+      "ordre": 1,
+      "afficher": true,
+      "titre": "Frontfall",
+      "pitch": "A real-time strategy game in the browser, played solo against bots or online with friends.",
+      "probleme": "Delivering an online multiplayer service end to end: rules written from scratch, a deterministic game engine, a server that relays orders without computing the game, and production on my own server, isolated from the rest of the site. The game is in beta: version 0.2 brings online play, and 1.0 will put the game on a 3D globe.",
+      "stack": [
+        "TypeScript",
+        "Three.js (WebGL 2)",
+        "Node.js",
+        "WebSocket",
+        "zod",
+        "Vitest and Playwright",
+        "Docker",
+        "GitHub Actions"
+      ],
+      "role": "Author and maintainer: rules specification, architecture, development, testing and running the public server.",
+      "points_forts": [
+        "Every player runs the same simulation: the server only numbers the orders, ten turns per second.",
+        "A read-only container with no privileges and no Internet access, deployed by a dedicated key that can run a single command.",
+        "Player addresses pseudonymised in the logs, no data kept on the server.",
+        "Rules written from scratch, under a clean-room policy enforced by continuous integration.",
+        "At least 90% of lines covered by tests, CodeQL, an image scan before every release and OpenSSF Scorecard."
+      ],
+      "chiffres": [
+        {
+          "valeur": "8",
+          "libelle": "maps, five of them from Natural Earth"
+        },
+        {
+          "valeur": "10",
+          "libelle": "turns per second"
+        },
+        {
+          "valeur": "2",
+          "libelle": "playable versions released"
+        }
+      ],
+      "image": {
+        "src": "images/frontfall.jpg",
+        "alt": "A game on the World map: a dozen empires with their troops, the leaderboard and the attack slider"
+      },
+      "contribuer": "Play and report what breaks, suggest a map or a balance change, or pick a good first issue.",
+      "liens": [
+        {
+          "libelle": "Play",
+          "url": "https://nclsmgr.com/frontfall/"
+        },
+        {
+          "libelle": "Source code",
+          "url": "https://github.com/nic0lasm/frontfall"
+        },
+        {
+          "libelle": "Roadmap",
+          "url": "https://github.com/nic0lasm/frontfall/blob/main/docs/roadmap.md"
+        },
+        {
+          "libelle": "Contributing guide",
+          "url": "https://github.com/nic0lasm/frontfall/blob/main/CONTRIBUTING.md"
+        }
+      ]
+    },
     {
       "id": "zeus-poseidon",
       "depot": "nic0lasm/zeus-poseidon-arm64",
-      "ordre": 1,
+      "ordre": 2,
       "afficher": true,
       "titre": "Zeus + Poseidon on Apple Silicon",
       "pitch": "Running a 2000 Windows game on modern Macs, from its original code and without a virtual machine.",
@@ -72,7 +136,7 @@
     {
       "id": "nclsmgr",
       "depot": "nic0lasm/nclsmgr.com",
-      "ordre": 2,
+      "ordre": 3,
       "afficher": true,
       "titre": "nclsmgr.com",
       "pitch": "This website, run as a project in its own right: open source, self-hosted and secure by design.",
@@ -106,7 +170,7 @@
     {
       "id": "as2c",
       "depot": "nic0lasm/as2c",
-      "ordre": 3,
+      "ordre": 4,
       "afficher": true,
       "titre": "AS2C Patrimoine",
       "pitch": "Taking over a wealth management firm's website and automating its publishing.",
