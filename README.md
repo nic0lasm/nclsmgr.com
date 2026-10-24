@@ -33,7 +33,7 @@ Le site est rédigé en français et en anglais. L'espace privé s'ouvre par un 
 
 ## Principes de sécurité
 
-- **Surface d'attaque minimale** : aucun script ni traceur tiers, aucune interface d'administration exposée, ports web du serveur réservés à Cloudflare.
+- **Surface d'attaque minimale** : aucun script ni traceur tiers, aucune interface d'administration de ce site exposée, ports web du serveur réservés à Cloudflare.
 - **Navigateur durci** : CSP stricte avec nonce, HSTS et en-têtes de sécurité complets.
 - **TLS et DNS** : TLS 1.2 au minimum, certificat d'origine vérifié par Cloudflare (Full strict), zone DNS signée par DNSSEC.
 - **Cloisonnement** : conteneurs en lecture seule et sans privilège ; l'application tourne sur un réseau interne sans accès sortant, seul un service d'envoi séparé détient les accès à la messagerie.

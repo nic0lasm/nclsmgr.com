@@ -10,7 +10,7 @@
     "mesures": [
       {
         "titre": "Surface réduite",
-        "texte": "Aucun script ni traceur tiers, aucune interface d'administration exposée. Le serveur n'accepte le trafic web que depuis Cloudflare et le domaine est signé par DNSSEC."
+        "texte": "Aucun script ni traceur tiers, aucune interface d'administration de ce site exposée. Le serveur n'accepte le trafic web que depuis Cloudflare et le domaine est signé par DNSSEC."
       },
       {
         "titre": "Navigateur protégé",
