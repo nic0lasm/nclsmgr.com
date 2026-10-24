@@ -27,6 +27,7 @@ Les étapes restantes et leurs critères de sortie sont dans [ROADMAP.md](ROADMA
 | Articles     | Notes d'expertise sur le pilotage, la cybersécurité et la souveraineté     | Au lancement       |
 | Contact      | Formulaire auto-hébergé                                                    | Public             |
 | Dev          | Projets personnels et dépôts publics, accessibles depuis le pied de page   | Public             |
+| Frontfall    | Jeu de stratégie multijoueur, publié depuis son propre dépôt               | Public             |
 | Espace privé | Version du site adaptée à son destinataire, avec documents complémentaires | Sur lien personnel |
 
 Le site est rédigé en français et en anglais. L'espace privé s'ouvre par un lien personnel que je transmets moi-même, valable pour une durée limitée et révocable à tout moment.
@@ -36,7 +37,7 @@ Le site est rédigé en français et en anglais. L'espace privé s'ouvre par un 
 - **Surface d'attaque minimale** : aucun script ni traceur tiers, aucune interface d'administration de ce site exposée, ports web du serveur réservés à Cloudflare.
 - **Navigateur durci** : CSP stricte avec nonce, HSTS et en-têtes de sécurité complets.
 - **TLS et DNS** : TLS 1.2 au minimum, certificat d'origine vérifié par Cloudflare (Full strict), zone DNS signée par DNSSEC.
-- **Cloisonnement** : conteneurs en lecture seule et sans privilège ; l'application tourne sur un réseau interne sans accès sortant, seul un service d'envoi séparé détient les accès à la messagerie.
+- **Cloisonnement** : conteneurs en lecture seule et sans privilège ; l'application tourne sur un réseau interne sans accès sortant, seul un service d'envoi séparé détient les accès à la messagerie. Le jeu [Frontfall](https://github.com/nic0lasm/frontfall) tourne dans son propre projet Compose, sur un réseau sans accès sortant, et se déploie par une clé qui ne peut lancer qu'une commande.
 - **Données maîtrisées** : statistiques auto-hébergées sans cookies, coordonnées réservées à l'espace privé, aucune donnée personnelle ni secret dans ce dépôt.
 - **Chaîne de livraison surveillée** : actions épinglées par empreinte, dépendances suivies, analyse du code et des images à chaque modification.
 - **Exploitation** : SSH par clé uniquement, pare-feu, bannissement automatique, mises à jour de sécurité automatiques, journaux conservés 30 jours, sauvegardes chiffrées avant envoi.
@@ -69,6 +70,7 @@ Visiteur ─► Cloudflare (DNS, proxy, pare-feu)
               └─► Serveur : Caddy (HTTPS, en-têtes)
                     ├─► web : Next.js ─► SQLite (espace privé)
                     ├─► courrier : envoi des messages
+                    ├─► frontfall : jeu, projet Compose séparé
                     └─► Umami ─► PostgreSQL (statistiques)
 
 Serveur ─► restic (chiffrement local) ─► Cloudflare R2, juridiction UE (sauvegardes)
