@@ -21,9 +21,9 @@ jobs:
     timeout-minutes: 5
     steps:
       # Trois essais espacés : une coupure de quelques secondes ne donne pas d'alerte.
-      - name: Contrôle de santé et page d'accueil
+      - name: Contrôle de santé, page d'accueil et jeu
         run: |
-          for url in https://nclsmgr.com/healthz https://nclsmgr.com/fr; do
+          for url in https://nclsmgr.com/healthz https://nclsmgr.com/fr https://nclsmgr.com/frontfall/healthz; do
             curl -fsS --retry 3 --retry-delay 20 --retry-all-errors --max-time 15 \
               -o /dev/null -w "$url %{http_code} %{time_total}s\n" "$url"
           done
