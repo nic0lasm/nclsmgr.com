@@ -47,5 +47,11 @@ docker compose up -d --remove-orphans --wait --wait-timeout 120
 if [ "$(cat Caddyfile)" != "$ancien_caddyfile" ]; then
   docker compose restart caddy > /dev/null
 fi
+# Garde les 10 images du site les plus récentes pour revenir en arrière sans téléchargement.
+# Docker refuse de supprimer l'image d'un conteneur, même arrêté : celle en service reste.
+# Le tri par date suffit : toutes les images sont datées dans le fuseau du serveur.
+docker image ls ghcr.io/nic0lasm/nclsmgr.com --format '{{.CreatedAt}}\t{{.Repository}}:{{.Tag}}' \
+  | sort -r | tail -n +11 | cut -f2 \
+  | xargs -r docker image rm > /dev/null 2>&1 || true
 docker image prune -f > /dev/null
 echo "Déployé : $TAG"
