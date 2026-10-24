@@ -27,7 +27,7 @@ This data is neither sold nor passed on to third parties, apart from the technic
 
 Encrypted server backups are kept for no more than 3 months.
 
-The game [Frontfall](https://nclsmgr.com/frontfall/) needs no account and does not record games: they only exist in memory. To limit abuse, it counts the connections opened from the same IP address, in memory only. Its logs never record that address in clear, only a fingerprint that changes every time the game restarts; they are kept for 30 days, like the server's.
+The game [Frontfall](https://nclsmgr.com/frontfall/) needs no account and does not record games: they only exist in memory. To limit abuse, it counts the connections opened from the same IP address, in memory only. Its logs never record that address in the clear, only a fingerprint that changes every time the game restarts; they are kept for 30 days, like the server's.
 
 ## Where the data is held
 
@@ -43,7 +43,7 @@ Nothing is measured in the private area. If your browser sends the Do Not Track 
 
 ## Cookies
 
-The site sets only one cookie, and only if you open a personal link: `__Host-espace`, a session cookie that is strictly necessary to access the private area and is deleted when it expires. The game Frontfall keeps a token in the browser's session storage so that you can take your seat back after a disconnection; it disappears when you close the tab. These strictly necessary trackers are exempt from consent (Article 82 of the French Data Protection Act, known as the loi Informatique et Libertés, and the CNIL guidelines of 17 September 2020), so no cookie banner is shown to you.
+The site sets only one cookie, and only if you open a personal link: `__Host-espace`, a session cookie that is strictly necessary to access the private area and is deleted when it expires. The game Frontfall keeps a token in the browser's session storage so that you can take your seat back after a disconnection; it disappears when you close the tab. It also keeps, in the browser's local storage, the language you chose and your last game settings, nickname included, until you clear the site's data. These strictly necessary trackers are exempt from consent (Article 82 of the French Data Protection Act, known as the loi Informatique et Libertés, and the CNIL guidelines of 17 September 2020), so no cookie banner is shown to you.
 
 ## Your rights
 

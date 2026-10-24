@@ -43,7 +43,7 @@ Aucune mesure n'est faite dans l'espace privé. Si votre navigateur envoie le si
 
 ## Cookies
 
-Le site ne dépose qu'un cookie, et seulement si vous ouvrez un lien personnel : `__Host-espace`, un cookie de session strictement nécessaire à l'accès à l'espace privé, supprimé à son expiration. Le jeu Frontfall, lui, garde dans le stockage de session du navigateur un jeton qui permet de reprendre sa place après une coupure ; il disparaît à la fermeture de l'onglet. Ces traceurs strictement nécessaires sont dispensés de consentement (article 82 de la loi Informatique et Libertés, lignes directrices de la CNIL du 17 septembre 2020) : aucun bandeau ne vous est donc présenté.
+Le site ne dépose qu'un cookie, et seulement si vous ouvrez un lien personnel : `__Host-espace`, un cookie de session strictement nécessaire à l'accès à l'espace privé, supprimé à son expiration. Le jeu Frontfall, lui, garde dans le stockage de session du navigateur un jeton qui permet de reprendre sa place après une coupure ; il disparaît à la fermeture de l'onglet. Il garde aussi, dans le stockage local du navigateur, la langue choisie et les derniers réglages de partie, pseudo compris, jusqu'à ce que vous effaciez les données du site. Ces traceurs strictement nécessaires sont dispensés de consentement (article 82 de la loi Informatique et Libertés, lignes directrices de la CNIL du 17 septembre 2020) : aucun bandeau ne vous est donc présenté.
 
 ## Vos droits
 
