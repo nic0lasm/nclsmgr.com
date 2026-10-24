@@ -10,7 +10,7 @@
     "mesures": [
       {
         "titre": "Small attack surface",
-        "texte": "No third-party scripts or trackers, no exposed admin interface. The server only accepts web traffic from Cloudflare and the domain is signed with DNSSEC."
+        "texte": "No third-party scripts or trackers, no exposed admin interface for this site. The server only accepts web traffic from Cloudflare and the domain is signed with DNSSEC."
       },
       {
         "titre": "Hardened browser side",
