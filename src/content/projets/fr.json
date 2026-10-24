@@ -24,9 +24,9 @@
       "points_forts": [
         "La même simulation tourne chez chaque joueur : le serveur ne fait que numéroter les ordres, dix tours par seconde.",
         "Conteneur en lecture seule, sans privilège ni accès à Internet, déployé par une clé dédiée qui ne peut lancer qu'une commande.",
-        "Adresses des joueurs pseudonymisées dans les journaux, aucune donnée conservée sur le serveur.",
+        "Adresses des joueurs pseudonymisées dans les journaux, aucune donnée de partie conservée.",
         "Règles écrites de zéro, sous une politique de salle blanche que l'intégration continue fait respecter.",
-        "90 % des lignes couvertes par les tests au minimum, CodeQL, analyse de l'image avant chaque publication et OpenSSF Scorecard."
+        "Au moins 90 % des lignes couvertes par les tests, CodeQL, analyse de l'image avant chaque publication et OpenSSF Scorecard."
       ],
       "chiffres": [
         {

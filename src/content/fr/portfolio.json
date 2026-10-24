@@ -124,7 +124,7 @@
   ],
   "autres": {
     "titre": "Projets personnels",
-    "texte": "Mes projets de développement sont présentés dans l'onglet Dev, avec leur code et leur documentation. Le dernier, Frontfall, est un jeu de stratégie multijoueur que j'héberge et exploite moi-même.",
+    "texte": "Mes projets de développement sont présentés dans l'onglet Dev, avec leur code et leur documentation. Le plus récent, Frontfall, est un jeu de stratégie multijoueur que j'héberge et exploite moi-même.",
     "lien": {
       "libelle": "Voir l'onglet Dev",
       "chemin": "/dev"
