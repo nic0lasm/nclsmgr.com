@@ -24,7 +24,7 @@
       "points_forts": [
         "Every player runs the same simulation: the server only numbers the orders, ten turns per second.",
         "A read-only container with no privileges and no Internet access, deployed by a dedicated key that can run a single command.",
-        "Player addresses pseudonymised in the logs, no data kept on the server.",
+        "Player addresses pseudonymised in the logs, no game data kept.",
         "Rules written from scratch, under a clean-room policy enforced by continuous integration.",
         "At least 90% of lines covered by tests, CodeQL, an image scan before every release and OpenSSF Scorecard."
       ],
