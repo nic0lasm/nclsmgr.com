@@ -97,10 +97,11 @@ nclsmgr.com {
 
 	# Frontfall, jeu multijoueur publié par son propre dépôt (nic0lasm/frontfall) dans un projet
 	# Compose distinct ; Caddy le joint sur le réseau frontfall. Le jeu ignore son préfixe : ses
-	# ressources sont relatives et le websocket se trouve sous /frontfall/ws.
+	# ressources sont relatives et le websocket se trouve sous /frontfall/ws. Sa politique admet en
+	# plus le script de mesure d'audience que Cloudflare injecte dans les pages, et son envoi.
 	redir /frontfall /frontfall/ permanent
 	@frontfall path /frontfall/*
-	header @frontfall >Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' wss://nclsmgr.com; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
+	header @frontfall >Content-Security-Policy "default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' wss://nclsmgr.com https://cloudflareinsights.com; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
 	# Les fichiers de assets/ portent leur empreinte dans leur nom ; le reste se revalide.
 	@frontfallAssets path /frontfall/assets/*
 	header @frontfallAssets >Cache-Control "public, max-age=31536000, immutable"
@@ -125,7 +126,7 @@ nclsmgr.com {
 	# Préproduction du jeu (branche next), même politique, sur son propre conteneur.
 	redir /frontfall-next /frontfall-next/ permanent
 	@frontfallNext path /frontfall-next/*
-	header @frontfallNext >Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' wss://nclsmgr.com; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
+	header @frontfallNext >Content-Security-Policy "default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' wss://nclsmgr.com https://cloudflareinsights.com; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
 	header @frontfallNext >X-Robots-Tag "noindex"
 	@frontfallNextAssets path /frontfall-next/assets/*
 	header @frontfallNextAssets >Cache-Control "public, max-age=31536000, immutable"

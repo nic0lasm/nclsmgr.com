@@ -71,6 +71,9 @@ attendre "documents réservés en prefetch" "sandbox allow-downloads" -H "Purpos
 
 attendre "jeu : politique du jeu" "connect-src 'self' wss://nclsmgr.com" "$u/frontfall/"
 attendre "jeu en prefetch : politique du jeu" "connect-src 'self' wss://nclsmgr.com" -H "Purpose: prefetch" "$u/frontfall/"
+attendre "jeu : script d'audience Cloudflare admis" "script-src 'self' https://static.cloudflareinsights.com;" "$u/frontfall/"
+attendre "jeu : envoi d'audience Cloudflare admis" "https://cloudflareinsights.com;" "$u/frontfall/"
+attendre "préproduction : script d'audience Cloudflare admis" "script-src 'self' https://static.cloudflareinsights.com;" "$u/frontfall-next/"
 
 # Jeu : préfixe retiré avant le service, cache selon le chemin, adresse sans barre redirigée.
 jeu() {
