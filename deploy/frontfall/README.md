@@ -11,8 +11,10 @@ côté compte, pour ne rien casser en modifiant l'un ou l'autre.
 
 L'image `ghcr.io/nic0lasm/frontfall` est publique, construite pour amd64 et arm64, et étiquetée par
 les 12 premiers caractères du commit. Elle lance un seul processus Node, en utilisateur `node`,
-sur le port 8080. Il n'écrit que dans `/tmp`, ne garde aucune donnée (les parties vivent en
-mémoire), n'a besoin ni d'Internet ni d'aucune capacité Linux, et son tas est limité à 512 Mio. Les
+sur le port 8080. Il n'écrit que dans `/tmp` et dans `/var/lib/frontfall` (`FRONTFALL_DATA`), un volume
+nommé dont les sous-dossiers `usage/` et `games/` recevront mesures d'usage et parties à reprendre ;
+il démarre aussi sans. Les parties vivent en mémoire. Il n'a besoin ni d'Internet ni d'aucune
+capacité Linux, et son tas est limité à 512 Mio. Les
 journaux sortent en JSON, une ligne par événement.
 
 Le jeu ignore le préfixe `/frontfall` : ses pages n'utilisent que des chemins relatifs, et les
@@ -23,13 +25,16 @@ pendant l'arrêt. L'en-tête `X-Frontfall-Version` donne l'étiquette en service
 publication du jeu l'attend, au travers de Cloudflare, avant de déclarer le déploiement réussi.
 `/metrics` renvoie 404 à toute requête qui passe par un proxy.
 
-Sur SIGTERM, le jeu ferme les websockets (code `1012`) et s'arrête en moins de 5 secondes.
+Sur SIGTERM, le jeu n'ouvre plus de partie et laisse finir celles en cours pendant
+`FRONTFALL_DRAIN_SECONDS` au plus (10 minutes ici), puis prévient les joueurs, ferme les websockets
+(code `1012`) et s'arrête 5 secondes plus tard au plus. `/admin/maintenance`, qui annonce une mise à
+jour aux joueurs, ne répond qu'aux requêtes venues du conteneur lui-même ; Caddy le ferme aussi.
 
 Quelques comportements dépendent directement de Caddy :
 
 - un websocket ouvert par une page d'une autre origine que `FRONTFALL_ORIGINE` est refusé ;
 - l'adresse du joueur est lue dans `X-Client-IP`, et seulement quand la connexion vient d'une
-  adresse privée, celle de Caddy sur le réseau `frontfall` ; au-delà de 8 connexions par adresse,
+  adresse privée, celle de Caddy sur le réseau `frontfall` ; au-delà de 16 connexions par adresse,
   le jeu répond 429 ;
 - le jeu envoie un ping toutes les 25 secondes, bien sous le délai d'inactivité de Cloudflare ;
 - le client ne charge rien d'une autre origine, ce que suppose la CSP posée par Caddy.
@@ -38,8 +43,10 @@ Quelques comportements dépendent directement de Caddy :
 
 Le fichier Compose de ce dossier est installé dans `/opt/frontfall`, qui appartient à root. Le
 conteneur redémarre seul après un plantage, tourne en lecture seule avec `/tmp` en mémoire, sans
-capacité, avec 1 Gio de mémoire, 2 processeurs et 256 processus au plus. Il dispose de 30 secondes
-pour s'arrêter. Docker interroge `/healthz` toutes les 30 secondes, avec `node` : l'image doit donc
+capacité, avec 768 Mio de mémoire, 2 processeurs et 256 processus au plus. Il dispose de 11 minutes
+pour s'arrêter, une de plus que le drainage. La préproduction (`compose-next.yaml`, service
+`frontfall-next`, `/opt/frontfall-next`) tourne à côté avec 192 Mio, un tas de 128 Mio, 20 parties
+et 200 connexions au plus. Docker interroge `/healthz` toutes les 30 secondes, avec `node` : l'image doit donc
 le garder. Il est seul sur le réseau interne `frontfall` avec Caddy, sans accès à Internet.
 
 Caddy redirige `/frontfall` vers `/frontfall/`, retire le préfixe, transmet le websocket, pose
@@ -50,10 +57,12 @@ Le déploiement passe par le compte `frontfall`, dont la clé SSH n'exécute que
 `frontfall-deployer`. Celui-ci refuse une étiquette qui n'est pas faite de 12 caractères
 hexadécimaux, écrit l'étiquette dans `/opt/frontfall/.env`, tire l'image, attend que le conteneur
 soit sain (120 secondes au plus) et ne garde que les 10 images les plus récentes, plus celle en
-service après un retour en arrière.
+service après un retour en arrière. Précédée de `next`, la commande vise la préproduction ;
+`annonce <minutes>` (1 à 60) prévient les joueurs connectés d'une mise à jour prochaine.
 
-Variables posées par le fichier Compose : `NODE_ENV=production`, `PORT=8080` et
-`FRONTFALL_ORIGINE=https://nclsmgr.com`. L'image pose elle-même `FRONTFALL_VERSION`,
+Variables posées par le fichier Compose : `NODE_ENV=production`, `PORT=8080`,
+`FRONTFALL_ORIGINE=https://nclsmgr.com`, `FRONTFALL_DRAIN_SECONDS=600` et
+`FRONTFALL_DATA=/var/lib/frontfall`. L'image pose elle-même `FRONTFALL_VERSION`,
 `FRONTFALL_STATIC` et `NODE_OPTIONS`. Les limites du jeu (`FRONTFALL_MAX_GAMES`,
 `FRONTFALL_MAX_CONNECTIONS`, `FRONTFALL_COUNTDOWN_SECONDS`) gardent leur valeur par défaut ; une
 nouvelle variable nécessaire en production s'ajoute dans `compose.yaml`.

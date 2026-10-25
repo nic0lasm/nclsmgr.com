@@ -1,0 +1,4 @@
+# Remplace la préproduction du jeu pour l'essai des en-têtes : renvoie le chemin reçu.
+:8080 {
+	respond "frontfall-next {path}"
+}

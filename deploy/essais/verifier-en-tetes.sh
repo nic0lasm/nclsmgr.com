@@ -81,7 +81,17 @@ contient "jeu : ressources immuables" "$(jeu -o /dev/null -D - "$u/frontfall/ass
 contient "jeu : page revalidée" "$(jeu -o /dev/null -D - "$u/frontfall/" | tr -d '\r' | grep -i '^cache-control:')" "no-cache" "immutable"
 contient "jeu : /frontfall redirigé" "$(jeu -o /dev/null -w '%{http_code} %{redirect_url}' "$u/frontfall")" "301 https://nclsmgr.com:$port/frontfall/"
 contient "jeu : métriques fermées" "$(jeu -o /dev/null -w '%{http_code}' "$u/frontfall/metrics") $(jeu -o /dev/null -w '%{http_code}' "$u/frontfall/metrics/x")" "404 404"
+contient "jeu : administration fermée" "$(jeu -o /dev/null -w '%{http_code}' "$u/frontfall/admin/maintenance")" "404"
 contient "site : chemin voisin hors du jeu" "$(jeu "$u/frontfallx")" "ok" "frontfall /"
+
+# Préproduction : son propre conteneur, mêmes règles.
+attendre "préproduction : politique du jeu" "connect-src 'self' wss://nclsmgr.com" "$u/frontfall-next/"
+contient "préproduction : préfixe retiré, bon conteneur" "$(jeu "$u/frontfall-next/assets/index-abc.js")" "frontfall-next /assets/index-abc.js"
+contient "préproduction : ressources immuables" "$(jeu -o /dev/null -D - "$u/frontfall-next/assets/index-abc.js" | tr -d '\r' | grep -i '^cache-control:')" "immutable"
+contient "préproduction : non indexée" "$(jeu -o /dev/null -D - "$u/frontfall-next/" | tr -d '\r' | grep -i '^x-robots-tag:')" "noindex"
+contient "préproduction : /frontfall-next redirigé" "$(jeu -o /dev/null -w '%{http_code} %{redirect_url}' "$u/frontfall-next")" "301 https://nclsmgr.com:$port/frontfall-next/"
+contient "préproduction : métriques et administration fermées" "$(jeu -o /dev/null -w '%{http_code}' "$u/frontfall-next/metrics") $(jeu -o /dev/null -w '%{http_code}' "$u/frontfall-next/admin/maintenance")" "404 404"
+contient "jeu : la production ne sert pas la préproduction" "$(jeu "$u/frontfall/assets/index-abc.js")" "frontfall /assets/index-abc.js" "frontfall-next"
 
 # Rien ne nomme le serveur dans la réponse.
 reponse=$(curl -sk --noproxy "*" --resolve "nclsmgr.com:$port:127.0.0.1" -o /dev/null -D - "$u/fr/cv" | tr -d '\r')
