@@ -158,7 +158,13 @@ politique CSP. Ce que le jeu attend du serveur, et l'inverse, est résumé dans
 une clé SSH à commande forcée distincte de celle du site. Le fichier Compose du jeu vient de ce
 dépôt (`deploy/frontfall/compose.yaml`) : le dépôt du jeu ne choisit que l'étiquette. Après chaque
 déploiement, le serveur ne garde que les 10 images du jeu les plus récentes, de quoi revenir en
-arrière sans téléchargement.
+arrière sans téléchargement. Quand des parties sont en cours, le workflow appelle d'abord
+`frontfall-deployer annonce <minutes>` : les joueurs voient arriver la mise à jour.
+
+**Préproduction.** La branche `next` du jeu est servie sous `https://nclsmgr.com/frontfall-next/`,
+par un second projet Compose, `/opt/frontfall-next` (`deploy/frontfall/compose-next.yaml`, 192 Mio).
+Le même compte la déploie, avec le mot `next` devant l'étiquette. Côté jeu, la variable
+`PREPROD_ACTIVE` du dépôt l'active une fois le déployeur mis à jour.
 
 **Mise à jour du déployeur.** Après une fusion qui modifie `deployer-frontfall.sh` ou le fichier
 Compose du jeu, relancer `installer-frontfall.sh` en gardant la clé en place :

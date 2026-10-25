@@ -10,19 +10,26 @@ services:
       driver: journald
       options:
         tag: "{{.Name}}"
-    # Laisse au serveur le temps de prévenir les joueurs et de fermer les websockets.
     init: true
-    stop_grace_period: 30s
+    # À l'arrêt, le jeu laisse finir les parties en cours (FRONTFALL_DRAIN_SECONDS), puis prévient
+    # les joueurs : le délai d'arrêt doit dépasser ce drainage d'au moins 30 secondes.
+    stop_grace_period: 11m
     read_only: true
     tmpfs:
       - /tmp
+    # Seul dossier écrit hors de /tmp : usage/ (mesures d'usage), games/ (parties à reprendre).
+    volumes:
+      - donnees:/var/lib/frontfall
     environment:
       NODE_ENV: production
       PORT: "8080"
       FRONTFALL_ORIGINE: https://nclsmgr.com
+      FRONTFALL_DRAIN_SECONDS: "600"
+      FRONTFALL_DATA: /var/lib/frontfall
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
-    mem_limit: 1g
+    # 768 Mio laissent 192 Mio à la préproduction ; le tas du jeu reste limité à 512 Mio.
+    mem_limit: 768m
     cpus: 2
     pids_limit: 256
     healthcheck:
@@ -38,6 +45,9 @@ services:
       start_interval: 2s
     # Seul réseau du jeu : Caddy le joint ici, et il n'a aucun accès à Internet.
     networks: [frontfall]
+
+volumes:
+  donnees:
 
 networks:
   frontfall:

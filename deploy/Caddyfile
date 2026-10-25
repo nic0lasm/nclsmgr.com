@@ -109,13 +109,34 @@ nclsmgr.com {
 		not path /frontfall/assets/*
 	}
 	header @frontfallPages >Cache-Control "no-cache"
-	# Les métriques du jeu restent sur le serveur, même si le jeu cessait de les refuser.
-	handle /frontfall/metrics* {
+	# Les métriques et l'administration du jeu restent sur le serveur, même si le jeu cessait de
+	# les refuser.
+	@frontfallPrive path /frontfall/metrics* /frontfall/admin* /frontfall-next/metrics* /frontfall-next/admin*
+	handle @frontfallPrive {
 		respond 404
 	}
 	handle /frontfall/* {
 		uri strip_prefix /frontfall
 		reverse_proxy frontfall:8080 {
+			header_up X-Client-IP {client_ip}
+		}
+	}
+
+	# Préproduction du jeu (branche next), même politique, sur son propre conteneur.
+	redir /frontfall-next /frontfall-next/ permanent
+	@frontfallNext path /frontfall-next/*
+	header @frontfallNext >Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' wss://nclsmgr.com; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
+	header @frontfallNext >X-Robots-Tag "noindex"
+	@frontfallNextAssets path /frontfall-next/assets/*
+	header @frontfallNextAssets >Cache-Control "public, max-age=31536000, immutable"
+	@frontfallNextPages {
+		path /frontfall-next/*
+		not path /frontfall-next/assets/*
+	}
+	header @frontfallNextPages >Cache-Control "no-cache"
+	handle /frontfall-next/* {
+		uri strip_prefix /frontfall-next
+		reverse_proxy frontfall-next:8080 {
 			header_up X-Client-IP {client_ip}
 		}
 	}

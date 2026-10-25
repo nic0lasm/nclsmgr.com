@@ -35,12 +35,16 @@ fi
 sshd -t
 systemctl reload ssh
 
-# Le dossier et le fichier Compose appartiennent à root ; le compte n'écrit que l'étiquette.
-install -d -m 755 -o root -g root /opt/frontfall
-install -m 644 -o root -g root ../frontfall/compose.yaml /opt/frontfall/compose.yaml
-if [ ! -f /opt/frontfall/.env ]; then
-  install -m 644 -o frontfall -g frontfall /dev/null /opt/frontfall/.env
-fi
+# Les dossiers et les fichiers Compose appartiennent à root ; le compte n'écrit que l'étiquette.
+# /opt/frontfall sert la production, /opt/frontfall-next la préproduction (branche next du jeu).
+for cible in frontfall:compose.yaml frontfall-next:compose-next.yaml; do
+  dossier=/opt/${cible%%:*}
+  install -d -m 755 -o root -g root "$dossier"
+  install -m 644 -o root -g root "../frontfall/${cible#*:}" "$dossier/compose.yaml"
+  if [ ! -f "$dossier/.env" ]; then
+    install -m 644 -o frontfall -g frontfall /dev/null "$dossier/.env"
+  fi
+done
 
 echo "Serveur prêt pour le déploiement du jeu."
 echo "Compte : $(id frontfall)"

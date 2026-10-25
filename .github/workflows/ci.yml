@@ -66,6 +66,8 @@ jobs:
             -v "$PWD/deploy/essais/web-factice.caddy:/etc/caddy/Caddyfile:ro" "$image"
           docker run -d --name frontfall --network essai \
             -v "$PWD/deploy/essais/frontfall-factice.caddy:/etc/caddy/Caddyfile:ro" "$image"
+          docker run -d --name frontfall-next --network essai \
+            -v "$PWD/deploy/essais/frontfall-next-factice.caddy:/etc/caddy/Caddyfile:ro" "$image"
           docker run -d --name caddy --network essai -p 8443:443 \
             -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
             -v "/tmp/cloudflare-ips.caddy:/etc/caddy/cloudflare-ips.caddy:ro" \
