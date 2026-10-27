@@ -49,7 +49,10 @@ pour s'arrêter, une de plus que le drainage. La préproduction (`compose-next.y
 et 200 connexions au plus. Docker interroge `/healthz` toutes les 30 secondes, avec `node` : l'image doit donc
 le garder. Caddy le joint sur le réseau interne `frontfall`, sans accès à Internet ; un second
 réseau, `sortie`, propre au projet et sans port publié, ne sert qu'aux appels du jeu vers Discord et
-Google quand un joueur se connecte.
+Google quand un joueur se connecte. C'est un bridge ordinaire : rien n'y limite encore la sortie, le
+conteneur pourrait joindre tout Internet, l'hôte et son réseau local. Durcissement prévu (v0.9) :
+une règle `DOCKER-USER` (nftables) qui n'admet depuis ce réseau que le DNS et le port 443 de
+`discord.com`, `oauth2.googleapis.com` et `openidconnect.googleapis.com`.
 
 Caddy redirige `/frontfall` vers `/frontfall/`, retire le préfixe, transmet le websocket, pose
 `X-Client-IP`, la CSP du jeu et les en-têtes de cache (un an pour `/frontfall/assets/`, revalidation
@@ -72,7 +75,8 @@ nouvelle variable nécessaire en production s'ajoute dans `compose.yaml`.
 
 Les secrets de la connexion Discord et Google ne sont pas dans ce dépôt : ils sont lus dans
 `/etc/frontfall/comptes.env` (préproduction : `comptes-next.env`), `root:root`, mode `600`, s'il
-existe. Sans lui, le jeu se joue en invité seulement.
+existe. Sans lui, le jeu se joue en invité seulement. `env_file` avec `required: false` demande
+Docker Compose 2.24 ou plus récent : `installer-frontfall.sh` le vérifie.
 
 ```sh
 FRONTFALL_SESSION_SECRET=<openssl rand -base64 48, jamais changé ensuite>
@@ -82,8 +86,8 @@ FRONTFALL_OAUTH_GOOGLE_ID=<id client>
 FRONTFALL_OAUTH_GOOGLE_SECRET=<secret client>
 ```
 
-Changer le secret de session déconnecte tout le monde et perd tous les comptes : il se sauvegarde
-avec le volume. Adresses de retour à déclarer chez Discord et Google :
+Changer le secret de session déconnecte tout le monde, sans rien perdre : les comptes vivent dans le
+volume, avec leur propre sel. Adresses de retour à déclarer chez Discord et Google :
 `https://nclsmgr.com/frontfall/auth/discord/callback`, `…/frontfall/auth/google/callback`, et les
 mêmes sous `/frontfall-next/`.
 

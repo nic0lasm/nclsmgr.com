@@ -35,6 +35,13 @@ fi
 sshd -t
 systemctl reload ssh
 
+# Les fichiers Compose lisent les secrets par env_file avec required: false (Compose 2.24 et plus).
+version=$(docker compose version --short | sed 's/^v//')
+if [ "$(printf '%s\n' 2.24.0 "$version" | sort -V | head -n 1)" != 2.24.0 ]; then
+  echo "Docker Compose $version trop ancien : 2.24 ou plus récent est nécessaire." >&2
+  exit 1
+fi
+
 # Les dossiers et les fichiers Compose appartiennent à root ; le compte n'écrit que l'étiquette.
 # /opt/frontfall sert la production, /opt/frontfall-next la préproduction (branche next du jeu).
 for cible in frontfall:compose.yaml frontfall-next:compose-next.yaml; do

@@ -53,6 +53,8 @@ services:
       start_interval: 2s
     # Caddy joint le jeu sur frontfall, sans accès à Internet ; sortie ne sert qu'aux appels
     # sortants du jeu vers Discord et Google lors d'une connexion. Aucun port n'y est publié.
+    # Bridge ordinaire pour l'instant ; à restreindre (v0.9) par une règle DOCKER-USER n'admettant
+    # que le DNS et le 443 de discord.com, oauth2.googleapis.com, openidconnect.googleapis.com.
     networks: [frontfall, sortie]
 
 volumes:
