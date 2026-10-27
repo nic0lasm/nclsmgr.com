@@ -47,7 +47,9 @@ capacité, avec 768 Mio de mémoire, 2 processeurs et 256 processus au plus. Il 
 pour s'arrêter, une de plus que le drainage. La préproduction (`compose-next.yaml`, service
 `frontfall-next`, `/opt/frontfall-next`) tourne à côté avec 192 Mio, un tas de 128 Mio, 20 parties
 et 200 connexions au plus. Docker interroge `/healthz` toutes les 30 secondes, avec `node` : l'image doit donc
-le garder. Il est seul sur le réseau interne `frontfall` avec Caddy, sans accès à Internet.
+le garder. Caddy le joint sur le réseau interne `frontfall`, sans accès à Internet ; un second
+réseau, `sortie`, propre au projet et sans port publié, ne sert qu'aux appels du jeu vers Discord et
+Google quand un joueur se connecte.
 
 Caddy redirige `/frontfall` vers `/frontfall/`, retire le préfixe, transmet le websocket, pose
 `X-Client-IP`, la CSP du jeu et les en-têtes de cache (un an pour `/frontfall/assets/`, revalidation
@@ -61,11 +63,29 @@ service après un retour en arrière. Précédée de `next`, la commande vise la
 `annonce <minutes>` (1 à 60) prévient les joueurs connectés d'une mise à jour prochaine.
 
 Variables posées par le fichier Compose : `NODE_ENV=production`, `PORT=8080`,
-`FRONTFALL_ORIGINE=https://nclsmgr.com`, `FRONTFALL_DRAIN_SECONDS=600` et
-`FRONTFALL_DATA=/var/lib/frontfall`. L'image pose elle-même `FRONTFALL_VERSION`,
+`FRONTFALL_ORIGINE=https://nclsmgr.com`, `FRONTFALL_DRAIN_SECONDS=600`,
+`FRONTFALL_DATA=/var/lib/frontfall` et `FRONTFALL_PUBLIC_URL` (`https://nclsmgr.com/frontfall`, ou
+`/frontfall-next` pour la préproduction). L'image pose elle-même `FRONTFALL_VERSION`,
 `FRONTFALL_STATIC` et `NODE_OPTIONS`. Les limites du jeu (`FRONTFALL_MAX_GAMES`,
 `FRONTFALL_MAX_CONNECTIONS`, `FRONTFALL_COUNTDOWN_SECONDS`) gardent leur valeur par défaut ; une
 nouvelle variable nécessaire en production s'ajoute dans `compose.yaml`.
+
+Les secrets de la connexion Discord et Google ne sont pas dans ce dépôt : ils sont lus dans
+`/etc/frontfall/comptes.env` (préproduction : `comptes-next.env`), `root:root`, mode `600`, s'il
+existe. Sans lui, le jeu se joue en invité seulement.
+
+```sh
+FRONTFALL_SESSION_SECRET=<openssl rand -base64 48, jamais changé ensuite>
+FRONTFALL_OAUTH_DISCORD_ID=<id client>
+FRONTFALL_OAUTH_DISCORD_SECRET=<secret client>
+FRONTFALL_OAUTH_GOOGLE_ID=<id client>
+FRONTFALL_OAUTH_GOOGLE_SECRET=<secret client>
+```
+
+Changer le secret de session déconnecte tout le monde et perd tous les comptes : il se sauvegarde
+avec le volume. Adresses de retour à déclarer chez Discord et Google :
+`https://nclsmgr.com/frontfall/auth/discord/callback`, `…/frontfall/auth/google/callback`, et les
+mêmes sous `/frontfall-next/`.
 
 ## Mettre à jour le déployeur
 

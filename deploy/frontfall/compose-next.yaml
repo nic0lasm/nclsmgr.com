@@ -24,10 +24,18 @@ services:
       FRONTFALL_ORIGINE: https://nclsmgr.com
       FRONTFALL_DRAIN_SECONDS: "20"
       FRONTFALL_DATA: /var/lib/frontfall
+      # Connexion Discord et Google : adresse où ces services renvoient les joueurs.
+      FRONTFALL_PUBLIC_URL: https://nclsmgr.com/frontfall-next
       FRONTFALL_MAX_GAMES: "20"
       FRONTFALL_MAX_CONNECTIONS: "200"
       # Tas réduit pour tenir dans 192 Mio.
       NODE_OPTIONS: --max-old-space-size=128
+    # Secrets de la connexion (FRONTFALL_SESSION_SECRET, FRONTFALL_OAUTH_DISCORD_ID et _SECRET,
+    # FRONTFALL_OAUTH_GOOGLE_ID et _SECRET), hors du dépôt, root:root 600. Sans ce fichier, le jeu
+    # se joue en invité seulement et le menu n'affiche aucun bouton de connexion.
+    env_file:
+      - path: /etc/frontfall/comptes-next.env
+        required: false
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     mem_limit: 192m
@@ -44,7 +52,8 @@ services:
       retries: 3
       start_period: 1m
       start_interval: 2s
-    networks: [frontfall]
+    # sortie : appels sortants vers Discord et Google lors d'une connexion ; aucun port publié.
+    networks: [frontfall, sortie]
 
 volumes:
   donnees:
@@ -52,3 +61,4 @@ volumes:
 networks:
   frontfall:
     external: true
+  sortie: {}
