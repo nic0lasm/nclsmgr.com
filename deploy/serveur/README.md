@@ -151,12 +151,12 @@ conteneur `umami-db`.
 
 ```sh
 ssh -t debian@<serveur> sudo nclsmgr-restaurer-frontfall --essai   # répétition, jeu non touché
-ssh -t debian@<serveur> sudo nclsmgr-restaurer-frontfall           # restauration réelle
+ssh -t debian@<serveur> sudo nclsmgr-restaurer-frontfall --confirmer   # restauration réelle
 ```
 
 La répétition lit le dernier instantané, vérifie chaque empreinte et affiche, étape par étape, le
 temps écoulé : c'est la durée à retenir. La restauration réelle arrête le jeu (30 secondes au plus,
-les parties en cours sont coupées), remplace le contenu du volume `frontfall_donnees`, rend les
+les parties en cours sont coupées), met de côté le contenu du volume `frontfall_donnees` (`_data.avant-restauration`, supprimé une fois le jeu sain, remis en place si la copie échoue), restaure les données, rend les
 fichiers au compte du conteneur, remet `/etc/frontfall/comptes.env` s'il manque (`root:frontfall`
 640) et relance le jeu. Sur un serveur neuf : restaurer d'abord les accès au dépôt comme ci-dessus,
 déployer le jeu une première fois pour créer le volume, puis lancer la commande.
@@ -164,7 +164,7 @@ déployer le jeu une première fois pour créer le volume, puis lancer la comman
 Mise à jour d'un serveur déjà installé (aucune question reposée) :
 
 ```sh
-ssh -t debian@<serveur> 'set -e; d=$(mktemp -d); curl -fsSL https://codeload.github.com/nic0lasm/nclsmgr.com/tar.gz/main | tar -xz -C $d --strip-components=1; sudo sh $d/deploy/serveur/installer-sauvegarde.sh; rm -rf $d'
+ssh -t debian@<serveur> 'd=$(mktemp -d); trap "rm -rf \"$d\"" EXIT; curl -fsSL https://codeload.github.com/nic0lasm/nclsmgr.com/tar.gz/main | tar -xz -C "$d" --strip-components=1 && sudo sh "$d/deploy/serveur/installer-sauvegarde.sh"'
 ```
 
 ## Jeu Frontfall
