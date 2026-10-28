@@ -30,6 +30,12 @@ if [ -z "$dossier" ] || [ ! -f "$dossier/SHA256SUMS" ]; then
 fi
 [ -f "$dossier/etc/certs/origin.pem" ] || { echo "Certificat absent de l'instantané." >&2; exit 1; }
 
+# Le volume du jeu existe sur ce serveur : il doit figurer dans l'instantané.
+if [ -d /var/lib/docker/volumes/frontfall_donnees/_data ] && [ ! -d "$dossier/frontfall/donnees" ]; then
+  echo "Données de Frontfall absentes de l'instantané." >&2
+  exit 1
+fi
+
 (cd "$dossier" && sha256sum --quiet --strict -c SHA256SUMS) || { echo "Empreintes différentes." >&2; exit 1; }
 if [ -f "$dossier/espace.db" ]; then
   [ "$(sqlite3 "$dossier/espace.db" 'PRAGMA integrity_check')" = ok ]

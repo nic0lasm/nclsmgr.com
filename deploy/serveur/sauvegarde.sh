@@ -37,6 +37,19 @@ fi
 copier "$VOLUMES/nclsmgr_prive/_data" "$COURANT/prive"
 copier "$VOLUMES/nclsmgr_caddy_data/_data" "$COURANT/caddy"
 
+# Jeu Frontfall : volume de données (mesures d'usage, comptes Discord/Google, signalements et
+# bannissements) et secrets de connexion. Le serveur écrit chaque fichier par renommage atomique :
+# une copie à chaud est toujours cohérente. games/ ne sert qu'à reprendre les parties au
+# redémarrage suivant et n'a aucun intérêt dans une sauvegarde. accounts/accounts.json contient des
+# données personnelles : il ne quitte le serveur que chiffré par restic.
+if [ -d "$VOLUMES/frontfall_donnees/_data" ]; then
+  install -d -m 700 "$COURANT/frontfall" "$COURANT/frontfall/etc" "$COURANT/frontfall/donnees"
+  copier /etc/frontfall "$COURANT/frontfall/etc"
+  copier "$VOLUMES/frontfall_donnees/_data" "$COURANT/frontfall/donnees"
+  rm -rf "$COURANT/frontfall/donnees/games"
+  find "$COURANT/frontfall/donnees" -name '*.tmp*' -delete
+fi
+
 # Mesure d'audience : export cohérent de PostgreSQL, à chaud. Service installé mais arrêté : échec,
 # pour ne pas laisser la rétention effacer les derniers exports sans alerte.
 if [ -f /etc/nclsmgr/umami-db.env ]; then
