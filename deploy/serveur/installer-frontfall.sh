@@ -42,6 +42,13 @@ if [ "$(printf '%s\n' 2.24.0 "$version" | sort -V | head -n 1)" != 2.24.0 ]; the
   exit 1
 fi
 
+# La production relit la boîte d'envoi du site pour la connexion par e-mail : sans ce fichier,
+# Compose refuserait de la démarrer au déploiement suivant.
+if [ ! -f /etc/nclsmgr/smtp.json ]; then
+  echo "/etc/nclsmgr/smtp.json absent : lancer configurer-smtp.sh avant ce script." >&2
+  exit 1
+fi
+
 # Les dossiers et les fichiers Compose appartiennent à root ; le compte n'écrit que l'étiquette.
 # /opt/frontfall sert la production, /opt/frontfall-next la préproduction (branche next du jeu).
 for cible in frontfall:compose.yaml frontfall-next:compose-next.yaml; do
