@@ -79,7 +79,10 @@ d'administration ; les contrôles locaux sur le serveur restent possibles. Retou
 
 **Contenu.** `/etc/nclsmgr` (certificats, secrets SMTP et Umami), `/opt/nclsmgr` (version
 déployée), la base de l'espace privé (copie cohérente par l'API de sauvegarde SQLite), les
-documents réservés, les données de Caddy et un export PostgreSQL d'Umami. Chaque fichier est
+documents réservés, les données de Caddy, un export PostgreSQL d'Umami, et pour le jeu Frontfall son
+volume de données (mesures d'usage, comptes Discord et Google, signalements et bannissements) et
+`/etc/frontfall` (secrets de connexion). Les parties en cours (`games/`) n'en font pas partie : elles
+ne servent qu'au redémarrage suivant. Chaque fichier est
 accompagné de son empreinte SHA-256. Les accès au dépôt de sauvegarde (`sauvegarde.env`,
 `restic.motdepasse`) en sont exclus : ils sont conservés hors du serveur.
 
@@ -143,6 +146,25 @@ jeton R2, puis `restic restore latest --host nclsmgr --target /root/restauration
 déploiement, `espace.db`, `prive/` et `caddy/` vont dans les volumes `nclsmgr_base`,
 `nclsmgr_prive` et `nclsmgr_caddy_data`, et `umami.dump` se recharge par `pg_restore` dans le
 conteneur `umami-db`.
+
+### Restauration des données de Frontfall
+
+```sh
+ssh -t debian@<serveur> sudo nclsmgr-restaurer-frontfall --essai   # répétition, jeu non touché
+ssh -t debian@<serveur> sudo nclsmgr-restaurer-frontfall --confirmer   # restauration réelle
+```
+
+La répétition lit le dernier instantané, vérifie chaque empreinte et affiche, étape par étape, le
+temps écoulé : c'est la durée à retenir. La restauration réelle arrête le jeu (30 secondes au plus,
+les parties en cours sont coupées), met de côté le contenu du volume `frontfall_donnees` (`_data.avant-restauration`, supprimé une fois le jeu sain, remis en place si la copie échoue), restaure les données, rend les
+fichiers au compte du conteneur, remet `/etc/frontfall/comptes.env` s'il manque (`root:frontfall` 640) et relance le jeu. Sur un serveur neuf : restaurer d'abord les accès au dépôt comme ci-dessus,
+déployer le jeu une première fois pour créer le volume, puis lancer la commande.
+
+Mise à jour d'un serveur déjà installé (aucune question reposée) :
+
+```sh
+ssh -t debian@<serveur> 'd=$(mktemp -d); trap "rm -rf \"$d\"" EXIT; curl -fsSL https://codeload.github.com/nic0lasm/nclsmgr.com/tar.gz/main | tar -xz -C "$d" --strip-components=1 && sudo sh "$d/deploy/serveur/installer-sauvegarde.sh"'
+```
 
 ## Jeu Frontfall
 
