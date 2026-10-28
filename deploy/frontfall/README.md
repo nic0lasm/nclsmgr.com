@@ -48,7 +48,7 @@ pour s'arrêter, une de plus que le drainage. La préproduction (`compose-next.y
 `frontfall-next`, `/opt/frontfall-next`) tourne à côté avec 192 Mio, un tas de 128 Mio, 20 parties
 et 200 connexions au plus. Docker interroge `/healthz` toutes les 30 secondes, avec `node` : l'image doit donc
 le garder. Caddy le joint sur le réseau interne `frontfall`, sans accès à Internet ; un second
-réseau, `sortie`, propre au projet et sans port publié, ne sert qu'aux appels du jeu vers Discord et
+réseau de la production, `sortie`, propre au projet et sans port publié, ne sert qu'aux appels du jeu vers Discord et
 Google quand un joueur se connecte. C'est un bridge ordinaire : rien n'y limite encore la sortie, le
 conteneur pourrait joindre tout Internet, l'hôte et son réseau local. Durcissement prévu (v0.9) :
 une règle `DOCKER-USER` (nftables) qui n'admet depuis ce réseau que le DNS et le port 443 de
@@ -67,15 +67,15 @@ service après un retour en arrière. Précédée de `next`, la commande vise la
 
 Variables posées par le fichier Compose : `NODE_ENV=production`, `PORT=8080`,
 `FRONTFALL_ORIGINE=https://nclsmgr.com`, `FRONTFALL_DRAIN_SECONDS=600`,
-`FRONTFALL_DATA=/var/lib/frontfall` et `FRONTFALL_PUBLIC_URL` (`https://nclsmgr.com/frontfall`, ou
-`/frontfall-next` pour la préproduction). L'image pose elle-même `FRONTFALL_VERSION`,
+`FRONTFALL_DATA=/var/lib/frontfall` et, en production seulement, `FRONTFALL_PUBLIC_URL`
+(`https://nclsmgr.com/frontfall`). L'image pose elle-même `FRONTFALL_VERSION`,
 `FRONTFALL_STATIC` et `NODE_OPTIONS`. Les limites du jeu (`FRONTFALL_MAX_GAMES`,
 `FRONTFALL_MAX_CONNECTIONS`, `FRONTFALL_COUNTDOWN_SECONDS`) gardent leur valeur par défaut ; une
 nouvelle variable nécessaire en production s'ajoute dans `compose.yaml`.
 
 Les secrets de la connexion Discord et Google ne sont pas dans ce dépôt : ils sont lus dans
-`/etc/frontfall/comptes.env` (préproduction : `comptes-next.env`), `root:root`, mode `600`, s'il
-existe. Sans lui, le jeu se joue en invité seulement. `env_file` avec `required: false` demande
+`/etc/frontfall/comptes.env`, `root:root`, mode `600`, s'il existe. La préproduction n'a pas de
+connexion : elle se joue en invité. Sans lui, le jeu se joue en invité seulement. `env_file` avec `required: false` demande
 Docker Compose 2.24 ou plus récent : `installer-frontfall.sh` le vérifie.
 
 ```sh
@@ -88,8 +88,7 @@ FRONTFALL_OAUTH_GOOGLE_SECRET=<secret client>
 
 Changer le secret de session déconnecte tout le monde, sans rien perdre : les comptes vivent dans le
 volume, avec leur propre sel. Adresses de retour à déclarer chez Discord et Google :
-`https://nclsmgr.com/frontfall/auth/discord/callback`, `…/frontfall/auth/google/callback`, et les
-mêmes sous `/frontfall-next/`.
+`https://nclsmgr.com/frontfall/auth/discord/callback` et `…/frontfall/auth/google/callback`.
 
 ## Mettre à jour le déployeur
 
