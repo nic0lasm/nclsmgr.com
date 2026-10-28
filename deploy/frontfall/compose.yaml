@@ -26,6 +26,14 @@ services:
       FRONTFALL_ORIGINE: https://nclsmgr.com
       FRONTFALL_DRAIN_SECONDS: "600"
       FRONTFALL_DATA: /var/lib/frontfall
+      # Connexion Discord et Google : adresse où ces services renvoient les joueurs.
+      FRONTFALL_PUBLIC_URL: https://nclsmgr.com/frontfall
+    # Secrets de la connexion (FRONTFALL_SESSION_SECRET, FRONTFALL_OAUTH_DISCORD_ID et _SECRET,
+    # FRONTFALL_OAUTH_GOOGLE_ID et _SECRET), hors du dépôt, root:root 600. Sans ce fichier, le jeu
+    # se joue en invité seulement et le menu n'affiche aucun bouton de connexion.
+    env_file:
+      - path: /etc/frontfall/comptes.env
+        required: false
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     # 768 Mio laissent 192 Mio à la préproduction ; le tas du jeu reste limité à 512 Mio.
@@ -43,8 +51,11 @@ services:
       retries: 3
       start_period: 1m
       start_interval: 2s
-    # Seul réseau du jeu : Caddy le joint ici, et il n'a aucun accès à Internet.
-    networks: [frontfall]
+    # Caddy joint le jeu sur frontfall, sans accès à Internet ; sortie ne sert qu'aux appels
+    # sortants du jeu vers Discord et Google lors d'une connexion. Aucun port n'y est publié.
+    # Bridge ordinaire pour l'instant ; à restreindre (v0.9) par une règle DOCKER-USER n'admettant
+    # que le DNS et le 443 de discord.com, oauth2.googleapis.com, openidconnect.googleapis.com.
+    networks: [frontfall, sortie]
 
 volumes:
   donnees:
@@ -52,3 +63,4 @@ volumes:
 networks:
   frontfall:
     external: true
+  sortie: {}

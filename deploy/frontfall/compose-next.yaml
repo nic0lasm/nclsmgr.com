@@ -24,6 +24,8 @@ services:
       FRONTFALL_ORIGINE: https://nclsmgr.com
       FRONTFALL_DRAIN_SECONDS: "20"
       FRONTFALL_DATA: /var/lib/frontfall
+      # Pas de connexion Discord ou Google ici : les applications ne déclarent que les adresses de
+      # retour de la production. La préproduction se joue en invité.
       FRONTFALL_MAX_GAMES: "20"
       FRONTFALL_MAX_CONNECTIONS: "200"
       # Tas réduit pour tenir dans 192 Mio.
