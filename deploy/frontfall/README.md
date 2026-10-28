@@ -74,8 +74,9 @@ Variables posées par le fichier Compose : `NODE_ENV=production`, `PORT=8080`,
 nouvelle variable nécessaire en production s'ajoute dans `compose.yaml`.
 
 Les secrets de la connexion Discord et Google ne sont pas dans ce dépôt : ils sont lus dans
-`/etc/frontfall/comptes.env`, `root:root`, mode `600`, s'il existe. La préproduction n'a pas de
-connexion : elle se joue en invité. Sans lui, le jeu se joue en invité seulement. `env_file` avec `required: false` demande
+`/etc/frontfall/comptes.env` s'il existe, `root:frontfall`, mode `640`, car le déployeur lance
+Compose sous le compte `frontfall`, qui doit pouvoir le lire. Sans lui, le jeu se joue en invité
+seulement ; la préproduction n'a jamais de connexion. `env_file` avec `required: false` demande
 Docker Compose 2.24 ou plus récent : `installer-frontfall.sh` le vérifie.
 
 ```sh

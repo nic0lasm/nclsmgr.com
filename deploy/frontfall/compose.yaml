@@ -29,8 +29,9 @@ services:
       # Connexion Discord et Google : adresse où ces services renvoient les joueurs.
       FRONTFALL_PUBLIC_URL: https://nclsmgr.com/frontfall
     # Secrets de la connexion (FRONTFALL_SESSION_SECRET, FRONTFALL_OAUTH_DISCORD_ID et _SECRET,
-    # FRONTFALL_OAUTH_GOOGLE_ID et _SECRET), hors du dépôt, root:root 600. Sans ce fichier, le jeu
-    # se joue en invité seulement et le menu n'affiche aucun bouton de connexion.
+    # FRONTFALL_OAUTH_GOOGLE_ID et _SECRET), hors du dépôt, root:frontfall 640 : le déployeur lance
+    # Compose sous le compte frontfall, qui doit le lire. Sans ce fichier, le jeu se joue en invité
+    # seulement et le menu n'affiche aucun bouton de connexion.
     env_file:
       - path: /etc/frontfall/comptes.env
         required: false
