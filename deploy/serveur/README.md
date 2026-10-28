@@ -157,8 +157,7 @@ ssh -t debian@<serveur> sudo nclsmgr-restaurer-frontfall --confirmer   # restaur
 La répétition lit le dernier instantané, vérifie chaque empreinte et affiche, étape par étape, le
 temps écoulé : c'est la durée à retenir. La restauration réelle arrête le jeu (30 secondes au plus,
 les parties en cours sont coupées), met de côté le contenu du volume `frontfall_donnees` (`_data.avant-restauration`, supprimé une fois le jeu sain, remis en place si la copie échoue), restaure les données, rend les
-fichiers au compte du conteneur, remet `/etc/frontfall/comptes.env` s'il manque (`root:frontfall`
-640) et relance le jeu. Sur un serveur neuf : restaurer d'abord les accès au dépôt comme ci-dessus,
+fichiers au compte du conteneur, remet `/etc/frontfall/comptes.env` s'il manque (`root:frontfall` 640) et relance le jeu. Sur un serveur neuf : restaurer d'abord les accès au dépôt comme ci-dessus,
 déployer le jeu une première fois pour créer le volume, puis lancer la commande.
 
 Mise à jour d'un serveur déjà installé (aucune question reposée) :
