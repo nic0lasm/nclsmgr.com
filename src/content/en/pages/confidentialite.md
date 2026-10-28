@@ -27,7 +27,7 @@ This data is neither sold nor passed on to third parties, apart from the technic
 
 Encrypted server backups are kept for no more than 3 months.
 
-The game [Frontfall](https://nclsmgr.com/frontfall/) can be played as a guest, and does not record games: they only exist in memory. Signing in with Discord or Google is optional; it then keeps your name, a scrambled id and the service used, never your email, until you delete the account from the game's menu. The details are in the [privacy policy of the game](https://nclsmgr.com/frontfall/privacy.html). To limit abuse, it counts the connections opened from the same IP address, in memory only. Its logs never record that address in the clear, only a fingerprint that changes every time the game restarts; they are kept for 30 days, like the server's.
+The game [Frontfall](https://nclsmgr.com/frontfall/) can be played as a guest, and does not record games: they only exist in memory. Signing in with Discord, Google or a link sent by email is optional; it then keeps your name, a scrambled id, the way you signed in and your achievements, never your email in clear, until you delete the account from the game's menu. The sign-in email goes out through the site's mailbox at OVH, and the address is forgotten once it is sent. The details are in the [privacy policy of the game](https://nclsmgr.com/frontfall/privacy.html). To limit abuse, it counts the connections opened from the same IP address, in memory only. Its logs never record that address in the clear, only a fingerprint that changes every time the game restarts; they are kept for 30 days, like the server's.
 
 ## Where the data is held
 

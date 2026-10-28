@@ -49,7 +49,7 @@ pour s'arrêter, une de plus que le drainage. La préproduction (`compose-next.y
 et 200 connexions au plus. Docker interroge `/healthz` toutes les 30 secondes, avec `node` : l'image doit donc
 le garder. Caddy le joint sur le réseau interne `frontfall`, sans accès à Internet ; un second
 réseau de la production, `sortie`, propre au projet et sans port publié, ne sert qu'aux appels du jeu vers Discord et
-Google quand un joueur se connecte. C'est un bridge ordinaire : rien n'y limite encore la sortie, le
+Google quand un joueur se connecte, et vers la boîte d'envoi pour les liens de connexion par e-mail. C'est un bridge ordinaire : rien n'y limite encore la sortie, le
 conteneur pourrait joindre tout Internet, l'hôte et son réseau local. Durcissement prévu (v0.9) :
 une règle `DOCKER-USER` (nftables) qui n'admet depuis ce réseau que le DNS et le port 443 de
 `discord.com`, `oauth2.googleapis.com` et `openidconnect.googleapis.com`.
@@ -68,7 +68,7 @@ service après un retour en arrière. Précédée de `next`, la commande vise la
 Variables posées par le fichier Compose : `NODE_ENV=production`, `PORT=8080`,
 `FRONTFALL_ORIGINE=https://nclsmgr.com`, `FRONTFALL_DRAIN_SECONDS=600`,
 `FRONTFALL_DATA=/var/lib/frontfall` et, en production seulement, `FRONTFALL_PUBLIC_URL`
-(`https://nclsmgr.com/frontfall`). L'image pose elle-même `FRONTFALL_VERSION`,
+(`https://nclsmgr.com/frontfall`) et `FRONTFALL_SMTP_FILE` (`/run/secrets/smtp`). L'image pose elle-même `FRONTFALL_VERSION`,
 `FRONTFALL_STATIC` et `NODE_OPTIONS`. Les limites du jeu (`FRONTFALL_MAX_GAMES`,
 `FRONTFALL_MAX_CONNECTIONS`, `FRONTFALL_COUNTDOWN_SECONDS`) gardent leur valeur par défaut ; une
 nouvelle variable nécessaire en production s'ajoute dans `compose.yaml`.
@@ -86,6 +86,14 @@ FRONTFALL_OAUTH_DISCORD_SECRET=<secret client>
 FRONTFALL_OAUTH_GOOGLE_ID=<id client>
 FRONTFALL_OAUTH_GOOGLE_SECRET=<secret client>
 ```
+
+La connexion par e-mail n'a pas de secret à elle : le jeu relit la boîte d'envoi du site,
+`/etc/nclsmgr/smtp.json` (`configurer-smtp.sh`, uid 1000, mode `400`), montée en lecture seule sur
+`/run/secrets/smtp` (`FRONTFALL_SMTP_FILE`). L'utilisateur `node` de l'image a l'uid 1000 et la lit
+donc sans autre droit. Le fichier doit exister : sans lui, Compose refuse de démarrer la production
+plutôt que de créer un dossier à sa place. Les liens partent de l'adresse `expediteur` de ce fichier,
+150 par jour au plus (`FRONTFALL_EMAIL_DAILY_LIMIT`), par le réseau `sortie`. La préproduction n'en
+a pas, comme pour Discord et Google.
 
 Changer le secret de session déconnecte tout le monde, sans rien perdre : les comptes vivent dans le
 volume, avec leur propre sel. Adresses de retour à déclarer chez Discord et Google :
