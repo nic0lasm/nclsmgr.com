@@ -1,7 +1,7 @@
 ---
 titre: Confidentialité
 statut: brouillon
-maj: 2026-10-24
+maj: 2026-10-28
 ---
 
 Ce site collecte le moins de données possible. Il n'utilise aucun cookie publicitaire, aucun traceur tiers et aucun outil de mesure qui vous suit d'un site à l'autre.
@@ -27,7 +27,7 @@ Ces données ne sont ni vendues ni transmises à des tiers, en dehors des presta
 
 Les sauvegardes chiffrées du serveur sont conservées 3 mois au plus.
 
-Le jeu [Frontfall](https://nclsmgr.com/frontfall/) ne demande aucun compte et n'enregistre pas les parties : elles n'existent qu'en mémoire. Pour limiter les abus, il compte les connexions ouvertes depuis une même adresse IP, en mémoire seulement. Ses journaux n'enregistrent jamais cette adresse en clair, seulement une empreinte qui change à chaque redémarrage du jeu ; ils sont gardés 30 jours, comme ceux du serveur.
+Le jeu [Frontfall](https://nclsmgr.com/frontfall/) se joue en invité et n'enregistre pas les parties : elles n'existent qu'en mémoire. Se connecter avec Discord ou Google est facultatif ; le jeu garde alors votre nom, un identifiant brouillé et le service utilisé, jamais votre e-mail, jusqu'à ce que vous supprimiez le compte depuis le menu du jeu. Le détail est dans la [politique de confidentialité du jeu](https://nclsmgr.com/frontfall/privacy.html). Pour limiter les abus, il compte les connexions ouvertes depuis une même adresse IP, en mémoire seulement. Ses journaux n'enregistrent jamais cette adresse en clair, seulement une empreinte qui change à chaque redémarrage du jeu ; ils sont gardés 30 jours, comme ceux du serveur.
 
 ## Où sont les données
 

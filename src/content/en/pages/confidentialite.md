@@ -1,7 +1,7 @@
 ---
 titre: Privacy
 statut: brouillon
-maj: 2026-10-24
+maj: 2026-10-28
 ---
 
 This site collects as little data as possible. It uses no advertising cookies, no third-party trackers and no analytics tool that follows you from one site to another.
@@ -27,7 +27,7 @@ This data is neither sold nor passed on to third parties, apart from the technic
 
 Encrypted server backups are kept for no more than 3 months.
 
-The game [Frontfall](https://nclsmgr.com/frontfall/) needs no account and does not record games: they only exist in memory. To limit abuse, it counts the connections opened from the same IP address, in memory only. Its logs never record that address in the clear, only a fingerprint that changes every time the game restarts; they are kept for 30 days, like the server's.
+The game [Frontfall](https://nclsmgr.com/frontfall/) can be played as a guest, and does not record games: they only exist in memory. Signing in with Discord or Google is optional; it then keeps your name, a scrambled id and the service used, never your email, until you delete the account from the game's menu. The details are in the [privacy policy of the game](https://nclsmgr.com/frontfall/privacy.html). To limit abuse, it counts the connections opened from the same IP address, in memory only. Its logs never record that address in the clear, only a fingerprint that changes every time the game restarts; they are kept for 30 days, like the server's.
 
 ## Where the data is held
 
