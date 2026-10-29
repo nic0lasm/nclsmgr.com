@@ -46,11 +46,11 @@ services:
       retries: 3
       start_period: 1m
       start_interval: 2s
-    networks: [frontfall]
+    networks: [frontfall-next]
 
 volumes:
   donnees:
 
 networks:
-  frontfall:
+  frontfall-next:
     external: true

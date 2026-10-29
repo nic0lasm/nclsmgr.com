@@ -3,6 +3,13 @@
 	servers {
 		import /etc/caddy/cloudflare-ips.caddy
 		client_ip_headers CF-Connecting-IP
+		# Des en-têtes qui traînent ne tiennent pas une connexion ; pas de délai de lecture du
+		# corps, qui couperait les websockets du jeu.
+		timeouts {
+			read_header 10s
+			idle 2m
+		}
+		max_header_size 16KB
 	}
 }
 
@@ -118,8 +125,17 @@ nclsmgr.com {
 	}
 	handle /frontfall/* {
 		uri strip_prefix /frontfall
+		# Le jeu n'accepte que de petits corps JSON (8 Ko au plus) ; les trames du websocket ne
+		# sont pas concernées.
+		request_body {
+			max_size 64KB
+		}
 		reverse_proxy frontfall:8080 {
 			header_up X-Client-IP {client_ip}
+			transport http {
+				dial_timeout 3s
+				response_header_timeout 30s
+			}
 		}
 	}
 
@@ -137,8 +153,17 @@ nclsmgr.com {
 	header @frontfallNextPages >Cache-Control "no-cache"
 	handle /frontfall-next/* {
 		uri strip_prefix /frontfall-next
+		# Le jeu n'accepte que de petits corps JSON (8 Ko au plus) ; les trames du websocket ne
+		# sont pas concernées.
+		request_body {
+			max_size 64KB
+		}
 		reverse_proxy frontfall-next:8080 {
 			header_up X-Client-IP {client_ip}
+			transport http {
+				dial_timeout 3s
+				response_header_timeout 30s
+			}
 		}
 	}
 

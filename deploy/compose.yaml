@@ -137,7 +137,7 @@ services:
       - /etc/nclsmgr/certs:/certs:ro
       - caddy_data:/data
       - caddy_config:/config
-    networks: [interne, public, frontfall]
+    networks: [interne, public, frontfall, frontfall-next]
 
 networks:
   interne:
@@ -146,6 +146,11 @@ networks:
   # qu'il le trouve ; sans accès à Internet.
   frontfall:
     name: frontfall
+    internal: true
+  # La préproduction a le sien : un conteneur de préproduction compromis ne joint pas la
+  # production, qui croit l'en-tête X-Client-IP de tout voisin privé.
+  frontfall-next:
+    name: frontfall-next
     internal: true
   public: {}
   sortie: {}

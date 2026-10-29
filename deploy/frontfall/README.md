@@ -47,7 +47,8 @@ capacité, avec 768 Mio de mémoire, 2 processeurs et 256 processus au plus. Il 
 pour s'arrêter, une de plus que le drainage. La préproduction (`compose-next.yaml`, service
 `frontfall-next`, `/opt/frontfall-next`) tourne à côté avec 192 Mio, un tas de 128 Mio, 20 parties
 et 200 connexions au plus. Docker interroge `/healthz` toutes les 30 secondes, avec `node` : l'image doit donc
-le garder. Caddy le joint sur le réseau interne `frontfall`, sans accès à Internet ; un second
+le garder. Caddy le joint sur le réseau interne `frontfall`, sans accès à Internet (la préproduction
+sur le sien, `frontfall-next`, pour qu'elle ne puisse pas parler à la production) ; un second
 réseau de la production, `sortie`, propre au projet et sans port publié, ne sert qu'aux appels du jeu vers Discord et
 Google quand un joueur se connecte, et vers la boîte d'envoi pour les liens de connexion par e-mail. C'est un bridge ordinaire : rien n'y limite encore la sortie, le
 conteneur pourrait joindre tout Internet, l'hôte et son réseau local. Durcissement prévu (v0.9) :
@@ -57,6 +58,12 @@ une règle `DOCKER-USER` (nftables) qui n'admet depuis ce réseau que le DNS et 
 Caddy redirige `/frontfall` vers `/frontfall/`, retire le préfixe, transmet le websocket, pose
 `X-Client-IP`, la CSP du jeu et les en-têtes de cache (un an pour `/frontfall/assets/`, revalidation
 pour le reste).
+Il refuse les corps de plus de 64 Ko, coupe une connexion dont les en-têtes mettent plus de
+10 secondes à arriver et n'attend pas plus de 30 secondes la réponse du jeu ; les websockets n'ont
+pas de limite de durée.
+
+Quand ce dépôt ajoute un réseau au jeu, le site doit être déployé d'abord (c'est lui qui crée les
+réseaux), puis `installer-frontfall.sh` relancé pour recopier les fichiers Compose dans `/opt`.
 
 Le déploiement passe par le compte `frontfall`, dont la clé SSH n'exécute que
 `frontfall-deployer`. Celui-ci refuse une étiquette qui n'est pas faite de 12 caractères
