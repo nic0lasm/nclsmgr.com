@@ -48,7 +48,7 @@ describe("contenus", () => {
       liens: c.profil.liens,
       etudes: c.portfolio.etudes.map((e) => [e.id, e.debut, e.fin, e.liens.map((l) => l.url)]),
       autres: c.portfolio.autres.lien.chemin,
-      referentiels: c.accueil.referentiels.elements.map((r) => [r.id, r.niveau]),
+      referentiels: c.accueil.referentiels.elements.map((r) => r.id),
       code: c.accueil.code.liens.map((l) => l.url),
     });
     expect(keys(en)).toEqual(keys(fr));
@@ -99,9 +99,6 @@ describe("contenus", () => {
       expect(c.portfolio.autres.lien.chemin).toMatch(/^\/[a-z-]+$/);
       for (const lien of c.accueil.code.liens) {
         expect(lien.url).toMatch(/^https:\/\/github\.com\/nic0lasm\/nclsmgr\.com(?:\/|$)/);
-      }
-      for (const r of c.accueil.referentiels.elements) {
-        expect(Object.keys(c.accueil.referentiels.niveaux)).toContain(r.niveau);
       }
       for (const fichier of [c.accueil, c.profil, c.parcours, c.portfolio, c.competences, c.seo]) {
         expect(["a-rediger", "brouillon", "valide"]).toContain(fichier.statut);

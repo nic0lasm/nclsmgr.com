@@ -65,7 +65,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                 <tr>
                   <th scope="col">{referentiels.colonnes.referentiel}</th>
                   <th scope="col">{referentiels.colonnes.application}</th>
-                  <th scope="col">{referentiels.colonnes.niveau}</th>
                 </tr>
               </thead>
               <tbody>
@@ -73,7 +72,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                   <tr key={r.id}>
                     <td>{r.nom}</td>
                     <td>{r.application}</td>
-                    <td className="is-numeric">{referentiels.niveaux[r.niveau]}</td>
                   </tr>
                 ))}
               </tbody>

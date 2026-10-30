@@ -35,76 +35,61 @@
     ]
   },
   "referentiels": {
-    "intro": "The guides and standards I relied on. The site is not certified by any body: “applied” means a requirement implemented and checked, “inspired by” an approach followed without claiming full compliance.",
+    "intro": "The guides and standards I relied on, with what is actually implemented. The site is not certified by any body and does not claim full compliance with these standards.",
     "colonnes": {
       "referentiel": "Standard",
-      "application": "What is implemented",
-      "niveau": "Level"
-    },
-    "niveaux": {
-      "applique": "Applied",
-      "inspire": "Inspired by"
+      "application": "What is implemented"
     },
     "elements": [
       {
         "id": "anssi-docker",
         "nom": "ANSSI recommendations for deploying Docker containers",
-        "application": "Read-only containers without capabilities or privilege escalation, internal network with no outbound access, images pinned by digest.",
-        "niveau": "inspire"
+        "application": "Read-only containers without capabilities or privilege escalation, internal network with no outbound access, images pinned by digest."
       },
       {
         "id": "anssi-linux",
         "nom": "ANSSI configuration recommendations for GNU/Linux systems",
-        "application": "Minimal server, key-based SSH, firewall, automatic security updates, controlled logging.",
-        "niveau": "inspire"
+        "application": "Minimal server, key-based SSH, firewall, automatic security updates, controlled logging."
       },
       {
         "id": "anssi-tls",
         "nom": "ANSSI security recommendations for TLS",
-        "application": "TLS 1.2 minimum, encryption all the way to the server with a verified certificate, HSTS.",
-        "niveau": "inspire"
+        "application": "TLS 1.2 minimum, encryption all the way to the server with a verified certificate, HSTS."
       },
       {
         "id": "owasp",
         "nom": "OWASP ASVS and OWASP cheat sheets",
-        "application": "Sessions through a __Host-, HttpOnly, SameSite cookie, cross-site request forgery protection, hashed tokens, rate limiting, uniform error responses.",
-        "niveau": "inspire"
+        "application": "Sessions through a __Host-, HttpOnly, SameSite cookie, cross-site request forgery protection, hashed tokens, rate limiting, uniform error responses."
       },
       {
         "id": "iso-27001",
         "nom": "ISO/IEC 27001",
-        "application": "Vulnerability management, logging, secure development and a pre-launch audit, modelled on the Annex A controls.",
-        "niveau": "inspire"
+        "application": "Vulnerability management, logging, secure development and a pre-launch audit, modelled on the Annex A controls."
       },
       {
         "id": "rgpd",
         "nom": "GDPR",
-        "application": "Data minimisation, published retention periods, cookie-free analytics, no IP address in the private area log.",
-        "niveau": "applique"
+        "application": "Data minimisation, published retention periods, cookie-free analytics, no IP address in the private area log."
       },
       {
         "id": "csp",
         "nom": "Content Security Policy Level 3 (W3C)",
-        "application": "Nonce and strict-dynamic policy, no unsafe-inline, checked on every change.",
-        "niveau": "applique"
+        "application": "Nonce and strict-dynamic policy, no unsafe-inline, checked on every change."
       },
       {
         "id": "hsts-dnssec",
         "nom": "HSTS (RFC 6797) and DNSSEC",
-        "application": "Two-year HSTS including subdomains; signed DNS zone.",
-        "niveau": "applique"
+        "application": "Two-year HSTS including subdomains; signed DNS zone."
       },
       {
         "id": "security-txt",
         "nom": "security.txt (RFC 9116)",
-        "application": "Published security contact and a responsible disclosure policy in the repository.",
-        "niveau": "applique"
+        "application": "Published security contact and a responsible disclosure policy in the repository."
       },
       {
         "id": "wcag",
         "nom": "WCAG 2.1, level AA",
-        "application": "Automated axe check of every page, contrast verified in both themes.",
-        "niveau": "inspire"
+        "application": "Automated axe check of every page, contrast verified in both themes."
       }
     ]
   },
