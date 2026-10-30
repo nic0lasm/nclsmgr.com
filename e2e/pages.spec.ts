@@ -45,6 +45,11 @@ for (const lang of ["fr", "en"]) {
         page.locator(`link[rel="alternate"][hreflang="${lang === "fr" ? "en" : "fr"}"]`),
       ).toHaveCount(1);
       await expect(page.locator('meta[property="og:title"]')).toHaveCount(1);
+      const apercu = await page.locator('meta[property="og:image"]').getAttribute("content");
+      expect(apercu).toMatch(/^https:\/\/nclsmgr\.com\/_next\/static\/media\/.+\.png$/);
+      const image = await page.request.get(new URL(apercu ?? "", "http://x").pathname);
+      expect(image.status()).toBe(200);
+      expect(image.headers()["content-type"]).toBe("image/png");
       expect(violations).toEqual([]);
 
       const axe = await new AxeBuilder({ page }).analyze();
