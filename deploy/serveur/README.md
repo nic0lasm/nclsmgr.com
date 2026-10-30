@@ -167,7 +167,7 @@ fail2ban, mises à jour automatiques, Docker). `restaurer-serveur.sh config` pui
 secrets, certificat d'origine, version déployée, base du site, documents, données de Caddy et base
 Umami depuis le dernier instantané ; les données du jeu passent par `restaurer-frontfall.sh`. Pour
 ne pas écraser la chaîne de sauvegardes, ne lancer `installer-sauvegarde.sh` sur le nouveau serveur
-qu'après ces restaurations, et arrêter les minuteries de l'ancien dès la bascule : les deux
+qu'après ces restaurations, relancer ensuite `installer-statistiques.sh` (il recrée la minuterie de purge d'Umami, que la restauration n'installe pas), et arrêter les minuteries de l'ancien dès la bascule : les deux
 écrivent sous le même nom d'hôte restic (`nclsmgr`).
 
 Mise à jour d'un serveur déjà installé (aucune question reposée) :
