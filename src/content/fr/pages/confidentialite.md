@@ -1,7 +1,7 @@
 ---
 titre: Confidentialité
 statut: brouillon
-maj: 2026-10-28
+maj: 2026-10-30
 ---
 
 Ce site collecte le moins de données possible. Il n'utilise aucun cookie publicitaire, aucun traceur tiers et aucun outil de mesure qui vous suit d'un site à l'autre.
@@ -31,7 +31,7 @@ Le jeu [Frontfall](https://nclsmgr.com/frontfall/) se joue en invité et n'enreg
 
 ## Où sont les données
 
-Le serveur est situé au Canada, chez OVH. Le Canada fait l'objet d'une décision d'adéquation de la Commission européenne, qui reconnaît un niveau de protection équivalent à celui de l'Union européenne. Le trafic transite par Cloudflare, qui agit comme intermédiaire technique pour protéger le site et accélérer son affichage.
+Le serveur est situé en France, chez OVH. Le trafic transite par Cloudflare, qui agit comme intermédiaire technique pour protéger le site et accélérer son affichage.
 
 Deux prestataires traitent ainsi des données pour le compte du site : Cloudflare (DNS, protection et diffusion du site) et OVHcloud (hébergement du serveur et messagerie qui reçoit les messages du formulaire).
 

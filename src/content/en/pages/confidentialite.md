@@ -1,7 +1,7 @@
 ---
 titre: Privacy
 statut: brouillon
-maj: 2026-10-28
+maj: 2026-10-30
 ---
 
 This site collects as little data as possible. It uses no advertising cookies, no third-party trackers and no analytics tool that follows you from one site to another.
@@ -31,7 +31,7 @@ The game [Frontfall](https://nclsmgr.com/frontfall/) can be played as a guest, a
 
 ## Where the data is held
 
-The server is located in Canada and operated by OVH. Canada is covered by an adequacy decision of the European Commission, which recognises a level of protection equivalent to that of the European Union. Traffic passes through Cloudflare, which acts as a technical intermediary to protect the site and make it load faster.
+The server is located in France and operated by OVH. Traffic passes through Cloudflare, which acts as a technical intermediary to protect the site and make it load faster.
 
 Two providers therefore process data on the site's behalf: Cloudflare (DNS, protection and delivery of the site) and OVHcloud (server hosting, and the mailbox that receives messages from the contact form).
 
