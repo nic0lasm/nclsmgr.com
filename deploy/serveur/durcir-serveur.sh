@@ -45,6 +45,11 @@ ufw allow 80/tcp > /dev/null
 ufw allow 443/tcp > /dev/null
 ufw --force enable > /dev/null
 
+# Pas d'IPv6 sortant : le site n'en publie aucune, et R2 filtre le jeton de sauvegarde par adresse
+# (Go préfère l'IPv6 quand elle existe : la sauvegarde arriverait par une adresse non autorisée).
+printf 'net.ipv6.conf.all.disable_ipv6=1\nnet.ipv6.conf.default.disable_ipv6=1\n' > /etc/sysctl.d/99-sans-ipv6.conf
+sysctl --system > /dev/null
+
 cat > /etc/fail2ban/jail.d/sshd.local <<'FIN'
 [sshd]
 enabled = true
