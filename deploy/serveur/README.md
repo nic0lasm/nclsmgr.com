@@ -108,8 +108,9 @@ quinze minutes, certificat compris.
    dans l'offre gratuite (10 Go).
 2. **Jeton.** R2 Object Storage › **Manage API tokens** › **Create Account API token** :
    permission **Object Read & Write**, limitée au bucket `nclsmgr-sauvegardes`, durée illimitée,
-   filtrage sur les adresses IPv4 et IPv6 du serveur. Garder ouverte la page qui affiche
-   l'_Access Key ID_, le _Secret Access Key_ et le point d'accès S3 de la juridiction EU.
+   filtrage sur l'adresse IPv4 du serveur (son IPv6 est coupée, voir « Changer de serveur »).
+   Garder ouverte la page qui affiche l'_Access Key ID_, le _Secret Access Key_ et le point
+   d'accès S3 de la juridiction EU.
 3. **Sondes.** Healthchecks.io, compte gratuit : créer deux contrôles, `sauvegarde` (période
    1 jour, délai de grâce 2 heures) et `site` (période 5 minutes, délai de grâce 10 minutes).
    L'alerte par courriel vers l'adresse du compte est active par défaut. Ne pas publier de page
@@ -163,12 +164,21 @@ déployer le jeu une première fois pour créer le volume, puis lancer la comman
 ### Changer de serveur
 
 `durcir-serveur.sh` reproduit le durcissement d'un Debian 13 neuf (SSH par clé, pare-feu,
-fail2ban, mises à jour automatiques, Docker). `restaurer-serveur.sh config` puis `donnees` remettent
-secrets, certificat d'origine, version déployée, base du site, documents, données de Caddy et base
-Umami depuis le dernier instantané ; les données du jeu passent par `restaurer-frontfall.sh`. Pour
-ne pas écraser la chaîne de sauvegardes, ne lancer `installer-sauvegarde.sh` sur le nouveau serveur
-qu'après ces restaurations, relancer ensuite `installer-statistiques.sh` (il recrée la minuterie de purge d'Umami, que la restauration n'installe pas), et arrêter les minuteries de l'ancien dès la bascule : les deux
-écrivent sous le même nom d'hôte restic (`nclsmgr`).
+fail2ban, mises à jour automatiques, Docker, IPv6 coupée). `restaurer-serveur.sh config` puis
+`donnees` remettent secrets, certificat d'origine, version déployée, base du site, documents, données
+de Caddy et base Umami depuis le dernier instantané ; les données du jeu passent par
+`restaurer-frontfall.sh`.
+
+Le jeton R2 des sauvegardes est filtré par adresse IP : ajouter l'IPv4 du nouveau serveur au filtre
+avant la première restauration, et retirer celle de l'ancien une fois la bascule confirmée. restic
+préfère l'IPv6 quand elle existe et R2 répond alors « Access Denied » : c'est pourquoi
+`durcir-serveur.sh` la coupe.
+
+Pour ne pas écraser la chaîne de sauvegardes, ne lancer `installer-sauvegarde.sh` sur le nouveau
+serveur qu'après ces restaurations (sa première sauvegarde deviendrait `latest`), relancer ensuite
+`installer-statistiques.sh` (il recrée la minuterie de purge d'Umami, que la restauration n'installe
+pas), et arrêter les minuteries de l'ancien dès la bascule : les deux écrivent sous le même nom d'hôte
+restic (`nclsmgr`).
 
 Mise à jour d'un serveur déjà installé (aucune question reposée) :
 
