@@ -10,12 +10,12 @@ set -eu
 
 [ "$(id -u)" -eq 0 ] || { echo "À lancer avec sudo." >&2; exit 1; }
 ADMIN=debian
-[ -s "/home/$ADMIN/.ssh/authorized_keys" ] \
+ssh-keygen -l -f "/home/$ADMIN/.ssh/authorized_keys" > /dev/null 2>&1 \
   || { echo "Aucune clé dans /home/$ADMIN/.ssh/authorized_keys : refus de fermer l'accès par mot de passe." >&2; exit 1; }
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
-apt-get upgrade -y -qq
+apt-get upgrade -y -qq -o Dpkg::Options::=--force-confold
 apt-get install -y -qq ufw fail2ban unattended-upgrades apt-listchanges ca-certificates curl gnupg \
   restic sqlite3 > /dev/null
 
@@ -36,6 +36,9 @@ FIN
 fi
 sshd -t
 systemctl reload ssh
+# Un réglage de l'hébergeur lu avant le nôtre l'emporterait : contrôler la valeur effective.
+sshd -T | grep -qx 'passwordauthentication no' && sshd -T | grep -qx 'permitrootlogin no' \
+  || { echo "SSH accepte encore les mots de passe ou root : voir /etc/ssh/sshd_config.d." >&2; exit 1; }
 
 # Pare-feu : SSH (limité), 80 et 443. Restreint ensuite aux plages Cloudflare par restreindre-origine.sh.
 ufw default deny incoming > /dev/null
@@ -71,9 +74,13 @@ FIN
 systemctl enable --now unattended-upgrades > /dev/null
 
 # Docker (dépôt officiel) : Compose 2.24 ou plus est exigé par installer-frontfall.sh.
-if ! command -v docker > /dev/null; then
+if ! docker compose version > /dev/null 2>&1; then
   install -m 755 -d /etc/apt/keyrings
-  curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+  curl --proto '=https' -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+  # Empreinte publiée par Docker : une autre clé autoriserait des paquets installés en root.
+  [ "$(gpg --show-keys --with-colons /etc/apt/keyrings/docker.asc | awk -F: '/^fpr/ { print $10; exit }')" \
+    = 9DC858229FC7DD38854AE2D88D81803C0EBFCD88 ] \
+    || { rm -f /etc/apt/keyrings/docker.asc; echo "Clé du dépôt Docker inattendue." >&2; exit 1; }
   chmod a+r /etc/apt/keyrings/docker.asc
   . /etc/os-release
   printf 'deb [arch=%s signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian %s stable\n' \
