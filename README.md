@@ -46,20 +46,18 @@ Une faille ? Voir [SECURITY.md](SECURITY.md).
 
 ## Référentiels
 
-Le site n'est certifié par aucun organisme. « Appliqué » désigne une exigence mise en œuvre et contrôlée, « inspiré de » une démarche reprise sans prétendre à une conformité complète.
+Le site n'est certifié par aucun organisme. Il s'appuie sur :
 
-| Référentiel                                        | Niveau     |
-| -------------------------------------------------- | ---------- |
-| ANSSI, déploiement de conteneurs Docker            | Inspiré de |
-| ANSSI, configuration d'un système GNU/Linux        | Inspiré de |
-| ANSSI, recommandations de sécurité relatives à TLS | Inspiré de |
-| OWASP ASVS et fiches de l'OWASP                    | Inspiré de |
-| ISO/IEC 27001, mesures de l'annexe A               | Inspiré de |
-| WCAG 2.1, niveau AA                                | Inspiré de |
-| RGPD                                               | Appliqué   |
-| Content Security Policy niveau 3 (W3C)             | Appliqué   |
-| HSTS (RFC 6797) et DNSSEC                          | Appliqué   |
-| security.txt (RFC 9116)                            | Appliqué   |
+- ANSSI, déploiement de conteneurs Docker
+- ANSSI, configuration d'un système GNU/Linux
+- ANSSI, recommandations de sécurité relatives à TLS
+- OWASP ASVS et fiches de l'OWASP
+- ISO/IEC 27001, mesures de l'annexe A
+- WCAG 2.1, niveau AA
+- RGPD
+- Content Security Policy niveau 3 (W3C)
+- HSTS (RFC 6797) et DNSSEC
+- security.txt (RFC 9116)
 
 Le détail de chaque mesure figure sur la [page d'accueil du site](https://nclsmgr.com).
 
