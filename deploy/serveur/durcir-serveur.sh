@@ -41,11 +41,14 @@ systemctl reload ssh
 ufw default deny incoming > /dev/null
 ufw default allow outgoing > /dev/null
 ufw limit 22/tcp > /dev/null
-ufw allow 80/tcp > /dev/null
-ufw allow 443/tcp > /dev/null
+# Une fois l'origine restreinte, relancer ce script ne doit pas rouvrir 80 et 443.
+if [ ! -f /etc/systemd/system/nclsmgr-pare-feu-origine.service ]; then
+  ufw allow 80/tcp > /dev/null
+  ufw allow 443/tcp > /dev/null
+fi
 ufw --force enable > /dev/null
 
-# Pas d'IPv6 sortant : le site n'en publie aucune, et R2 filtre le jeton de sauvegarde par adresse
+# Pas d'IPv6 du tout : le site n'en publie aucune, et R2 filtre le jeton de sauvegarde par adresse
 # (Go préfère l'IPv6 quand elle existe : la sauvegarde arriverait par une adresse non autorisée).
 printf 'net.ipv6.conf.all.disable_ipv6=1\nnet.ipv6.conf.default.disable_ipv6=1\n' > /etc/sysctl.d/99-sans-ipv6.conf
 sysctl --system > /dev/null
