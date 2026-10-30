@@ -25,7 +25,7 @@ Recentrer le site sur le pilotage de projets cyber et la souveraineté numériqu
 - [x] Accueil : intitulé, phrase clé, résumé et chiffres clés revus
 - [x] CV : parcours complet, compétences cyber et souveraineté (analyse de risques, architecture, cloud qualifié, solutions sur site)
 - [x] Portfolio refait par thème, avec des études de cas anonymisées
-- [x] Navigation : Dev sort du menu principal, accessible depuis le pied de page et le portfolio
+- [x] Navigation : Dev dans le menu principal, aussi lié depuis le pied de page et le portfolio
 - [x] Référencement et aperçu de partage alignés sur le nouveau positionnement
 - [x] Version anglaise retraduite après validation du français
 - [x] CV PDF français et anglais régénérés
