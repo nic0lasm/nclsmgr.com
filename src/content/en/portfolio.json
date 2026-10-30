@@ -10,7 +10,7 @@
       "organisation": "Capgemini, for a French government ministry",
       "debut": null,
       "fin": null,
-      "contexte": "A digital service was about to open to new users, some of them outside the ministry's network. Before deciding, senior management wanted to know the real risks and what it would cost to address them.",
+      "contexte": "An internal digital service was about to open to new users, some of them outside the ministry's network, with sensitive data at stake. Before deciding, senior management wanted to know the real risks, what it would cost to address them and how that would affect the schedule.",
       "role": "Project manager for the assessment: scoping with the CISO and business teams, running the workshops, summarising for senior management.",
       "enjeux": [
         "Speak the language of the business as well as that of security",
@@ -18,13 +18,13 @@
         "Produce a file that can be reused for security accreditation"
       ],
       "actions": [
-        "Workshops with business, operations and security teams, following the EBIOS Risk Manager method",
-        "Risk scenarios ranked by severity and likelihood",
-        "Costed measures sorted into three groups: before opening, to schedule, to accept",
+        "Business assets, supporting assets and stakeholders mapped with business and operations teams, following the EBIOS Risk Manager method",
+        "Strategic and operational scenarios ranked by severity and likelihood",
+        "Measures costed in money and time, sorted into three groups: before opening, to schedule, to accept",
         "A short decision note for senior management alongside the full report"
       ],
       "resultats": [
-        "Opening decided on the basis of identified and accepted risks",
+        "Opening decided in committee, on the basis of identified and explicitly accepted risks",
         "A treatment plan built into the project schedule",
         "A file reused for security accreditation"
       ],
@@ -38,16 +38,18 @@
       "organisation": "Capgemini, for the public sector",
       "debut": null,
       "fin": null,
-      "contexte": "An existing application had to leave its original hosting. Two paths were open: a SecNumCloud-qualified trusted cloud, or an on-premise deployment at the client's site.",
+      "contexte": "An existing application had to leave its original hosting. Two paths were open: a SecNumCloud-qualified trusted cloud, or an on-premise deployment at the client's site. The choice would commit the ministry for several years.",
       "role": "Project manager for the architecture study, working with an architect and a security expert.",
       "enjeux": [
         "Compare two options on criteria that management can decide on",
         "Meet sovereignty and data protection requirements",
-        "Anticipate the full cost: migration, operations, reversibility"
+        "Anticipate the full cost: migration, operations, reversibility",
+        "Avoid creating a dependency on a supplier that would be hard to undo"
       ],
       "actions": [
+        "Selection criteria and weighting agreed with management before the study",
         "Inventory of the application's data flows, data and dependencies",
-        "Two target architectures described and compared on security, cost, lead time and reversibility",
+        "Two target architectures compared on security, data location, full cost, lead time, operating skills and reversibility",
         "Risk assessment of each option",
         "Migration roadmap for the chosen option"
       ],
@@ -66,7 +68,7 @@
       "debut": null,
       "fin": null,
       "contexte": "A business application to build for a ministry's staff, with high security requirements, a tight schedule and a budget of several million euros.",
-      "role": "Project manager, accountable for the client, the budget, the contract and a team of five to fifteen people.",
+      "role": "Project manager and project security officer, accountable for the client, the budget, the contract and a multidisciplinary team of five to fifteen people: developers, testers, an architect and a security expert.",
       "enjeux": [
         "Hold the schedule and the budget",
         "Build security in from the first iterations",
@@ -75,7 +77,8 @@
       "actions": [
         "Scoping with business teams and splitting the work into deliverable releases",
         "Agile delivery (Scrum) with regular steering meetings with the client",
-        "Security requirements tracked in the backlog alongside features",
+        "Security requirements tracked in the backlog alongside features, with the accreditation file kept up to date at each release",
+        "Dashboard shared with the client: remaining work, budget spent, risks",
         "Financial tracking, contract amendments and risk management"
       ],
       "resultats": [
