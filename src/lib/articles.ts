@@ -18,6 +18,12 @@ export interface Article {
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
+// « 2026-02-31 » a la bonne forme mais n'existe pas : Date.UTC le décalerait au 3 mars.
+function dateValide(date: string | undefined): date is string {
+  if (!date || !DATE.test(date)) return false;
+  return new Date(`${date}T00:00:00Z`).toISOString().slice(0, 10) === date;
+}
+
 function dossier(locale: Locale): string {
   return path.join(process.cwd(), "src", "content", locale, "articles");
 }
@@ -38,8 +44,8 @@ async function slugs(locale: Locale): Promise<string[]> {
 async function lire(locale: Locale, slug: string): Promise<Article> {
   const doc = parseMarkdown(await readFile(path.join(dossier(locale), `${slug}.md`), "utf8"));
   const { titre, description, date } = doc.frontmatter;
-  if (!titre || !description || !DATE.test(date ?? "")) {
-    throw new Error(`Article ${locale}/${slug} : titre, description ou date manquant`);
+  if (!titre || !description || !dateValide(date)) {
+    throw new Error(`Article ${locale}/${slug} : titre, description ou date manquant ou invalide`);
   }
   const langues: Locale[] = [];
   for (const l of locales) if ((await slugs(l)).includes(slug)) langues.push(l);

@@ -132,7 +132,14 @@ test("robots.txt, sitemap.xml et icônes sont servis", async ({ request }) => {
   const sitemap = await request.get("/sitemap.xml");
   expect(sitemap.status()).toBe(200);
   const xml = await sitemap.text();
-  for (const chemin of ["/fr", "/en/cv", "/fr/dev", "/en/confidentialite"]) {
+  for (const chemin of [
+    "/fr",
+    "/en/cv",
+    "/fr/dev",
+    "/en/confidentialite",
+    "/fr/articles",
+    "/en/articles/cloud-de-confiance-ou-sur-site",
+  ]) {
     expect(xml).toContain(`<loc>https://nclsmgr.com${chemin}</loc>`);
   }
   expect(xml).not.toContain("/espace");

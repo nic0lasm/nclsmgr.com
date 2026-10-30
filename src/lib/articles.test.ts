@@ -10,7 +10,7 @@ describe("articles", () => {
         expect(a.titre.length, id).toBeLessThanOrEqual(60);
         expect(a.description.length, id).toBeGreaterThanOrEqual(50);
         expect(a.description.length, id).toBeLessThanOrEqual(160);
-        expect(Number.isNaN(Date.parse(a.date)), id).toBe(false);
+        expect(new Date(`${a.date}T00:00:00Z`).toISOString().slice(0, 10), id).toBe(a.date);
         expect(a.langues, id).toContain(lang);
         expect(a.doc.blocks.length, id).toBeGreaterThan(0);
       }
@@ -21,6 +21,14 @@ describe("articles", () => {
     for (const lang of locales) {
       const dates = (await getArticles(lang)).map((a) => a.date);
       expect(dates).toEqual([...dates].sort().reverse());
+    }
+  });
+
+  it("gardent la même date d'une langue à l'autre", async () => {
+    const [fr, en] = await Promise.all([getArticles("fr"), getArticles("en")]);
+    for (const a of fr) {
+      const traduction = en.find((b) => b.slug === a.slug);
+      if (traduction) expect(traduction.date, a.slug).toBe(a.date);
     }
   });
 

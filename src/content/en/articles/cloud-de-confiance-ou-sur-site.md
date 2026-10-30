@@ -1,7 +1,7 @@
 ---
 titre: Trusted cloud or on-premise hosting?
 description: Hosting a sensitive application for the French State raises the same question every time. Here is how I prepare it for the decision-maker.
-date: 2026-11-05
+date: 2026-10-30
 statut: valide
 ---
 

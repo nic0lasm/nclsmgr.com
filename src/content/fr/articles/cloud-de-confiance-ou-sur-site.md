@@ -1,7 +1,7 @@
 ---
 titre: Cloud de confiance ou installation sur site ?
 description: Héberger une application sensible pour l'État pose souvent la même question. Voici comment je la prépare pour que le décideur puisse trancher.
-date: 2026-11-05
+date: 2026-10-30
 statut: valide
 ---
 
