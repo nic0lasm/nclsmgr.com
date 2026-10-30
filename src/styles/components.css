@@ -263,6 +263,28 @@
   font-size: 0.9375rem;
 }
 
+/* Notes de sécurité : un encadré par outil, la note en grand, le lien vers le résultat public. */
+.facts--badges > div {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4);
+  border: var(--border);
+  border-radius: var(--radius);
+}
+
+/* La note s'affiche en tête de l'encadré ; le balisage garde l'ordre terme puis valeur. */
+.facts--badges .facts__grade {
+  order: -1;
+  margin-bottom: var(--space-2);
+  font: var(--weight-strong) var(--text-h2) / 1 var(--font-display);
+}
+
+.facts--badges dd:last-child:not(.facts__grade) {
+  margin-top: auto;
+  padding-top: var(--space-3);
+  font-size: var(--text-sm);
+}
+
 /* ---------- Parcours (frise) ---------- */
 .timeline {
   display: flex;

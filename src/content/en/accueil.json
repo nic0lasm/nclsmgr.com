@@ -96,15 +96,18 @@
   "controles": [
     {
       "valeur": "A+",
-      "libelle": "Mozilla Observatory, 140/100"
+      "libelle": "Mozilla Observatory, 140/100",
+      "url": "https://developer.mozilla.org/en-US/observatory/analyze?host=nclsmgr.com"
     },
     {
       "valeur": "A+",
-      "libelle": "Qualys SSL Labs, on all four site addresses"
+      "libelle": "Qualys SSL Labs, on all four site addresses",
+      "url": "https://www.ssllabs.com/ssltest/analyze.html?d=nclsmgr.com&latest"
     },
     {
       "valeur": "0",
-      "libelle": "high-severity finding in the October 2026 audit"
+      "libelle": "high-severity finding in the October 2026 audit",
+      "url": null
     }
   ],
   "code": {
