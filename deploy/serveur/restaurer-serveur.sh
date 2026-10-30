@@ -31,19 +31,22 @@ echo "Instantané déchiffré, empreintes vérifiées."
 
 VOLUMES=/var/lib/docker/volumes
 COMPOSE=/opt/nclsmgr
+# Copie élément par élément : « cp -a source/. cible/ » donnerait à la cible le mode 700 du dossier
+# de l'instantané, et /etc/nclsmgr en 700 bloque le déploiement.
+copier_contenu() { find "$1" -mindepth 1 -maxdepth 1 -exec cp -a {} "$2/" \; ; }
 vider_et_copier() { # source, volume : remplace le contenu du volume par celui de la source
   [ -d "$1" ] || return 0
   [ -d "$VOLUMES/$2/_data" ] || { echo "Volume $2 absent : démarrer une fois le site (docker compose up)." >&2; exit 1; }
   proprio=$(stat -c %u:%g "$VOLUMES/$2/_data")
   find "$VOLUMES/$2/_data" -mindepth 1 -delete
-  cp -a "$1/." "$VOLUMES/$2/_data/"
+  copier_contenu "$1" "$VOLUMES/$2/_data"
   chown -R "$proprio" "$VOLUMES/$2/_data"
 }
 
 if [ "$mode" = config ]; then
   # /etc/nclsmgr : on ne remplace jamais sauvegarde.env ni restic.motdepasse (absents de l'instantané).
   install -d -m 755 -o root -g root /etc/nclsmgr
-  cp -a "$dossier/etc/." /etc/nclsmgr/
+  copier_contenu "$dossier/etc" /etc/nclsmgr
   chown root:root /etc/nclsmgr/sauvegarde.env /etc/nclsmgr/restic.motdepasse /etc/nclsmgr/sonde.env 2> /dev/null || true
   # Fichiers lus par Compose au nom du compte deploy (voir installer-statistiques.sh) : root:deploy, 640.
   for f in umami.env umami-db.env statistiques.env; do
@@ -52,12 +55,13 @@ if [ "$mode" = config ]; then
   # Version déployée : le compte deploy la relit et l'écrase à chaque publication.
   if id deploy > /dev/null 2>&1; then
     install -d -m 750 -o deploy -g deploy "$COMPOSE"
-    cp -a "$dossier/opt/." "$COMPOSE/"
+    copier_contenu "$dossier/opt" "$COMPOSE"
     chown -R deploy:deploy "$COMPOSE"
   else
     echo "Compte deploy absent : lancer installer-deploiement.sh avant « config »." >&2
     exit 1
   fi
+  stat -c '%a %U:%G %n' /etc/nclsmgr "$COMPOSE"
   echo "Configuration restaurée. Suite : démarrer le site (docker compose up -d dans $COMPOSE, en tant que deploy)."
   exit 0
 fi
@@ -82,7 +86,14 @@ fi
 if [ -f "$dossier/umami.dump" ]; then
   docker compose up -d --wait umami-db
   docker compose exec -T umami-db pg_restore -U umami -d umami --clean --if-exists --no-owner < "$dossier/umami.dump" \
-    || echo "pg_restore a signalé des avertissements (souvent bénins sur un schéma vide) : vérifier le tableau de bord." >&2
+    || echo "pg_restore a signalé des avertissements (souvent bénins sur un schéma vide)." >&2
+  # Le site est relancé quoi qu'il arrive, mais une base vide doit se voir.
+  sites=$(docker compose exec -T umami-db psql -U umami -d umami -tAc 'SELECT count(*) FROM website') || sites=0
+  if [ "$sites" -gt 0 ] 2> /dev/null; then
+    echo "Umami : $sites site(s) dans la base restaurée."
+  else
+    echo "ATTENTION : aucun site dans la base Umami restaurée, les statistiques repartent de zéro." >&2
+  fi
 fi
 docker compose up -d --wait --wait-timeout 180
 echo "Données du site restaurées et services relancés."
