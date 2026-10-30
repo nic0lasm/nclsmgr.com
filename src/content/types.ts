@@ -98,7 +98,8 @@ export interface Accueil extends Fichier {
     colonnes: { referentiel: string; application: string };
     elements: { id: string; nom: string; application: string }[];
   };
-  controles: { valeur: string; libelle: string }[];
+  /** url : résultat public de l'outil de contrôle, ouvert seulement au clic. */
+  controles: { valeur: string; libelle: string; url: string | null }[];
   code: { texte: string; liens: { libelle: string; url: string }[] };
 }
 
@@ -126,6 +127,7 @@ export interface Interface {
     securite: string;
     referentiels: string;
     controles: string;
+    voirResultat: string;
     code: string;
     /** Aussi utilisé par l'espace privé. */
     parcours: string;

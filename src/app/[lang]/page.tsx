@@ -85,11 +85,19 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           {ui.accueil.controles}
         </h2>
         <div className="section__body">
-          <dl className="facts">
+          <dl className="facts facts--badges">
             {accueil.controles.map((c) => (
               <div key={c.libelle}>
                 <dt>{c.libelle}</dt>
-                <dd>{c.valeur}</dd>
+                <dd className="facts__grade">{c.valeur}</dd>
+                {c.url ? (
+                  <dd className="facts__link">
+                    <a href={c.url}>
+                      {ui.accueil.voirResultat}
+                      <span className="visually-hidden">{`${lang === "fr" ? " : " : ": "}${c.libelle}`}</span>
+                    </a>
+                  </dd>
+                ) : null}
               </div>
             ))}
           </dl>

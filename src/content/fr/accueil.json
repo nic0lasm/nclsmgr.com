@@ -96,15 +96,18 @@
   "controles": [
     {
       "valeur": "A+",
-      "libelle": "Mozilla Observatory, 140/100"
+      "libelle": "Mozilla Observatory, 140/100",
+      "url": "https://developer.mozilla.org/en-US/observatory/analyze?host=nclsmgr.com"
     },
     {
       "valeur": "A+",
-      "libelle": "Qualys SSL Labs, sur les quatre adresses du site"
+      "libelle": "Qualys SSL Labs, sur les quatre adresses du site",
+      "url": "https://www.ssllabs.com/ssltest/analyze.html?d=nclsmgr.com&latest"
     },
     {
       "valeur": "0",
-      "libelle": "écart de gravité élevée à l'audit d'octobre 2026"
+      "libelle": "écart de gravité élevée à l'audit d'octobre 2026",
+      "url": null
     }
   ],
   "code": {

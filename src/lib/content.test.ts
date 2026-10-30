@@ -50,6 +50,7 @@ describe("contenus", () => {
       autres: c.portfolio.autres.lien.chemin,
       referentiels: c.accueil.referentiels.elements.map((r) => r.id),
       code: c.accueil.code.liens.map((l) => l.url),
+      controles: c.accueil.controles.map((x) => x.url),
     });
     expect(keys(en)).toEqual(keys(fr));
   });
@@ -97,6 +98,15 @@ describe("contenus", () => {
         expect(lien.url).toMatch(/^https:\/\//);
       }
       expect(c.portfolio.autres.lien.chemin).toMatch(/^\/[a-z-]+$/);
+      // Les résultats publics ne viennent que des deux outils cités, ouverts au clic seulement.
+      for (const { url } of c.accueil.controles) {
+        if (url !== null) {
+          expect(url).toMatch(
+            /^https:\/\/(developer\.mozilla\.org\/en-US\/observatory\/|www\.ssllabs\.com\/ssltest\/)analyze/,
+          );
+          expect(url).toContain("nclsmgr.com");
+        }
+      }
       for (const lien of c.accueil.code.liens) {
         expect(lien.url).toMatch(/^https:\/\/github\.com\/nic0lasm\/nclsmgr\.com(?:\/|$)/);
       }
