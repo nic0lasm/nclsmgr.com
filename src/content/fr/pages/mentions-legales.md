@@ -1,7 +1,7 @@
 ---
 titre: Mentions légales
 statut: brouillon
-maj: 2026-10-15
+maj: 2026-10-30
 ---
 
 ## Éditeur et responsable de publication
@@ -11,7 +11,7 @@ Pour toute demande, utilisez le [formulaire de contact](/contact).
 
 ## Hébergement
 
-Le site est hébergé par OVH SAS, 2 rue Kellermann, 59100 Roubaix, France (RCS Lille Métropole 424 761 419, téléphone +33 9 72 10 10 07), sur un serveur situé au Canada.
+Le site est hébergé par OVH SAS, 2 rue Kellermann, 59100 Roubaix, France (RCS Lille Métropole 424 761 419, téléphone +33 9 72 10 10 07), sur un serveur situé en France.
 
 Le nom de domaine et la diffusion du site passent par Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, États-Unis.
 
