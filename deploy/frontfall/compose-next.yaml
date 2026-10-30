@@ -1,0 +1,56 @@
+# Préproduction de Frontfall, servie sous /frontfall-next/ : la branche next du jeu avant main.
+# Installée dans /opt/frontfall-next par installer-frontfall.sh, à côté de la production.
+name: frontfall-next
+
+services:
+  # Nom distinct de la production : sur le réseau frontfall, Caddy joint chaque service par son nom.
+  frontfall-next:
+    image: ghcr.io/nic0lasm/frontfall:${IMAGE_TAG:?IMAGE_TAG manquant}
+    restart: unless-stopped
+    logging:
+      driver: journald
+      options:
+        tag: "{{.Name}}"
+    init: true
+    stop_grace_period: 30s
+    read_only: true
+    tmpfs:
+      - /tmp
+    volumes:
+      - donnees:/var/lib/frontfall
+    environment:
+      NODE_ENV: production
+      PORT: "8080"
+      FRONTFALL_ORIGINE: https://nclsmgr.com
+      FRONTFALL_DRAIN_SECONDS: "20"
+      FRONTFALL_DATA: /var/lib/frontfall
+      # Pas de connexion Discord ou Google ici : les applications ne déclarent que les adresses de
+      # retour de la production. La préproduction se joue en invité.
+      FRONTFALL_MAX_GAMES: "20"
+      FRONTFALL_MAX_CONNECTIONS: "200"
+      # Tas réduit pour tenir dans 192 Mio.
+      NODE_OPTIONS: --max-old-space-size=128
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 192m
+    cpus: 1
+    pids_limit: 128
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:8080/healthz').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 1m
+      start_interval: 2s
+    networks: [frontfall]
+
+volumes:
+  donnees:
+
+networks:
+  frontfall:
+    external: true

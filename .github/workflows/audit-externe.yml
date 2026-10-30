@@ -86,6 +86,13 @@ jobs:
           attendu "www renvoyé vers le domaine nu" "$(lire https://www.nclsmgr.com/fr)" '^location: https://nclsmgr\.com/fr$'
           stats=$(curl -sS -L --max-time 20 -o /dev/null -w '%{http_code}' https://nclsmgr.com/stats/api/websites || true)
           attendu "tableau de bord des statistiques fermé" "$stats" '^404$'
+          jeu=$(lire https://nclsmgr.com/frontfall/)
+          attendu "jeu : politique du jeu" "$jeu" "^content-security-policy: .*connect-src 'self' wss://nclsmgr\\.com"
+          attendu "jeu : une seule CSP" "$(printf '%s\n' "$jeu" | grep -ci '^content-security-policy:')" '^1$'
+          attendu "jeu : HSTS" "$jeu" '^strict-transport-security: max-age=63072000'
+          attendu "jeu en service" "$(curl -sS --max-time 20 https://nclsmgr.com/frontfall/healthz || true)" '^ok$'
+          metriques=$(curl -sS --max-time 20 -o /dev/null -w '%{http_code}' https://nclsmgr.com/frontfall/metrics || true)
+          attendu "métriques du jeu fermées" "$metriques" '^404$'
           attendu "security.txt" "$(curl -sS --max-time 20 https://nclsmgr.com/.well-known/security.txt || true)" '^Contact: '
 
           [ "$echecs" -eq 0 ]

@@ -8,7 +8,15 @@ ssh -t debian@<serveur> "set -e; d=\$(mktemp -d); curl -fsSL https://codeload.gi
 ```
 
 Le déploiement courant ne passe pas par ces scripts : GitHub Actions publie l'image puis appelle
-`deployer.sh` par une clé SSH à commande forcée.
+`deployer.sh` par une clé SSH à commande forcée. Après chaque déploiement, le serveur ne garde que
+les 10 images du site les plus récentes, de quoi revenir en arrière sans téléchargement.
+
+**Mise à jour du déployeur.** Après une fusion qui modifie `deployer.sh`, réinstaller ce seul
+fichier ; aucun autre réglage du serveur n'est touché :
+
+```sh
+ssh -t debian@<serveur> 'set -e; d=$(mktemp -d); curl -fsSL https://codeload.github.com/nic0lasm/nclsmgr.com/tar.gz/main | tar -xz -C $d --strip-components=1; sudo install -m 755 -o root -g root $d/deploy/serveur/deployer.sh /usr/local/sbin/nclsmgr-deployer; rm -rf $d'
+```
 
 ## Mise en place, dans l'ordre
 
@@ -22,6 +30,7 @@ Le déploiement courant ne passe pas par ces scripts : GitHub Actions publie l'i
 | 6. Sauvegardes et sonde  | `installer-sauvegarde.sh`                           | Bucket R2, jeton S3, sondes     |
 | 7. Origine fermée        | `restreindre-origine.sh`                            | Full (strict), aucun AAAA       |
 | 8. Journaux sur 30 jours | `conserver-journaux.sh`                             | Aucun                           |
+| 9. Jeu Frontfall         | `installer-frontfall.sh "<clé publique dédiée>"`    | Réseau `frontfall` déployé      |
 
 Tous sont idempotents, sauf `installer-certificat.sh` qui remplace le certificat à chaque appel.
 
@@ -70,7 +79,10 @@ d'administration ; les contrôles locaux sur le serveur restent possibles. Retou
 
 **Contenu.** `/etc/nclsmgr` (certificats, secrets SMTP et Umami), `/opt/nclsmgr` (version
 déployée), la base de l'espace privé (copie cohérente par l'API de sauvegarde SQLite), les
-documents réservés, les données de Caddy et un export PostgreSQL d'Umami. Chaque fichier est
+documents réservés, les données de Caddy, un export PostgreSQL d'Umami, et pour le jeu Frontfall son
+volume de données (mesures d'usage, comptes Discord et Google, signalements et bannissements) et
+`/etc/frontfall` (secrets de connexion). Les parties en cours (`games/`) n'en font pas partie : elles
+ne servent qu'au redémarrage suivant. Chaque fichier est
 accompagné de son empreinte SHA-256. Les accès au dépôt de sauvegarde (`sauvegarde.env`,
 `restic.motdepasse`) en sont exclus : ils sont conservés hors du serveur.
 
@@ -96,8 +108,9 @@ quinze minutes, certificat compris.
    dans l'offre gratuite (10 Go).
 2. **Jeton.** R2 Object Storage › **Manage API tokens** › **Create Account API token** :
    permission **Object Read & Write**, limitée au bucket `nclsmgr-sauvegardes`, durée illimitée,
-   filtrage sur les adresses IPv4 et IPv6 du serveur. Garder ouverte la page qui affiche
-   l'_Access Key ID_, le _Secret Access Key_ et le point d'accès S3 de la juridiction EU.
+   filtrage sur l'adresse IPv4 du serveur (son IPv6 est coupée, voir « Changer de serveur »).
+   Garder ouverte la page qui affiche l'_Access Key ID_, le _Secret Access Key_ et le point
+   d'accès S3 de la juridiction EU.
 3. **Sondes.** Healthchecks.io, compte gratuit : créer deux contrôles, `sauvegarde` (période
    1 jour, délai de grâce 2 heures) et `site` (période 5 minutes, délai de grâce 10 minutes).
    L'alerte par courriel vers l'adresse du compte est active par défaut. Ne pas publier de page
@@ -135,6 +148,91 @@ déploiement, `espace.db`, `prive/` et `caddy/` vont dans les volumes `nclsmgr_b
 `nclsmgr_prive` et `nclsmgr_caddy_data`, et `umami.dump` se recharge par `pg_restore` dans le
 conteneur `umami-db`.
 
+### Restauration des données de Frontfall
+
+```sh
+ssh -t debian@<serveur> sudo nclsmgr-restaurer-frontfall --essai   # répétition, jeu non touché
+ssh -t debian@<serveur> sudo nclsmgr-restaurer-frontfall --confirmer   # restauration réelle
+```
+
+La répétition lit le dernier instantané, vérifie chaque empreinte et affiche, étape par étape, le
+temps écoulé : c'est la durée à retenir. La restauration réelle arrête le jeu (30 secondes au plus,
+les parties en cours sont coupées), met de côté le contenu du volume `frontfall_donnees` (`_data.avant-restauration`, supprimé une fois le jeu sain, remis en place si la copie échoue), restaure les données, rend les
+fichiers au compte du conteneur, remet `/etc/frontfall/comptes.env` s'il manque (`root:frontfall` 640) et relance le jeu. Sur un serveur neuf : restaurer d'abord les accès au dépôt comme ci-dessus,
+déployer le jeu une première fois pour créer le volume, puis lancer la commande.
+
+### Changer de serveur
+
+`durcir-serveur.sh` reproduit le durcissement d'un Debian 13 neuf (SSH par clé, pare-feu,
+fail2ban, mises à jour automatiques, Docker, IPv6 coupée). `restaurer-serveur.sh config` puis
+`donnees --confirmer` remettent secrets, certificat d'origine, version déployée, base du site,
+documents, données de Caddy et base Umami depuis le dernier instantané ; les données du jeu passent
+par `restaurer-frontfall.sh`. Sans `--confirmer`, `donnees` affiche l'instantané et ne touche à rien.
+
+Le jeton R2 des sauvegardes est filtré par adresse IP : ajouter l'IPv4 du nouveau serveur au filtre
+avant la première restauration, et retirer celle de l'ancien une fois la bascule confirmée. restic
+préfère l'IPv6 quand elle existe et R2 répond alors « Access Denied » : c'est pourquoi
+`durcir-serveur.sh` la coupe.
+
+Pour ne pas écraser la chaîne de sauvegardes, ne lancer `installer-sauvegarde.sh` sur le nouveau
+serveur qu'après ces restaurations (sa première sauvegarde deviendrait `latest`), relancer ensuite
+`installer-statistiques.sh` (il recrée la minuterie de purge d'Umami, que la restauration n'installe
+pas), et arrêter les minuteries de l'ancien dès la bascule : les deux écrivent sous le même nom d'hôte
+restic (`nclsmgr`).
+
+Mise à jour d'un serveur déjà installé (aucune question reposée) :
+
+```sh
+ssh -t debian@<serveur> 'd=$(mktemp -d); trap "rm -rf \"$d\"" EXIT; curl -fsSL https://codeload.github.com/nic0lasm/nclsmgr.com/tar.gz/main | tar -xz -C "$d" --strip-components=1 && sudo sh "$d/deploy/serveur/installer-sauvegarde.sh"'
+```
+
+## Jeu Frontfall
+
+Le jeu (dépôt `nic0lasm/frontfall`) est servi sous `https://nclsmgr.com/frontfall/`, websocket
+compris (`/frontfall/ws`). Il tourne dans son propre projet Compose, `/opt/frontfall`, pour que ses
+publications ne redémarrent ni le site ni Caddy. Caddy le joint sur le réseau `frontfall`, créé par
+le projet du site et sans accès à Internet, retire le préfixe `/frontfall` et lui pose sa propre
+politique CSP. Ce que le jeu attend du serveur, et l'inverse, est résumé dans
+[deploy/frontfall/README.md](../frontfall/README.md).
+
+**Déploiement.** Le workflow de publication du dépôt du jeu construit
+`ghcr.io/nic0lasm/frontfall`, puis appelle `frontfall-deployer` avec l'étiquette de l'image, par
+une clé SSH à commande forcée distincte de celle du site. Le fichier Compose du jeu vient de ce
+dépôt (`deploy/frontfall/compose.yaml`) : le dépôt du jeu ne choisit que l'étiquette. Après chaque
+déploiement, le serveur ne garde que les 10 images du jeu les plus récentes, de quoi revenir en
+arrière sans téléchargement. Quand des parties sont en cours, le workflow appelle d'abord
+`frontfall-deployer annonce <minutes>` : les joueurs voient arriver la mise à jour.
+
+**Préproduction.** La branche `next` du jeu est servie sous `https://nclsmgr.com/frontfall-next/`,
+par un second projet Compose, `/opt/frontfall-next` (`deploy/frontfall/compose-next.yaml`, 192 Mio).
+Le même compte la déploie, avec le mot `next` devant l'étiquette. Côté jeu, la variable
+`PREPROD_ACTIVE` du dépôt l'active une fois le déployeur mis à jour.
+
+**Mise à jour du déployeur.** Après une fusion qui modifie `deployer-frontfall.sh` ou le fichier
+Compose du jeu, relancer `installer-frontfall.sh` en gardant la clé en place :
+
+```sh
+ssh -t debian@<serveur> 'set -e; d=$(mktemp -d); curl -fsSL https://codeload.github.com/nic0lasm/nclsmgr.com/tar.gz/main | tar -xz -C $d --strip-components=1; sudo sh $d/deploy/serveur/installer-frontfall.sh "$(sudo cut -d" " -f2- /home/frontfall/.ssh/authorized_keys)"; rm -rf $d'
+```
+
+**Mise en place.**
+
+1. **Réseau.** Déployer une version du site qui contient le réseau `frontfall` (fusion sur
+   `main`). Caddy est recréé une fois pour le rejoindre, soit quelques secondes d'interruption.
+2. **Compte, clé et secrets.** Depuis le poste d'administration, avec `gh` connecté :
+   `sh deploy/poste/activer-frontfall.sh <serveur>`. Le script crée une clé dédiée, lance
+   `installer-frontfall.sh` sur le serveur depuis la dernière version de `main`, puis crée
+   l'environnement `production` du dépôt du jeu avec les secrets `DEPLOY_SSH_KEY`, `DEPLOY_HOST` et
+   `DEPLOY_KNOWN_HOSTS` (tiré du `known_hosts` du poste), et la variable `DEPLOIEMENT_ACTIF`. La clé
+   privée ne reste pas sur le poste.
+3. **Image publique.** Après la première publication : Packages › `frontfall` › Package settings ›
+   **Change visibility** › Public, sans quoi le serveur ne peut pas la tirer.
+
+Tant que le jeu n'est pas déployé, `/frontfall/` répond 502 ; le reste du site n'est pas touché.
+Une publication du jeu coupe les parties en cours : le serveur du jeu reçoit SIGTERM et dispose de
+30 secondes pour prévenir les joueurs. Le jeu ne garde aucune donnée sur le serveur ; s'il en
+garde un jour, son volume entre dans la sauvegarde.
+
 ## Conservation des journaux
 
 La page Confidentialité annonce 30 jours pour les journaux techniques du serveur.
@@ -146,21 +244,18 @@ suivant, soit quelques secondes d'interruption. Caddy ne tient pas de journal d'
 
 ## Reste à faire avant le lancement
 
-État au 17 octobre 2026 : site servi derrière Cloudflare en **Full (strict)** avec le certificat
+État au 18 octobre 2026 : site servi derrière Cloudflare en **Full (strict)** avec le certificat
 d'origine, origine fermée aux autres adresses, DNSSEC signé par Cloudflare et enregistrement DS
-publié chez le registrar, Mozilla Observatory et SSL Labs à A+. Le suivi d'ensemble est dans
-[ROADMAP.md](../../ROADMAP.md), chantier 3. Pour reprendre, dans cet ordre :
+publié chez le registrar, Mozilla Observatory et SSL Labs à A+, sauvegardes chiffrées vers R2 et
+sondes de disponibilité en service. Le suivi d'ensemble est dans [ROADMAP.md](../../ROADMAP.md),
+chantier 3. Pour terminer, dans cet ordre :
 
-1. **Contrôle externe** : créer la variable de dépôt `SURVEILLANCE_ACTIVE` à `true` pour
-   l'exécution mensuelle du workflow _Audit externe_.
-2. **Noyau** : redémarrer le serveur (`sudo reboot`) pour charger le dernier noyau installé. Les
+1. **Noyau** : redémarrer le serveur (`sudo reboot`) pour charger le dernier noyau installé. Les
    conteneurs et le filtre d'origine repartent seuls ; vérifier ensuite `uname -r` et la page
    d'accueil.
-3. **Adresse security@** : alias vers la boîte de l'administrateur, chez l'hébergeur de messagerie,
+2. **Adresse security@** : alias vers la boîte de l'administrateur, chez l'hébergeur de messagerie,
    puis envoi d'un courriel de test. Elle est annoncée dans `/.well-known/security.txt`.
-4. **Sauvegardes** : bucket R2 dédié et jeton S3 limité à ce bucket, puis
-   `installer-sauvegarde.sh`. Le test de restauration mensuel s'installe avec.
-5. **Poste d'administration** : retirer l'entrée `nclsmgr.com` ajoutée au fichier `/etc/hosts`
+3. **Poste d'administration** : retirer l'entrée `nclsmgr.com` ajoutée au fichier `/etc/hosts`
    pendant la bascule DNS, sans quoi le poste continue de joindre l'origine en direct.
 
 Le certificat d'origine est valable 15 ans. Pour le remplacer, reprendre la section

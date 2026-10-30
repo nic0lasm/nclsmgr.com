@@ -2,10 +2,13 @@
   "langue": "en",
   "accueil": {
     "profil": "Profile",
-    "parcours": "Background",
+    "securite": "Security",
+    "referentiels": "Standards",
+    "controles": "Checks",
+    "code": "Source code",
     "voirCv": "View my CV",
-    "meContacter": "Get in touch",
-    "chiffresCles": "At a glance"
+    "parcours": "Background",
+    "meContacter": "Get in touch"
   },
   "portfolio": {
     "titre": "Portfolio",
@@ -33,7 +36,9 @@
     "langues": "Languages",
     "centresInteret": "Interests",
     "enCours": "present",
-    "realisations": "Highlights"
+    "realisations": "Highlights",
+    "presentation": "About me",
+    "chiffresCles": "At a glance"
   },
   "contact": {
     "linkedin": "My LinkedIn profile",

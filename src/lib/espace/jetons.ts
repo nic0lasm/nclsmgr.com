@@ -24,7 +24,7 @@ export function empreinte(secret: string): Buffer {
   return createHash("sha256").update(secret, "utf8").digest();
 }
 
-/** Identifiant de lien affiché à Nico (ex. « l-7kq2mz ») : aléatoire mais pas secret. */
+/** Identifiant de lien affiché à l'administrateur (ex. « l-7kq2mz ») : aléatoire, pas secret. */
 export function genererIdLien(): string {
   let id = "l-";
   for (let i = 0; i < LONGUEUR_ID; i++) id += ALPHABET_ID[randomInt(ALPHABET_ID.length)];

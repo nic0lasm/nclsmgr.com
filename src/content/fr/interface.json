@@ -2,10 +2,13 @@
   "langue": "fr",
   "accueil": {
     "profil": "Profil",
-    "parcours": "Parcours",
+    "securite": "Sécurité",
+    "referentiels": "Référentiels",
+    "controles": "Contrôles",
+    "code": "Code source",
     "voirCv": "Voir le CV",
-    "meContacter": "Me contacter",
-    "chiffresCles": "En bref"
+    "parcours": "Parcours",
+    "meContacter": "Me contacter"
   },
   "portfolio": {
     "titre": "Portfolio",
@@ -33,7 +36,9 @@
     "langues": "Langues",
     "centresInteret": "Centres d'intérêt",
     "enCours": "aujourd'hui",
-    "realisations": "Réalisations"
+    "realisations": "Réalisations",
+    "presentation": "Présentation",
+    "chiffresCles": "En bref"
   },
   "contact": {
     "linkedin": "Mon profil LinkedIn",

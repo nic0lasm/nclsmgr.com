@@ -2,7 +2,10 @@
 
 ## Signaler une vulnérabilité
 
-Si vous découvrez une faille sur nclsmgr.com ou dans ce dépôt, merci de me l'écrire à **security@nclsmgr.com** plutôt que d'ouvrir un ticket public.
+Si vous découvrez une faille sur nclsmgr.com ou dans ce dépôt, merci de me la signaler en privé plutôt que d'ouvrir un ticket public :
+
+- par le [formulaire de signalement privé de GitHub](https://github.com/nic0lasm/nclsmgr.com/security/advisories/new) ;
+- ou par courriel à **security@nclsmgr.com**.
 
 Indiquez si possible :
 

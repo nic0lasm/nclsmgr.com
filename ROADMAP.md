@@ -14,6 +14,7 @@ Le site est en ligne sur https://nclsmgr.com, derrière Cloudflare, et redéploy
 - [x] Espace privé : liens personnels avec expiration et révocation, profils, documents réservés, journal des consultations, limitation de débit
 - [x] Statistiques Umami auto-hébergées et fichier security.txt
 - [x] A+ sur Mozilla Observatory et sur SSL Labs
+- [x] 23 octobre : jeu [Frontfall](https://github.com/nic0lasm/frontfall) servi sous https://nclsmgr.com/frontfall/, dans un projet séparé du site
 
 Le chemin jusqu'au lancement tient en quatre chantiers.
 
@@ -50,7 +51,7 @@ Fermer les derniers écarts de sécurité. Le chantier a repris le 17 octobre 20
 - [x] DNSSEC réactivé via Cloudflare
 - [ ] Redémarrage du serveur sur le dernier noyau
 - [ ] Adresse security@nclsmgr.com opérationnelle
-- [ ] Sauvegardes chiffrées hors site et alerte de disponibilité
+- [x] Sauvegardes chiffrées hors site et alerte de disponibilité
 - [x] Audit de sécurité complet et correction des écarts
 
 **Critère de sortie** : A+ sur Mozilla Observatory et SSL Labs en Full (strict), aucune vulnérabilité critique ou haute connue, sauvegarde restaurée avec succès.

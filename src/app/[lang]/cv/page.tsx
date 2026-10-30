@@ -24,6 +24,27 @@ export default async function Cv({ params }: PageProps<"/[lang]/cv">) {
         </div>
       </section>
 
+      <section className="section" aria-labelledby="presentation">
+        <h2 className="section__label" id="presentation">
+          {ui.cv.presentation}
+        </h2>
+        <div className="section__body">
+          {profil.resume.map((paragraphe) => (
+            <p className="prose" key={paragraphe}>
+              {paragraphe}
+            </p>
+          ))}
+          <dl className="facts">
+            {profil.chiffres_cles.map((c) => (
+              <div key={c.libelle}>
+                <dt>{c.libelle}</dt>
+                <dd>{c.valeur}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
       <section className="section" aria-labelledby="experiences">
         <h2 className="section__label" id="experiences">
           {ui.cv.experiences}

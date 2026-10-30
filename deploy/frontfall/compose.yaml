@@ -1,0 +1,79 @@
+# Projet Compose du jeu Frontfall, installé dans /opt/frontfall par installer-frontfall.sh.
+# Le dépôt du jeu ne choisit que l'étiquette de l'image : ce fichier reste sous la main de ce dépôt.
+name: frontfall
+
+services:
+  frontfall:
+    image: ghcr.io/nic0lasm/frontfall:${IMAGE_TAG:?IMAGE_TAG manquant}
+    restart: unless-stopped
+    logging:
+      driver: journald
+      options:
+        tag: "{{.Name}}"
+    init: true
+    # À l'arrêt, le jeu laisse finir les parties en cours (FRONTFALL_DRAIN_SECONDS), puis prévient
+    # les joueurs : le délai d'arrêt doit dépasser ce drainage d'au moins 30 secondes.
+    stop_grace_period: 11m
+    read_only: true
+    tmpfs:
+      - /tmp
+    # Seul dossier écrit hors de /tmp : usage/ (mesures d'usage), games/ (parties à reprendre).
+    volumes:
+      - donnees:/var/lib/frontfall
+      # Boîte d'envoi du site (configurer-smtp.sh), relue telle quelle pour les liens de connexion
+      # par e-mail : uid 1000 en 400, l'utilisateur node de l'image. Le fichier doit exister, sinon
+      # Compose refuse de démarrer plutôt que de créer un dossier à sa place.
+      - type: bind
+        source: /etc/nclsmgr/smtp.json
+        target: /run/secrets/smtp
+        read_only: true
+        bind:
+          create_host_path: false
+    environment:
+      NODE_ENV: production
+      PORT: "8080"
+      FRONTFALL_ORIGINE: https://nclsmgr.com
+      FRONTFALL_DRAIN_SECONDS: "600"
+      FRONTFALL_DATA: /var/lib/frontfall
+      # Connexion Discord et Google : adresse où ces services renvoient les joueurs.
+      FRONTFALL_PUBLIC_URL: https://nclsmgr.com/frontfall
+      # Connexion par e-mail : lien à usage unique envoyé depuis la boîte du site.
+      FRONTFALL_SMTP_FILE: /run/secrets/smtp
+    # Secrets de la connexion (FRONTFALL_SESSION_SECRET, FRONTFALL_OAUTH_DISCORD_ID et _SECRET,
+    # FRONTFALL_OAUTH_GOOGLE_ID et _SECRET), hors du dépôt, root:frontfall 640 : le déployeur lance
+    # Compose sous le compte frontfall, qui doit le lire. Sans ce fichier, le jeu se joue en invité
+    # seulement et le menu n'affiche aucun bouton de connexion.
+    env_file:
+      - path: /etc/frontfall/comptes.env
+        required: false
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    # 768 Mio laissent 192 Mio à la préproduction ; le tas du jeu reste limité à 512 Mio.
+    mem_limit: 768m
+    cpus: 2
+    pids_limit: 256
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:8080/healthz').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 1m
+      start_interval: 2s
+    # Caddy joint le jeu sur frontfall, sans accès à Internet ; sortie ne sert qu'aux appels
+    # sortants du jeu vers Discord et Google lors d'une connexion, et vers la boîte d'envoi (port
+    # 465) pour les liens par e-mail. Aucun port n'y est publié. Bridge ordinaire pour l'instant ;
+    # à restreindre (v0.9) par une règle DOCKER-USER n'admettant que le DNS, le 443 de discord.com,
+    # oauth2.googleapis.com, openidconnect.googleapis.com et le port de la boîte d'envoi.
+    networks: [frontfall, sortie]
+
+volumes:
+  donnees:
+
+networks:
+  frontfall:
+    external: true
+  sortie: {}

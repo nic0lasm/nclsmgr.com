@@ -1,8 +1,8 @@
 #!/bin/sh
 # Commande « liens » : crée, liste, prolonge et révoque les liens de l'espace privé.
-# Se lance depuis le Mac de Nico. La demande part en JSON, par SSH, vers le compte « liens »
-# du serveur, dont la clé ne peut lancer qu'une seule commande. Le lien créé arrive par
-# courriel : il n'apparaît jamais dans ce terminal.
+# Se lance depuis le poste d'administration. La demande part en JSON, par SSH, vers le compte
+# « liens » du serveur, dont la clé ne peut lancer qu'une seule commande. Le lien créé arrive
+# par courriel : il n'apparaît jamais dans ce terminal.
 #
 #   liens creer --profil recruteur --destinataire "Camille" [--organisation "Acme"]
 #               [--langue fr|en] [--message "..."] [--documents cv]
