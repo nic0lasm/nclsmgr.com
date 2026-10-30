@@ -279,7 +279,7 @@
   font: var(--weight-strong) var(--text-h2) / 1 var(--font-display);
 }
 
-.facts--badges dd:last-child:not(.facts__grade) {
+.facts--badges .facts__link {
   margin-top: auto;
   padding-top: var(--space-3);
   font-size: var(--text-sm);

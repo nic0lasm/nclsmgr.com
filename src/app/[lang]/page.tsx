@@ -91,7 +91,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                 <dt>{c.libelle}</dt>
                 <dd className="facts__grade">{c.valeur}</dd>
                 {c.url ? (
-                  <dd>
+                  <dd className="facts__link">
                     <a href={c.url}>
                       {ui.accueil.voirResultat}
                       <span className="visually-hidden">{`${lang === "fr" ? " : " : ": "}${c.libelle}`}</span>
