@@ -111,6 +111,7 @@ export const pagesSeo = [
   "cv",
   "dev",
   "portfolio",
+  "articles",
   "contact",
   "mentions_legales",
   "confidentialite",
@@ -144,6 +145,13 @@ export interface Interface {
     enjeux: string;
     actions: string;
     resultats: string;
+  };
+  articles: {
+    titre: string;
+    publieLe: string;
+    aucun: string;
+    enFrancais: string;
+    tous: string;
   };
   cv: {
     titre: string;

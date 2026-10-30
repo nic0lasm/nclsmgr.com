@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { caseMeta, formatMonth, formatPeriod } from "./dates";
+import { caseMeta, formatDay, formatMonth, formatPeriod } from "./dates";
 
 describe("formatMonth", () => {
   it("écrit le mois en toutes lettres dans chaque langue", () => {
@@ -36,5 +36,12 @@ describe("caseMeta", () => {
         "aujourd'hui",
       ),
     ).toBe("Projet personnel · octobre 2026 · aujourd'hui");
+  });
+});
+
+describe("formatDay", () => {
+  it("écrit le jour en toutes lettres, sans décalage de fuseau", () => {
+    expect(formatDay("2026-10-30", "fr")).toBe("30 octobre 2026");
+    expect(formatDay("2026-01-01", "en")).toBe("1 January 2026");
   });
 });
