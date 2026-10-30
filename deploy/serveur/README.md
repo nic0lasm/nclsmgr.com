@@ -160,6 +160,16 @@ les parties en cours sont coupées), met de côté le contenu du volume `frontfa
 fichiers au compte du conteneur, remet `/etc/frontfall/comptes.env` s'il manque (`root:frontfall` 640) et relance le jeu. Sur un serveur neuf : restaurer d'abord les accès au dépôt comme ci-dessus,
 déployer le jeu une première fois pour créer le volume, puis lancer la commande.
 
+### Changer de serveur
+
+`durcir-serveur.sh` reproduit le durcissement d'un Debian 13 neuf (SSH par clé, pare-feu,
+fail2ban, mises à jour automatiques, Docker). `restaurer-serveur.sh config` puis `donnees` remettent
+secrets, certificat d'origine, version déployée, base du site, documents, données de Caddy et base
+Umami depuis le dernier instantané ; les données du jeu passent par `restaurer-frontfall.sh`. Pour
+ne pas écraser la chaîne de sauvegardes, ne lancer `installer-sauvegarde.sh` sur le nouveau serveur
+qu'après ces restaurations, et arrêter les minuteries de l'ancien dès la bascule : les deux
+écrivent sous le même nom d'hôte restic (`nclsmgr`).
+
 Mise à jour d'un serveur déjà installé (aucune question reposée) :
 
 ```sh
