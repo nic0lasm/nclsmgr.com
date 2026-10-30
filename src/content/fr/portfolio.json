@@ -10,7 +10,7 @@
       "organisation": "Capgemini, pour un ministère régalien",
       "debut": null,
       "fin": null,
-      "contexte": "Un service numérique devait s'ouvrir à de nouveaux utilisateurs, dont certains hors du réseau du ministère. Avant de trancher, la direction voulait connaître les risques réels et le coût de leur traitement.",
+      "contexte": "Un service numérique utilisé en interne devait s'ouvrir à de nouveaux utilisateurs, dont certains hors du réseau du ministère, avec des données sensibles en jeu. Avant de trancher, la direction voulait connaître les risques réels, le coût de leur traitement et leur effet sur le calendrier.",
       "role": "Chef de projet de l'analyse : cadrage avec le RSSI et les métiers, animation des ateliers, synthèse pour la direction.",
       "enjeux": [
         "Parler le langage des métiers autant que celui de la sécurité",
@@ -18,13 +18,13 @@
         "Produire un dossier réutilisable pour l'homologation"
       ],
       "actions": [
-        "Ateliers avec les métiers, l'exploitation et la sécurité, selon la méthode EBIOS Risk Manager",
-        "Scénarios de risque hiérarchisés par gravité et vraisemblance",
-        "Mesures chiffrées et classées : avant l'ouverture, à planifier, à accepter",
+        "Valeurs métier, biens supports et parties prenantes cartographiés avec les métiers et l'exploitation, selon EBIOS Risk Manager",
+        "Scénarios stratégiques et opérationnels hiérarchisés par gravité et vraisemblance",
+        "Mesures chiffrées en coût et en délai, classées : avant l'ouverture, à planifier, à accepter",
         "Note de décision courte pour la direction, en plus du rapport complet"
       ],
       "resultats": [
-        "Une ouverture décidée sur la base de risques identifiés et acceptés",
+        "Une ouverture décidée en comité, sur la base de risques identifiés et explicitement acceptés",
         "Un plan de traitement intégré au calendrier du projet",
         "Un dossier repris pour l'homologation de sécurité"
       ],
@@ -38,16 +38,18 @@
       "organisation": "Capgemini, pour le secteur public",
       "debut": null,
       "fin": null,
-      "contexte": "Une application existante devait quitter son hébergement d'origine. Deux voies étaient possibles : un cloud qualifié SecNumCloud ou une installation sur site chez le bénéficiaire.",
+      "contexte": "Une application existante devait quitter son hébergement d'origine. Deux voies étaient possibles : un cloud qualifié SecNumCloud ou une installation sur site chez le bénéficiaire. Le choix engageait le ministère pour plusieurs années.",
       "role": "Chef de projet de l'étude d'architecture, avec un architecte et un expert sécurité.",
       "enjeux": [
         "Comparer deux options sur des critères que la direction peut arbitrer",
         "Respecter les exigences de souveraineté et de protection des données",
-        "Anticiper le coût complet : migration, exploitation, réversibilité"
+        "Anticiper le coût complet : migration, exploitation, réversibilité",
+        "Ne pas créer de dépendance difficile à défaire envers un fournisseur"
       ],
       "actions": [
+        "Critères de choix et pondération validés avec la direction avant l'étude",
         "Inventaire des flux, des données et des dépendances de l'application",
-        "Deux architectures cibles décrites et comparées : sécurité, coût, délai, réversibilité",
+        "Deux architectures cibles comparées : sécurité, localisation des données, coût complet, délai, compétences d'exploitation, réversibilité",
         "Analyse de risques de chaque option",
         "Feuille de route de migration pour l'option retenue"
       ],
@@ -66,7 +68,7 @@
       "debut": null,
       "fin": null,
       "contexte": "Une application métier à développer pour les agents d'un ministère, avec des exigences de sécurité élevées, un calendrier contraint et un budget de plusieurs millions d'euros.",
-      "role": "Chef de projet, responsable du client, du budget, du contrat et d'une équipe de cinq à quinze personnes.",
+      "role": "Chef de projet et officier de sécurité du projet, responsable du client, du budget, du contrat et d'une équipe pluridisciplinaire de cinq à quinze personnes : développeurs, testeurs, architecte, expert sécurité.",
       "enjeux": [
         "Tenir le calendrier et le budget",
         "Intégrer la sécurité dès les premières itérations",
@@ -75,7 +77,8 @@
       "actions": [
         "Cadrage avec les métiers et découpage en versions livrables",
         "Pilotage agile (Scrum) et comités réguliers avec le client",
-        "Exigences de sécurité suivies dans le backlog au même titre que les fonctionnalités",
+        "Exigences de sécurité suivies dans le backlog au même titre que les fonctionnalités, et dossier d'homologation tenu à jour à chaque version",
+        "Tableau de bord partagé avec le client : reste à faire, budget consommé, risques",
         "Suivi financier, avenants et gestion des risques"
       ],
       "resultats": [
