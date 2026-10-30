@@ -6,7 +6,7 @@ export const sourceUrl = "https://github.com/nic0lasm/nclsmgr.com";
 // Pages légales, liées depuis le pied de chaque page.
 export const legalSegments = { legal: "mentions-legales", privacy: "confidentialite" } as const;
 
-// Onglet Dev : hors du menu principal, lié depuis le pied de page et le portfolio.
+// Onglet Dev : dans le menu principal, et lié aussi depuis le pied de page et le portfolio.
 export const devSegment = "dev";
 
 type NavEntry = {
@@ -20,6 +20,7 @@ export const navEntries: readonly NavEntry[] = [
   { segment: "", label: { fr: "Accueil", en: "Home" }, published: true },
   { segment: "cv", label: { fr: "CV", en: "Résumé" }, published: true },
   { segment: "portfolio", label: { fr: "Portfolio", en: "Portfolio" }, published: true },
+  { segment: devSegment, label: { fr: "Dev", en: "Dev" }, published: true },
   { segment: "articles", label: { fr: "Articles", en: "Articles" }, published: true },
   { segment: "contact", label: { fr: "Contact", en: "Contact" }, published: true },
 ];

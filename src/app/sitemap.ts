@@ -4,10 +4,9 @@ import { getContent } from "@/lib/content";
 import { locales } from "@/lib/i18n";
 import { legalSegments, localizedPath, navEntries } from "@/lib/navigation";
 
-// Pages publiques : menu, onglet Dev (hors menu) et pages légales, dans chaque langue.
+// Pages publiques : menu (onglet Dev compris) et pages légales, dans chaque langue.
 const segmentsPublics = [
   ...navEntries.filter((entry) => entry.published).map((entry) => entry.segment),
-  "dev",
   legalSegments.legal,
   legalSegments.privacy,
 ];

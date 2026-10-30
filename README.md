@@ -26,7 +26,7 @@ Les étapes restantes et leurs critères de sortie sont dans [ROADMAP.md](ROADMA
 | Portfolio    | Études de cas anonymisées, classées par thème                              | Public             |
 | Articles     | Notes d'expertise sur le pilotage, la cybersécurité et la souveraineté     | Au lancement       |
 | Contact      | Formulaire auto-hébergé                                                    | Public             |
-| Dev          | Projets personnels et dépôts publics, accessibles depuis le pied de page   | Public             |
+| Dev          | Projets personnels et dépôts publics, dans le menu principal               | Public             |
 | Frontfall    | Jeu de stratégie multijoueur, publié depuis son propre dépôt               | Public             |
 | Espace privé | Version du site adaptée à son destinataire, avec documents complémentaires | Sur lien personnel |
 

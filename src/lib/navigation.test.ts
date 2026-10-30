@@ -19,8 +19,9 @@ describe("navigation", () => {
     expect(links.every((link) => link.href.startsWith("/fr"))).toBe(true);
   });
 
-  it("garde l'onglet Dev hors du menu principal", () => {
-    expect(navLinks("fr").map((link) => link.href)).not.toContain("/fr/dev");
+  it("place l'onglet Dev dans le menu, après le portfolio", () => {
+    const hrefs = navLinks("fr").map((link) => link.href);
+    expect(hrefs.indexOf("/fr/dev")).toBe(hrefs.indexOf("/fr/portfolio") + 1);
   });
 
   it("marque l'accueil uniquement sur sa propre adresse", () => {
