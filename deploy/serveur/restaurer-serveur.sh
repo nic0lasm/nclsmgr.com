@@ -45,6 +45,10 @@ if [ "$mode" = config ]; then
   install -d -m 755 -o root -g root /etc/nclsmgr
   cp -a "$dossier/etc/." /etc/nclsmgr/
   chown root:root /etc/nclsmgr/sauvegarde.env /etc/nclsmgr/restic.motdepasse /etc/nclsmgr/sonde.env 2> /dev/null || true
+  # Fichiers lus par Compose au nom du compte deploy (voir installer-statistiques.sh) : root:deploy, 640.
+  for f in umami.env umami-db.env statistiques.env; do
+    [ ! -f "/etc/nclsmgr/$f" ] || { chown root:deploy "/etc/nclsmgr/$f"; chmod 640 "/etc/nclsmgr/$f"; }
+  done
   # Version déployée : le compte deploy la relit et l'écrase à chaque publication.
   if id deploy > /dev/null 2>&1; then
     install -d -m 750 -o deploy -g deploy "$COMPOSE"
