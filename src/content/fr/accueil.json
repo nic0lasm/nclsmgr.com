@@ -35,76 +35,61 @@
     ]
   },
   "referentiels": {
-    "intro": "Les guides et normes sur lesquels je me suis appuyé. Le site n'est certifié par aucun organisme : « appliqué » désigne une exigence mise en œuvre et contrôlée, « inspiré de » une démarche reprise sans prétendre à une conformité complète.",
+    "intro": "Les guides et normes sur lesquels je me suis appuyé, et ce que j'en applique sur ce site. Aucun organisme ne l'a certifié.",
     "colonnes": {
       "referentiel": "Référentiel",
-      "application": "Ce qui est mis en œuvre",
-      "niveau": "Niveau"
-    },
-    "niveaux": {
-      "applique": "Appliqué",
-      "inspire": "Inspiré de"
+      "application": "Ce qui est mis en œuvre"
     },
     "elements": [
       {
         "id": "anssi-docker",
         "nom": "ANSSI, recommandations pour le déploiement de conteneurs Docker",
-        "application": "Conteneurs en lecture seule, sans capacité ni élévation de privilèges, réseau interne sans sortie, images épinglées par empreinte.",
-        "niveau": "inspire"
+        "application": "Conteneurs en lecture seule, sans capacité ni élévation de privilèges, réseau interne sans sortie, images épinglées par empreinte."
       },
       {
         "id": "anssi-linux",
         "nom": "ANSSI, recommandations de configuration d'un système GNU/Linux",
-        "application": "Serveur minimal, SSH par clé, pare-feu, mises à jour de sécurité automatiques, journalisation maîtrisée.",
-        "niveau": "inspire"
+        "application": "Serveur minimal, SSH par clé, pare-feu, mises à jour de sécurité automatiques, journalisation maîtrisée."
       },
       {
         "id": "anssi-tls",
         "nom": "ANSSI, recommandations de sécurité relatives à TLS",
-        "application": "TLS 1.2 au minimum, chiffrement jusqu'au serveur avec certificat vérifié, HSTS.",
-        "niveau": "inspire"
+        "application": "TLS 1.2 au minimum, chiffrement jusqu'au serveur avec certificat vérifié, HSTS."
       },
       {
         "id": "owasp",
         "nom": "OWASP ASVS et fiches de l'OWASP",
-        "application": "Sessions par cookie __Host-, HttpOnly et SameSite, protection contre la falsification de requêtes, jetons stockés hachés, limitation de débit, réponses d'erreur uniformes.",
-        "niveau": "inspire"
+        "application": "Sessions par cookie __Host-, HttpOnly et SameSite, protection contre la falsification de requêtes, jetons stockés hachés, limitation de débit, réponses d'erreur uniformes."
       },
       {
         "id": "iso-27001",
         "nom": "ISO/IEC 27001",
-        "application": "Gestion des vulnérabilités, journalisation, développement sécurisé et audit avant mise en service, sur le modèle des mesures de l'annexe A.",
-        "niveau": "inspire"
+        "application": "Gestion des vulnérabilités, journalisation, développement sécurisé et audit avant mise en service, sur le modèle des mesures de l'annexe A."
       },
       {
         "id": "rgpd",
         "nom": "RGPD",
-        "application": "Minimisation des données, durées de conservation publiées, mesure d'audience sans cookie, aucune adresse IP dans le journal de l'espace privé.",
-        "niveau": "applique"
+        "application": "Minimisation des données, durées de conservation publiées, mesure d'audience sans cookie, aucune adresse IP dans le journal de l'espace privé."
       },
       {
         "id": "csp",
         "nom": "Content Security Policy niveau 3 (W3C)",
-        "application": "Politique à nonce et strict-dynamic, sans unsafe-inline, vérifiée à chaque modification.",
-        "niveau": "applique"
+        "application": "Politique à nonce et strict-dynamic, sans unsafe-inline, vérifiée à chaque modification."
       },
       {
         "id": "hsts-dnssec",
         "nom": "HSTS (RFC 6797) et DNSSEC",
-        "application": "HSTS sur deux ans, sous-domaines compris ; zone DNS signée.",
-        "niveau": "applique"
+        "application": "HSTS sur deux ans, sous-domaines compris ; zone DNS signée."
       },
       {
         "id": "security-txt",
         "nom": "security.txt (RFC 9116)",
-        "application": "Contact de sécurité publié et politique de divulgation responsable dans le dépôt.",
-        "niveau": "applique"
+        "application": "Contact de sécurité publié et politique de divulgation responsable dans le dépôt."
       },
       {
         "id": "wcag",
         "nom": "WCAG 2.1, niveau AA",
-        "application": "Contrôle automatique de chaque page avec axe, contrastes vérifiés dans les deux thèmes.",
-        "niveau": "inspire"
+        "application": "Contrôle automatique de chaque page avec axe, contrastes vérifiés dans les deux thèmes."
       }
     ]
   },

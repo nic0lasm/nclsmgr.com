@@ -13,8 +13,8 @@
       "contexte": "Projets numériques pour les ministères régaliens et le secteur public : développement applicatif, cybersécurité, cloud de confiance.",
       "realisations": [
         "Business analyst pendant deux ans, puis chef de projet junior, confirmé et aujourd'hui senior",
-        "Plus de 30 projets pilotés du cadrage à la livraison, de 500 k€ à 2 M€",
-        "Aujourd'hui trois à sept projets en parallèle, avec des équipes de cinq à dix personnes",
+        "Plus de 30 projets pilotés du cadrage à la livraison, de 500 k€ à plus de 5 M€",
+        "Pilotage de plusieurs projets en parallèle, associant des équipes de 5 à 15 ETP",
         "Analyses de risques cyber (EBIOS Risk Manager) et études d'architecture de sécurité",
         "Solutions souveraines : cloud de confiance qualifié SecNumCloud ou installation sur site chez le bénéficiaire",
         "Pilotage financier et contractuel : budget, marge, avenants, réponses aux appels d'offres",
@@ -56,14 +56,17 @@
     },
     {
       "id": "reserve",
-      "poste": "Lieutenant, officier de réserve spécialiste communication",
+      "poste": "Officier de réserve, conseiller communication",
       "organisation": "Armée de Terre",
       "secteur": "Défense",
       "lieu": "Paris",
       "debut": "2017-09",
       "fin": null,
-      "contexte": "Réserve opérationnelle de l'armée de Terre, en parallèle de mon activité civile.",
-      "realisations": ["Engagement de trois mois en opération extérieure"],
+      "contexte": "Réserve opérationnelle de l'armée de Terre, en parallèle de mon activité civile. J'appuie les décideurs des armées dans leur stratégie de communication, qu'elle soit interne, externe ou institutionnelle.",
+      "realisations": [
+        "Conseil aux autorités militaires sur leurs messages, leurs prises de parole et leurs relations avec les médias",
+        "Conseiller communication d'un général de l'armée de Terre lors d'une mission de trois mois en opération extérieure"
+      ],
       "outils": []
     },
     {

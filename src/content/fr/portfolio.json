@@ -65,8 +65,8 @@
       "organisation": "Capgemini, pour un ministère régalien",
       "debut": null,
       "fin": null,
-      "contexte": "Une application métier à développer pour les agents d'un ministère, avec des exigences de sécurité élevées, un calendrier contraint et un budget compris entre 500 k€ et 2 M€.",
-      "role": "Chef de projet, responsable du client, du budget, du contrat et d'une équipe de cinq à dix personnes.",
+      "contexte": "Une application métier à développer pour les agents d'un ministère, avec des exigences de sécurité élevées, un calendrier contraint et un budget de plusieurs millions d'euros.",
+      "role": "Chef de projet, responsable du client, du budget, du contrat et d'une équipe de cinq à quinze personnes.",
       "enjeux": [
         "Tenir le calendrier et le budget",
         "Intégrer la sécurité dès les premières itérations",

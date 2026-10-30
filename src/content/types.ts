@@ -95,16 +95,12 @@ export interface Accueil extends Fichier {
   securite: { intro: string; mesures: { titre: string; texte: string }[] };
   referentiels: {
     intro: string;
-    colonnes: { referentiel: string; application: string; niveau: string };
-    /** « appliqué » : exigence mise en œuvre et contrôlée ; « inspiré de » : sans conformité revendiquée. */
-    niveaux: Record<NiveauReferentiel, string>;
-    elements: { id: string; nom: string; application: string; niveau: NiveauReferentiel }[];
+    colonnes: { referentiel: string; application: string };
+    elements: { id: string; nom: string; application: string }[];
   };
   controles: { valeur: string; libelle: string }[];
   code: { texte: string; liens: { libelle: string; url: string }[] };
 }
-
-export type NiveauReferentiel = "applique" | "inspire";
 
 export const pagesSeo = [
   "accueil",

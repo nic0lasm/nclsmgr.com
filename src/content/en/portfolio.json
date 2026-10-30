@@ -65,8 +65,8 @@
       "organisation": "Capgemini, for a French government ministry",
       "debut": null,
       "fin": null,
-      "contexte": "A business application to build for a ministry's staff, with high security requirements, a tight schedule and a budget between €500k and €2M.",
-      "role": "Project manager, accountable for the client, the budget, the contract and a team of five to ten people.",
+      "contexte": "A business application to build for a ministry's staff, with high security requirements, a tight schedule and a budget of several million euros.",
+      "role": "Project manager, accountable for the client, the budget, the contract and a team of five to fifteen people.",
       "enjeux": [
         "Hold the schedule and the budget",
         "Build security in from the first iterations",
