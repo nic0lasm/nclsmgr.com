@@ -165,9 +165,9 @@ déployer le jeu une première fois pour créer le volume, puis lancer la comman
 
 `durcir-serveur.sh` reproduit le durcissement d'un Debian 13 neuf (SSH par clé, pare-feu,
 fail2ban, mises à jour automatiques, Docker, IPv6 coupée). `restaurer-serveur.sh config` puis
-`donnees` remettent secrets, certificat d'origine, version déployée, base du site, documents, données
-de Caddy et base Umami depuis le dernier instantané ; les données du jeu passent par
-`restaurer-frontfall.sh`.
+`donnees --confirmer` remettent secrets, certificat d'origine, version déployée, base du site,
+documents, données de Caddy et base Umami depuis le dernier instantané ; les données du jeu passent
+par `restaurer-frontfall.sh`. Sans `--confirmer`, `donnees` affiche l'instantané et ne touche à rien.
 
 Le jeton R2 des sauvegardes est filtré par adresse IP : ajouter l'IPv4 du nouveau serveur au filtre
 avant la première restauration, et retirer celle de l'ancien une fois la bascule confirmée. restic
