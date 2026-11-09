@@ -35,6 +35,8 @@ services:
       FRONTFALL_ORIGINE: https://nclsmgr.com
       FRONTFALL_DRAIN_SECONDS: "600"
       FRONTFALL_DATA: /var/lib/frontfall
+      # Caddy écrase X-Client-IP : le jeu peut s'y fier (limites et bannissements par adresse).
+      FRONTFALL_TRUST_PROXY: "true"
       # Connexion Discord et Google : adresse où ces services renvoient les joueurs.
       FRONTFALL_PUBLIC_URL: https://nclsmgr.com/frontfall
       # Connexion par e-mail : lien à usage unique envoyé depuis la boîte du site.

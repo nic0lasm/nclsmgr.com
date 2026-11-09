@@ -19,6 +19,8 @@ ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     PORT=3000 \
     HOSTNAME=0.0.0.0
+# Applique les correctifs Alpine publiés depuis l'image de base (musl, zlib) avant l'analyse Trivy.
+RUN apk upgrade --no-cache
 # npm, npx, corepack et yarn ne servent pas à l'exécution : on les retire pour réduire la surface d'attaque.
 RUN rm -rf /usr/local/lib/node_modules /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
      /opt/yarn-v* /usr/local/bin/yarn /usr/local/bin/yarnpkg \
