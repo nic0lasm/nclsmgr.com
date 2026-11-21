@@ -1,6 +1,6 @@
 ---
 titre: Contact
-statut: brouillon
+statut: valide
 maj: 2026-10-15
 ---
 

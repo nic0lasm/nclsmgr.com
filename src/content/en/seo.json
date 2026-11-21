@@ -9,8 +9,8 @@
   },
   "pages": {
     "accueil": {
-      "titre": "Nicolas M, cyber and sovereignty project manager",
-      "description": "Project manager at Capgemini for French government ministries and the public sector: application development, cyber risk, trusted cloud.",
+      "titre": "Web security sandbox · Nicolas M",
+      "description": "A real website exposed to the Internet to apply and verify good web security practice: protections, standards, public checks and open source code.",
       "og_image": null
     },
     "cv": {
