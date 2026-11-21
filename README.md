@@ -8,14 +8,14 @@ Le dépôt est public par choix : la façon dont un site est conçu, sécurisé 
 
 ## État du projet
 
-Le site est en ligne depuis le 15 octobre 2026 et ouvre officiellement le 5 novembre 2026, avec la rubrique Articles.
+Le site est en ligne depuis le 15 octobre 2026 et ouvert au public depuis le 30 octobre 2026, rubrique Articles comprise.
 
 - Pages publiques en français et en anglais, espace privé sur lien personnel.
 - A+ sur [Mozilla Observatory](https://developer.mozilla.org/en-US/observatory/analyze?host=nclsmgr.com) et sur [SSL Labs](https://www.ssllabs.com/ssltest/analyze.html?d=nclsmgr.com).
 - Audit de sécurité avant lancement mené en octobre 2026 : aucun écart de gravité élevée, écarts moyens et faibles corrigés ([#23](../../issues/23)).
 - Sauvegardes chiffrées hors site, restauration testée chaque mois, sondes de disponibilité.
 
-Les étapes restantes et leurs critères de sortie sont dans [ROADMAP.md](ROADMAP.md).
+Ce qui reste à faire et les critères de sortie sont dans [ROADMAP.md](ROADMAP.md).
 
 ## Contenu du site
 
@@ -24,7 +24,7 @@ Les étapes restantes et leurs critères de sortie sont dans [ROADMAP.md](ROADMA
 | Accueil      | Présentation courte, sécurité du site, référentiels suivis, code source    | Public             |
 | CV           | Présentation, parcours, compétences cyber et souveraineté, formations      | Public             |
 | Portfolio    | Études de cas anonymisées, classées par thème                              | Public             |
-| Articles     | Notes d'expertise sur le pilotage, la cybersécurité et la souveraineté     | Au lancement       |
+| Articles     | Notes d'expertise sur le pilotage, la cybersécurité et l'hébergement       | Public             |
 | Contact      | Formulaire auto-hébergé                                                    | Public             |
 | Dev          | Projets personnels et dépôts publics, dans le menu principal               | Public             |
 | Frontfall    | Jeu de stratégie multijoueur, publié depuis son propre dépôt               | Public             |
