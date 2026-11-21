@@ -1,6 +1,6 @@
 ---
 titre: Legal notice
-statut: brouillon
+statut: valide
 maj: 2026-10-30
 ---
 
