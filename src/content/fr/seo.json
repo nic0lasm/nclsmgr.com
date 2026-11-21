@@ -15,7 +15,7 @@
     },
     "cv": {
       "titre": "CV · Nicolas M",
-      "description": "Parcours, compétences et formation de Nicolas M, chef de projet cyber et souveraineté numérique pour le secteur public.",
+      "description": "Parcours de Nicolas M : chef de projet chez Capgemini, officier de réserve, compétences en cybersécurité, analyse de risques et pilotage.",
       "og_image": null
     },
     "dev": {
@@ -25,17 +25,17 @@
     },
     "portfolio": {
       "titre": "Portfolio · Nicolas M",
-      "description": "Trois cas anonymisés : analyse de risque cyber, architecture souveraine et pilotage applicatif pour le secteur régalien.",
+      "description": "Trois cas anonymisés : analyse de risque cyber, choix d'hébergement et pilotage applicatif pour des ministères.",
       "og_image": null
     },
     "articles": {
       "titre": "Articles · Nicolas M",
-      "description": "Retours d'expérience sur le pilotage de projets cyber, l'analyse de risques et la souveraineté numérique dans le secteur public.",
+      "description": "Retours d'expérience sur le pilotage de projets cyber, l'analyse de risques et l'hébergement des données sensibles.",
       "og_image": null
     },
     "contact": {
       "titre": "Contact · Nicolas M",
-      "description": "Un projet régalien, une question de cybersécurité ou de souveraineté numérique ? Écrivez-moi via le formulaire ou sur LinkedIn.",
+      "description": "Un projet pour un ministère, une question de cybersécurité ou d'hébergement ? Écrivez-moi via le formulaire ou sur LinkedIn.",
       "og_image": null
     },
     "mentions_legales": {

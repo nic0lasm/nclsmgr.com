@@ -121,8 +121,12 @@ test("un slug inconnu répond 404", async ({ page }) => {
 
 test("la liste des articles mène à l'article dans la même langue", async ({ page }) => {
   await page.goto("/en/articles");
-  await page.getByRole("main").getByRole("link").first().click();
-  await expect(page).toHaveURL(/\/en\/articles\/cloud-de-confiance-ou-sur-site$/);
+  const premier = page.getByRole("main").getByRole("link").first();
+  const titre = (await premier.textContent())?.trim() ?? "";
+  expect(titre).not.toBe("");
+  await premier.click();
+  await expect(page).toHaveURL(/\/en\/articles\/[a-z0-9-]+$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(titre);
 });
 
 test("robots.txt, sitemap.xml et icônes sont servis", async ({ request }) => {

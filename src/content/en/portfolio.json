@@ -42,7 +42,7 @@
       "role": "Project manager for the architecture study, working with an architect and a security expert.",
       "enjeux": [
         "Compare two options on criteria that management can decide on",
-        "Meet sovereignty and data protection requirements",
+        "Meet data location and data protection requirements",
         "Anticipate the full cost: migration, operations, reversibility",
         "Avoid creating a dependency on a supplier that would be hard to undo"
       ],
@@ -127,7 +127,7 @@
   ],
   "autres": {
     "titre": "Personal projects",
-    "texte": "My development projects are presented in the Dev section, with their code and documentation. The latest, Frontfall, is a multiplayer strategy game that I host and run myself.",
+    "texte": "My development projects are presented in the Dev section, with their code and documentation. Frontfall, a multiplayer strategy game, runs on my own server and I operate it myself; Zeus + Poseidon brings a 2000 Windows game back to Mac and Linux, from its original code.",
     "lien": {
       "libelle": "See the Dev section",
       "chemin": "/dev"

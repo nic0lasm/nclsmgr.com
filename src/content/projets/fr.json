@@ -1,6 +1,6 @@
 {
   "statut": "brouillon",
-  "maj": "2026-10-24",
+  "maj": "2026-11-21",
   "projets": [
     {
       "id": "frontfall",
@@ -8,8 +8,8 @@
       "ordre": 1,
       "afficher": true,
       "titre": "Frontfall",
-      "pitch": "Un jeu de stratégie en temps réel dans le navigateur, à jouer seul contre des bots ou en ligne entre amis.",
-      "probleme": "Conduire un service multijoueur en ligne de bout en bout : des règles écrites de zéro, un moteur de jeu déterministe, un serveur qui relaie les ordres sans calculer la partie, et une mise en production sur mon serveur, isolée du reste du site. Le jeu est en bêta : la version 0.2 permet de jouer en ligne, la 1.0 placera la partie sur un globe en 3D.",
+      "pitch": "Un jeu de stratégie en temps réel dans le navigateur, sur une carte du monde sans bord, à jouer seul contre des bots ou en ligne entre amis.",
+      "probleme": "Conduire un service multijoueur en ligne de bout en bout : des règles écrites de zéro, un moteur de jeu déterministe, un serveur qui relaie les ordres sans calculer la partie, et une mise en production sur mon serveur, isolée du reste du site. La version 1.0 a clos la bêta en novembre 2026 ; la 1.1 ajoute un globe en 3D, au choix du joueur.",
       "stack": [
         "TypeScript",
         "Three.js (WebGL 2)",
@@ -24,27 +24,27 @@
       "points_forts": [
         "La même simulation tourne chez chaque joueur : le serveur ne fait que numéroter les ordres, dix tours par seconde.",
         "Conteneur en lecture seule, sans privilège ni accès à Internet, déployé par une clé dédiée qui ne peut lancer qu'une commande.",
-        "Adresses des joueurs pseudonymisées dans les journaux, aucune donnée de partie conservée.",
-        "Règles écrites de zéro, sous une politique de salle blanche que l'intégration continue fait respecter.",
-        "Au moins 90 % des lignes couvertes par les tests, CodeQL, analyse de l'image avant chaque publication et OpenSSF Scorecard."
+        "Jouer ne demande ni compte ni cookie ; le serveur ne garde que des compteurs anonymes, et les identifiants des comptes facultatifs sont conservés sous forme d'empreinte.",
+        "Testé à chaque changement dans Chromium, Firefox et WebKit, avec au moins 90 % des lignes couvertes, CodeQL, analyse de l'image et OpenSSF Scorecard.",
+        "Règles écrites de zéro, sous une politique de salle blanche que l'intégration continue fait respecter, et premières contributions extérieures intégrées."
       ],
       "chiffres": [
         {
-          "valeur": "8",
+          "valeur": "13",
           "libelle": "cartes, dont cinq tirées de Natural Earth"
         },
         {
-          "valeur": "10",
-          "libelle": "tours par seconde"
+          "valeur": "27",
+          "libelle": "versions publiées depuis octobre 2026"
         },
         {
-          "valeur": "2",
-          "libelle": "versions jouables publiées"
+          "valeur": "3",
+          "libelle": "moteurs de navigateur testés à chaque changement"
         }
       ],
       "image": {
         "src": "images/frontfall.jpg",
-        "alt": "Une partie sur la carte du Monde : une douzaine d'empires avec leurs troupes, le classement et le curseur d'attaque"
+        "alt": "Une partie sur la carte du Monde : des dizaines d'empires et de nations avec leurs troupes, le classement, le curseur d'attaque et la barre des constructions"
       },
       "contribuer": "Jouer et signaler ce qui casse, proposer une carte ou un réglage d'équilibrage, ou prendre un ticket « good first issue ».",
       "liens": [
@@ -71,9 +71,9 @@
       "depot": "nic0lasm/zeus-poseidon-arm64",
       "ordre": 2,
       "afficher": true,
-      "titre": "Zeus + Poseidon sur Mac Apple Silicon",
-      "pitch": "Faire tourner un jeu Windows de 2000 sur les Mac récents, avec son code d'origine et sans machine virtuelle.",
-      "probleme": "Zeus : Master of Olympus est un jeu Windows 32 bits que les Mac Apple Silicon ne savent plus lancer. Les solutions existantes passent par Wine ou une machine virtuelle. Le projet exécute le code original du jeu dans un petit émulateur x86 isolé et réécrit en natif les fonctions Windows dont il dépend.",
+      "titre": "Zeus + Poseidon sur Mac et Linux",
+      "pitch": "Faire tourner un jeu Windows de 2000 sur les Mac et sous Linux, avec son code d'origine, sans Wine ni machine virtuelle.",
+      "probleme": "Zeus : Master of Olympus est un jeu Windows 32 bits que les Mac Apple Silicon ne savent plus lancer. Les solutions existantes passent par Wine ou une machine virtuelle. Le projet exécute le code original du jeu dans un petit émulateur x86 isolé et réécrit en natif les fonctions Windows dont il dépend. Il fonctionne désormais sur Mac Apple Silicon et Intel, et sous Linux x86-64 et arm64.",
       "stack": [
         "C++17",
         "Unicorn (émulation x86)",
@@ -85,11 +85,11 @@
       ],
       "role": "Auteur et mainteneur : rétro-ingénierie, architecture, développement, tests, publication des versions et animation de la communauté.",
       "points_forts": [
-        "Le vrai jeu, pas un remake : même simulation, mêmes sauvegardes.",
-        "Fidélité prouvée : des scénarios rejoués comparent chaque image à une référence.",
+        "Le vrai jeu, pas un remake : même simulation, mêmes sauvegardes, du premier tutoriel à l'éditeur d'aventures.",
+        "Fidélité prouvée : dix scénarios rejoués comparent chaque image et tout l'état du jeu, tour par tour, au jeu d'origine.",
         "Formats de fichiers du jeu documentés, avec lecteurs Python de référence.",
         "Feuille de route publique vers un moteur entièrement natif, pièce par pièce.",
-        "Application prête à l'emploi, sans aucun fichier du jeu dans le dépôt."
+        "Applications prêtes à l'emploi pour quatre plateformes, sans aucun fichier du jeu dans le dépôt."
       ],
       "chiffres": [
         {
@@ -97,11 +97,11 @@
           "libelle": "fonctions Windows réécrites"
         },
         {
-          "valeur": "8",
-          "libelle": "scénarios de non-régression"
+          "valeur": "10",
+          "libelle": "scénarios comparés au jeu d'origine"
         },
         {
-          "valeur": "8",
+          "valeur": "17",
           "libelle": "versions publiées"
         }
       ],
@@ -145,9 +145,9 @@
       "role": "Cadrage, architecture, sécurité, développement et exploitation.",
       "points_forts": [
         "Feuille de route par jalons, chacun avec un critère de sortie vérifiable.",
-        "CSP stricte avec nonce, HSTS, objectif A+ sur Mozilla Observatory et SSL Labs.",
+        "CSP stricte avec nonce, HSTS et DNSSEC : A+ sur Mozilla Observatory et sur SSL Labs, contrôlé par un audit automatique.",
         "Chaîne d'intégration avec CodeQL, Dependabot et analyse des images Docker.",
-        "Liens privés à usage nominatif, expirables et révocables."
+        "Liens privés à usage nominatif, expirables et révocables, sauvegardes chiffrées hors site."
       ],
       "chiffres": [],
       "image": null,
