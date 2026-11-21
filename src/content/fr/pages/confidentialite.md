@@ -1,6 +1,6 @@
 ---
 titre: Confidentialité
-statut: brouillon
+statut: valide
 maj: 2026-11-21
 ---
 
