@@ -9,7 +9,11 @@
     "code": "Source code",
     "voirCv": "View my CV",
     "parcours": "Background",
-    "meContacter": "Get in touch"
+    "meContacter": "Get in touch",
+    "projets": "Projects",
+    "projetsIntro": "Alongside client work, I design and maintain open source projects, published with their code, tests and roadmap. The two main ones:",
+    "voirDev": "All dev projects",
+    "voirPortfolio": "Case studies"
   },
   "portfolio": {
     "titre": "Portfolio",

@@ -133,6 +133,10 @@ export interface Interface {
     parcours: string;
     voirCv: string;
     meContacter: string;
+    projets: string;
+    projetsIntro: string;
+    voirDev: string;
+    voirPortfolio: string;
   };
   portfolio: {
     titre: string;

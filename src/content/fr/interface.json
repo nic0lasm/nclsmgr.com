@@ -9,7 +9,11 @@
     "code": "Code source",
     "voirCv": "Voir le CV",
     "parcours": "Parcours",
-    "meContacter": "Me contacter"
+    "meContacter": "Me contacter",
+    "projets": "Projets",
+    "projetsIntro": "En dehors de mes missions, je conçois et maintiens des projets open source, publiés avec leur code, leurs tests et leur feuille de route. Les deux principaux :",
+    "voirDev": "Tous les projets dev",
+    "voirPortfolio": "Les études de cas"
   },
   "portfolio": {
     "titre": "Portfolio",
