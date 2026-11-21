@@ -121,6 +121,18 @@ jobs:
             fi
           done
 
+          # Aucun script venu d'un autre domaine, ni balise de mesure injectée au passage par
+          # Cloudflare (Web Analytics) : la page Confidentialité l'affirme.
+          for url in $(cat pages) https://nclsmgr.com/frontfall/; do
+            html=$(curl -fsS --max-time 20 "$url" || true)
+            tiers=$(printf '%s' "$html" | grep -oiE '<script[^>]+src="(https?:)?//[^"]+"' | grep -viE 'src="(https?:)?//nclsmgr\.com/' || true)
+            balise=$(printf '%s' "$html" | grep -oiE 'cloudflareinsights|beacon\.min\.js' | head -1 || true)
+            if [ -n "$tiers$balise" ]; then
+              echo "ÉCHEC script tiers sur $url : $tiers $balise"; echecs=$((echecs + 1))
+            fi
+          done
+          echo "Scripts tiers recherchés sur $(($(wc -l < pages) + 1)) pages"
+
           [ "$echecs" -eq 0 ]
 
       - name: Mozilla Observatory
