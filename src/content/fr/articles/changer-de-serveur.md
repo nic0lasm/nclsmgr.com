@@ -23,7 +23,7 @@ Ces scripts sont publics, dans le dépôt du site. Ils serviront au prochain dé
 
 J'aurais pu copier les fichiers d'un serveur à l'autre. J'ai choisi de faire passer toutes les données par la sauvegarde chiffrée, celle qui tourne chaque nuit, et de construire le nouveau serveur uniquement à partir d'elle.
 
-Ce détour a un intérêt : la migration devient un exercice réel de reprise après sinistre : si le nouveau serveur fonctionne, c'est que la sauvegarde permet de reconstruire le site sans l'ancien. Chaque fichier restauré est comparé à l'empreinte prise au moment de la sauvegarde. Une seule différence arrête l'opération.
+Ce détour a un intérêt : la migration devient un exercice réel de reprise après sinistre. Si le nouveau serveur fonctionne, c'est que la sauvegarde permet de reconstruire le site sans l'ancien. Chaque fichier restauré est comparé à l'empreinte prise au moment de la sauvegarde. Une seule différence arrête l'opération.
 
 Une sauvegarde que l'on n'a jamais restaurée reste une hypothèse. Celle-ci a cessé d'en être une ce jour-là.
 
