@@ -91,6 +91,9 @@ export interface Portfolio extends Fichier {
 }
 
 export interface Accueil extends Fichier {
+  /** Présentation du site, en tête de l'accueil. */
+  site: { titre: string; accroche: string; texte: string[] };
+  /** Présentation de l'auteur, en fin d'accueil. */
   presentation: string[];
   securite: { intro: string; mesures: { titre: string; texte: string }[] };
   referentiels: {
@@ -137,6 +140,10 @@ export interface Interface {
     projetsIntro: string;
     voirDev: string;
     voirPortfolio: string;
+    site: string;
+    auteur: string;
+    voirMesures: string;
+    lireCode: string;
   };
   portfolio: {
     titre: string;
