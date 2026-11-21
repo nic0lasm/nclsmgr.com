@@ -1,6 +1,6 @@
 {
   "statut": "brouillon",
-  "maj": "2026-10-24",
+  "maj": "2026-11-21",
   "projets": [
     {
       "id": "frontfall",
@@ -8,8 +8,8 @@
       "ordre": 1,
       "afficher": true,
       "titre": "Frontfall",
-      "pitch": "A real-time strategy game in the browser, played solo against bots or online with friends.",
-      "probleme": "Delivering an online multiplayer service end to end: rules written from scratch, a deterministic game engine, a server that relays orders without computing the game, and production on my own server, isolated from the rest of the site. The game is in beta: version 0.2 brings online play, and 1.0 will put the game on a 3D globe.",
+      "pitch": "A real-time strategy game in the browser, on a world map with no edges, played solo against bots or online with friends.",
+      "probleme": "Delivering an online multiplayer service end to end: rules written from scratch, a deterministic game engine, a server that relays orders without computing the game, and production on my own server, isolated from the rest of the site. Version 1.0 ended the beta in November 2026; 1.1 adds a 3D globe that players can switch on.",
       "stack": [
         "TypeScript",
         "Three.js (WebGL 2)",
@@ -24,27 +24,27 @@
       "points_forts": [
         "Every player runs the same simulation: the server only numbers the orders, ten turns per second.",
         "A read-only container with no privileges and no Internet access, deployed by a dedicated key that can run a single command.",
-        "Player addresses pseudonymised in the logs, no game data kept.",
-        "Rules written from scratch, under a clean-room policy enforced by continuous integration.",
-        "At least 90% of lines covered by tests, CodeQL, an image scan before every release and OpenSSF Scorecard."
+        "Playing needs no account and no cookie; the server keeps only anonymous counters, and optional accounts are stored as hashes.",
+        "Tested in Chromium, Firefox and WebKit on every change, with at least 90% of lines covered, CodeQL, an image scan and OpenSSF Scorecard.",
+        "Rules written from scratch, under a clean-room policy enforced by continuous integration, with first outside contributions merged."
       ],
       "chiffres": [
         {
-          "valeur": "8",
+          "valeur": "13",
           "libelle": "maps, five of them from Natural Earth"
         },
         {
-          "valeur": "10",
-          "libelle": "turns per second"
+          "valeur": "27",
+          "libelle": "releases since October 2026"
         },
         {
-          "valeur": "2",
-          "libelle": "playable versions released"
+          "valeur": "3",
+          "libelle": "browser engines tested on every change"
         }
       ],
       "image": {
         "src": "images/frontfall.jpg",
-        "alt": "A game on the World map: a dozen empires with their troops, the leaderboard and the attack slider"
+        "alt": "A game on the World map: dozens of empires and nations with their troops, the leaderboard, the attack slider and the build bar"
       },
       "contribuer": "Play and report what breaks, suggest a map or a balance change, or pick a good first issue.",
       "liens": [
@@ -71,9 +71,9 @@
       "depot": "nic0lasm/zeus-poseidon-arm64",
       "ordre": 2,
       "afficher": true,
-      "titre": "Zeus + Poseidon on Apple Silicon",
-      "pitch": "Running a 2000 Windows game on modern Macs, from its original code and without a virtual machine.",
-      "probleme": "Zeus: Master of Olympus is a 32-bit Windows game that Apple Silicon Macs can no longer run. The usual answers are Wine or a virtual machine. This project runs the game's original code inside a small sandboxed x86 emulator and rewrites the Windows functions it needs as native code.",
+      "titre": "Zeus + Poseidon on Mac and Linux",
+      "pitch": "Running a 2000 Windows game on Macs and Linux, from its original code, with no Wine and no virtual machine.",
+      "probleme": "Zeus: Master of Olympus is a 32-bit Windows game that Apple Silicon Macs can no longer run. The usual answers are Wine or a virtual machine. This project runs the game's original code inside a small sandboxed x86 emulator and rewrites the Windows functions it needs as native code. It now runs on Apple Silicon and Intel Macs, and on x86-64 and arm64 Linux.",
       "stack": [
         "C++17",
         "Unicorn (x86 emulation)",
@@ -85,11 +85,11 @@
       ],
       "role": "Author and maintainer: reverse engineering, architecture, development, testing, releases and community.",
       "points_forts": [
-        "The real game, not a remake: same simulation, same save files.",
-        "Accuracy you can check: replayed scenarios compare every frame with a reference.",
+        "The real game, not a remake: same simulation, same save files, from the first tutorial to the adventure editor.",
+        "Accuracy you can check: ten replayed scenarios compare every frame and the whole game state, tick by tick, with the original game.",
         "The game's file formats documented, with reference readers in Python.",
         "A public roadmap towards a fully native engine, one part at a time.",
-        "A ready-to-run app, with no game files in the repository."
+        "Ready-to-run apps for four platforms, with no game files in the repository."
       ],
       "chiffres": [
         {
@@ -97,11 +97,11 @@
           "libelle": "Windows functions rewritten"
         },
         {
-          "valeur": "8",
-          "libelle": "regression scenarios"
+          "valeur": "10",
+          "libelle": "scenarios checked against the original game"
         },
         {
-          "valeur": "8",
+          "valeur": "16",
           "libelle": "releases"
         }
       ],
@@ -145,9 +145,9 @@
       "role": "Scoping, architecture, security, development and operations.",
       "points_forts": [
         "A roadmap in milestones, each with a checkable exit criterion.",
-        "Strict nonce-based CSP, HSTS, aiming for A+ on Mozilla Observatory and SSL Labs.",
+        "Strict nonce-based CSP, HSTS and DNSSEC: A+ on Mozilla Observatory and SSL Labs, checked by an automated audit.",
         "CI with CodeQL, Dependabot and Docker image scanning.",
-        "Personal private links that expire and can be revoked."
+        "Personal private links that expire and can be revoked, encrypted off-site backups."
       ],
       "chiffres": [],
       "image": null,

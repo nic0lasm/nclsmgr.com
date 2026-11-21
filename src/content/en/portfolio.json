@@ -127,7 +127,7 @@
   ],
   "autres": {
     "titre": "Personal projects",
-    "texte": "My development projects are presented in the Dev section, with their code and documentation. The latest, Frontfall, is a multiplayer strategy game that I host and run myself.",
+    "texte": "My development projects are presented in the Dev section, with their code and documentation. Frontfall, a multiplayer strategy game, runs on my own server and I operate it myself; Zeus + Poseidon brings a 2000 Windows game back to Mac and Linux, from its original code.",
     "lien": {
       "libelle": "See the Dev section",
       "chemin": "/dev"

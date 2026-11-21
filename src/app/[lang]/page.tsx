@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getContent } from "@/lib/content";
+import { fichesMisesEnAvant } from "@/lib/projets";
 import { pageMetadata } from "@/lib/metadata";
 import { resolveLocale } from "@/lib/route";
 
@@ -11,6 +12,10 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   const lang = await resolveLocale(params);
   const { accueil, profil, ui } = getContent(lang);
   const { referentiels } = accueil;
+  // Les deux premières fiches illustrées de l'onglet Dev, dans son ordre.
+  const projets = fichesMisesEnAvant(lang, [])
+    .filter((f) => f.image)
+    .slice(0, 2);
 
   return (
     <main id="contenu" className="wrap">
@@ -31,6 +36,43 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             </Link>
             <Link className="button button--secondary" href={`/${lang}/contact`}>
               {ui.accueil.meContacter}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="section" aria-labelledby="projets">
+        <h2 className="section__label" id="projets">
+          {ui.accueil.projets}
+        </h2>
+        <div className="section__body">
+          <p className="prose">{ui.accueil.projetsIntro}</p>
+          {projets.map((f) => (
+            <article className="project" key={f.id} aria-labelledby={`accueil-${f.id}`}>
+              <h3 id={`accueil-${f.id}`}>
+                <Link href={`/${lang}/dev#projet-${f.id}`}>{f.titre}</Link>
+              </h3>
+              <p>{f.pitch}</p>
+              {f.chiffres && f.chiffres.length > 0 && (
+                <p className="project__figures">
+                  {f.chiffres.map((c) => `${c.valeur} ${c.libelle}`).join(" · ")}
+                </p>
+              )}
+              <ul className="project__links">
+                {f.liens.slice(0, 2).map((l) => (
+                  <li key={l.url}>
+                    <a href={l.url}>{l.libelle}</a>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
+          <div className="actions">
+            <Link className="button button--secondary" href={`/${lang}/dev`}>
+              {ui.accueil.voirDev}
+            </Link>
+            <Link className="button button--secondary" href={`/${lang}/portfolio`}>
+              {ui.accueil.voirPortfolio}
             </Link>
           </div>
         </div>

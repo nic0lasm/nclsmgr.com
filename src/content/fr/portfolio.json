@@ -127,7 +127,7 @@
   ],
   "autres": {
     "titre": "Projets personnels",
-    "texte": "Mes projets de développement sont présentés dans l'onglet Dev, avec leur code et leur documentation. Le plus récent, Frontfall, est un jeu de stratégie multijoueur que j'héberge et exploite moi-même.",
+    "texte": "Mes projets de développement sont présentés dans l'onglet Dev, avec leur code et leur documentation. Frontfall, un jeu de stratégie multijoueur, tourne sur mon serveur et je l'exploite moi-même ; Zeus + Poseidon ramène un jeu Windows de 2000 sur Mac et Linux, à partir de son code d'origine.",
     "lien": {
       "libelle": "Voir l'onglet Dev",
       "chemin": "/dev"
