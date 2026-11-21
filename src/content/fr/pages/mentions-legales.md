@@ -1,6 +1,6 @@
 ---
 titre: Mentions légales
-statut: brouillon
+statut: valide
 maj: 2026-10-30
 ---
 
