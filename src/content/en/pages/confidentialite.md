@@ -1,7 +1,7 @@
 ---
 titre: Privacy
 statut: brouillon
-maj: 2026-10-30
+maj: 2026-11-21
 ---
 
 This site collects as little data as possible. It uses no advertising cookies, no third-party trackers and no analytics tool that follows you from one site to another.
@@ -27,7 +27,9 @@ This data is neither sold nor passed on to third parties, apart from the technic
 
 Encrypted server backups are kept for no more than 3 months.
 
-The game [Frontfall](https://nclsmgr.com/frontfall/) can be played as a guest, and does not record games: they only exist in memory. Signing in with Discord, Google or a link sent by email is optional; it then keeps your name, a scrambled id, the way you signed in and your achievements, never your email in clear, until you delete the account from the game's menu. The sign-in email goes out through the site's mailbox at OVH, and the address is forgotten once it is sent. The details are in the [privacy policy of the game](https://nclsmgr.com/frontfall/privacy.html). To limit abuse, it counts the connections opened from the same IP address, in memory only. Its logs never record that address in the clear, only a fingerprint that changes every time the game restarts; they are kept for 30 days, like the server's.
+The game [Frontfall](https://nclsmgr.com/frontfall/) can be played as a guest, with no account and no cookie. The server does not keep games: they only exist in memory, and the end screen only lets you download a recording to your own device. Signing in with Discord, Google or a link sent by email is optional; the game then keeps your name, a scrambled id, the way you signed in, the dates the account was created and last used, and your achievements, never your email in clear, until you delete the account from the game's menu. The sign-in email goes out through the site's mailbox at OVH, and the address is forgotten once it is sent.
+
+The game also sends its server usage reports with no identifier (map, mode, length and outcome of the game, kind of device, errors met), used only to keep counters. Nothing is sent if your browser turns on Do Not Track or Global Privacy Control. A player reported by another during an online game is the subject of a report kept for 30 days, with a reference drawn from their network address with a secret key, never the address itself. To limit abuse, the game counts the connections opened from the same IP address, in memory only. Its logs never record that address in the clear, only a fingerprint that changes every time the game restarts; they are kept for 30 days, like the server's. The details are in the [privacy policy of the game](https://nclsmgr.com/frontfall/privacy.html).
 
 ## Where the data is held
 
@@ -43,7 +45,11 @@ Nothing is measured in the private area. If your browser sends the Do Not Track 
 
 ## Cookies
 
-The site sets only one cookie, and only if you open a personal link: `__Host-espace`, a session cookie that is strictly necessary to access the private area and is deleted when it expires. The game Frontfall keeps a token in the browser's session storage so that you can take your seat back after a disconnection; it disappears when you close the tab. It also keeps, in the browser's local storage, the language you chose and your last game settings, nickname included, until you clear the site's data. These strictly necessary trackers are exempt from consent (Article 82 of the French Data Protection Act, known as the loi Informatique et Libertés, and the CNIL guidelines of 17 September 2020), so no cookie banner is shown to you.
+The site sets only one cookie, and only if you open a personal link: `__Host-espace`, a session cookie that is strictly necessary to access the private area and is deleted when it expires.
+
+The game Frontfall sets cookies only if you sign in: `frontfall_session` keeps you signed in for 30 days, and two short-lived cookies, `frontfall_sign_in` (10 minutes) and `frontfall_link` (15 minutes), are used only while signing in. In the browser, it also keeps a token to take your seat back after a disconnection (session storage, and 5 minutes in local storage), the language, your game settings including your nickname, your profile (colour and last ten games) and your achievements (local storage), and the state of a game in progress so that a reload can resume it (the browser's local database). The game's "Forget my profile and achievements" menu erases this data from your device.
+
+These strictly necessary trackers are exempt from consent (Article 82 of the French Data Protection Act, known as the loi Informatique et Libertés, and the CNIL guidelines of 17 September 2020), so no cookie banner is shown to you.
 
 ## Your rights
 

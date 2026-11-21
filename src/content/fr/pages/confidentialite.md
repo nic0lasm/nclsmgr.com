@@ -1,7 +1,7 @@
 ---
 titre: Confidentialité
 statut: brouillon
-maj: 2026-10-30
+maj: 2026-11-21
 ---
 
 Ce site collecte le moins de données possible. Il n'utilise aucun cookie publicitaire, aucun traceur tiers et aucun outil de mesure qui vous suit d'un site à l'autre.
@@ -27,7 +27,9 @@ Ces données ne sont ni vendues ni transmises à des tiers, en dehors des presta
 
 Les sauvegardes chiffrées du serveur sont conservées 3 mois au plus.
 
-Le jeu [Frontfall](https://nclsmgr.com/frontfall/) se joue en invité et n'enregistre pas les parties : elles n'existent qu'en mémoire. Se connecter avec Discord, Google ou un lien envoyé par e-mail est facultatif ; le jeu garde alors votre nom, un identifiant brouillé, la façon dont vous vous êtes connecté et vos succès, jamais votre e-mail en clair, jusqu'à ce que vous supprimiez le compte depuis le menu du jeu. L'e-mail de connexion part de la boîte du site chez OVH, et l'adresse est oubliée une fois le message envoyé. Le détail est dans la [politique de confidentialité du jeu](https://nclsmgr.com/frontfall/privacy.html). Pour limiter les abus, il compte les connexions ouvertes depuis une même adresse IP, en mémoire seulement. Ses journaux n'enregistrent jamais cette adresse en clair, seulement une empreinte qui change à chaque redémarrage du jeu ; ils sont gardés 30 jours, comme ceux du serveur.
+Le jeu [Frontfall](https://nclsmgr.com/frontfall/) se joue en invité, sans compte ni cookie. Le serveur ne conserve pas les parties : elles n'existent qu'en mémoire, et l'écran de fin permet seulement d'en télécharger l'enregistrement sur votre appareil. Se connecter avec Discord, Google ou un lien envoyé par e-mail est facultatif ; le jeu garde alors votre nom, un identifiant brouillé, la façon dont vous vous êtes connecté, les dates de création et de dernière utilisation du compte et vos succès, jamais votre e-mail en clair, jusqu'à ce que vous supprimiez le compte depuis le menu du jeu. L'e-mail de connexion part de la boîte du site chez OVH, et l'adresse est oubliée une fois le message envoyé.
+
+Le jeu envoie aussi à son serveur des rapports d'usage sans identifiant (carte, mode, durée et issue de la partie, type d'appareil, erreurs rencontrées), qui ne servent qu'à tenir des compteurs. Rien n'est envoyé si votre navigateur active Do Not Track ou Global Privacy Control. Un joueur signalé par un autre pendant une partie en ligne fait l'objet d'un signalement gardé 30 jours, avec une référence tirée de son adresse réseau par une clé secrète, jamais l'adresse elle-même. Pour limiter les abus, le jeu compte les connexions ouvertes depuis une même adresse IP, en mémoire seulement. Ses journaux n'enregistrent jamais cette adresse en clair, seulement une empreinte qui change à chaque redémarrage du jeu ; ils sont gardés 30 jours, comme ceux du serveur. Le détail est dans la [politique de confidentialité du jeu](https://nclsmgr.com/frontfall/privacy.html).
 
 ## Où sont les données
 
@@ -43,7 +45,11 @@ Aucune mesure n'est faite dans l'espace privé. Si votre navigateur envoie le si
 
 ## Cookies
 
-Le site ne dépose qu'un cookie, et seulement si vous ouvrez un lien personnel : `__Host-espace`, un cookie de session strictement nécessaire à l'accès à l'espace privé, supprimé à son expiration. Le jeu Frontfall, lui, garde dans le stockage de session du navigateur un jeton qui permet de reprendre sa place après une coupure ; il disparaît à la fermeture de l'onglet. Il garde aussi, dans le stockage local du navigateur, la langue choisie et les derniers réglages de partie, pseudo compris, jusqu'à ce que vous effaciez les données du site. Ces traceurs strictement nécessaires sont dispensés de consentement (article 82 de la loi Informatique et Libertés, lignes directrices de la CNIL du 17 septembre 2020) : aucun bandeau ne vous est donc présenté.
+Le site ne dépose qu'un cookie, et seulement si vous ouvrez un lien personnel : `__Host-espace`, un cookie de session strictement nécessaire à l'accès à l'espace privé, supprimé à son expiration.
+
+Le jeu Frontfall ne dépose de cookie que si vous vous connectez : `frontfall_session` vous garde connecté 30 jours, et deux cookies de courte durée, `frontfall_sign_in` (10 minutes) et `frontfall_link` (15 minutes), ne servent que pendant la connexion. Dans le navigateur, il garde aussi un jeton pour reprendre votre place après une coupure (stockage de session, et 5 minutes dans le stockage local), la langue, les réglages de partie pseudo compris, votre profil (couleur et dix dernières parties) et vos succès (stockage local), et l'état d'une partie en cours pour la reprendre après un rechargement (base locale du navigateur). Le menu du jeu « Oublier mon profil et mes succès » efface ces données de votre appareil.
+
+Ces traceurs strictement nécessaires sont dispensés de consentement (article 82 de la loi Informatique et Libertés, lignes directrices de la CNIL du 17 septembre 2020) : aucun bandeau ne vous est donc présenté.
 
 ## Vos droits
 
