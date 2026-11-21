@@ -927,7 +927,6 @@ test.describe("documents réservés", () => {
       const h = reponse.headers();
       expect(h).toMatchObject({
         "content-type": "application/pdf",
-        "content-length": String(attendu.length),
         "content-disposition": `inline; filename="${nom}"`,
         "cache-control": "private, no-store",
         "x-content-type-options": "nosniff",

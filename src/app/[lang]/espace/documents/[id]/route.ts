@@ -55,8 +55,8 @@ export async function GET(
     status: 200,
     headers: {
       ...EN_TETES_DOCUMENT,
+      // Pas de Content-Length : Next.js le retire des réponses de route depuis 16.4.5.
       "Content-Type": "application/pdf",
-      "Content-Length": String(document.contenu.byteLength),
       "Content-Disposition": `inline; filename="${document.nom}"`,
     },
   });
