@@ -11,9 +11,13 @@
     "parcours": "Parcours",
     "meContacter": "Me contacter",
     "projets": "Projets",
-    "projetsIntro": "En dehors de mes missions, je conçois et maintiens des projets open source, publiés avec leur code, leurs tests et leur feuille de route. Les deux principaux :",
+    "projetsIntro": "D'autres projets suivent les mêmes règles, publiés avec leur code, leurs tests et leur feuille de route :",
     "voirDev": "Tous les projets dev",
-    "voirPortfolio": "Les études de cas"
+    "voirPortfolio": "Les études de cas",
+    "site": "Ce site",
+    "auteur": "Auteur",
+    "voirMesures": "Voir les protections",
+    "lireCode": "Lire le code source"
   },
   "portfolio": {
     "titre": "Portfolio",
