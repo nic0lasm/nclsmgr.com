@@ -42,7 +42,7 @@
       "role": "Chef de projet de l'étude d'architecture, avec un architecte et un expert sécurité.",
       "enjeux": [
         "Comparer deux options sur des critères que la direction peut arbitrer",
-        "Respecter les exigences de souveraineté et de protection des données",
+        "Respecter les exigences de localisation et de protection des données",
         "Anticiper le coût complet : migration, exploitation, réversibilité",
         "Ne pas créer de dépendance difficile à défaire envers un fournisseur"
       ],
