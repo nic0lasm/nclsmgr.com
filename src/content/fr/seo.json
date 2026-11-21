@@ -9,8 +9,8 @@
   },
   "pages": {
     "accueil": {
-      "titre": "Nicolas M, chef de projet cyber et souveraineté",
-      "description": "Chef de projet chez Capgemini pour les ministères régaliens et le secteur public : développement applicatif, risques cyber, cloud de confiance.",
+      "titre": "Bac à sable de sécurité web · Nicolas M",
+      "description": "Un vrai site exposé sur Internet pour appliquer et vérifier les bonnes pratiques de sécurité web : protections, référentiels, contrôles publics et code ouvert.",
       "og_image": null
     },
     "cv": {

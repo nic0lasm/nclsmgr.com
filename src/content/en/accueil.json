@@ -1,12 +1,18 @@
 {
   "statut": "brouillon",
   "langue": "en",
+  "site": {
+    "titre": "A security sandbox, open to the Internet",
+    "accroche": "nclsmgr.com is a real website, exposed like any online service, that I use to apply and test good web security practice.",
+    "texte": [
+      "Each protection is described below with the standard it comes from. Nothing has to be taken on trust: public scanners give their grade, automated checks run on every change and the code is published in full."
+    ]
+  },
   "presentation": [
-    "At Capgemini, I run digital projects for French government ministries and the public sector: application development, cyber risk assessments and hosting choices for sensitive data.",
-    "I built this site the way I run those projects: security as a starting requirement, explained choices and checks anyone can verify. Its code is public. My full background is on the résumé page."
+    "At Capgemini, I run digital projects for French government ministries and the public sector: application development, cyber risk assessments and hosting choices for sensitive data. This site is my testing ground for the practices I advocate in that work."
   ],
   "securite": {
-    "intro": "A personal website does not need this level of protection. I still treated it as a sensitive service exposed to the Internet: the smallest possible attack surface, defence in depth and evidence for every measure.",
+    "intro": "Six groups of measures, chosen as for a sensitive service: the smallest possible attack surface, defence in depth and evidence for each one.",
     "mesures": [
       {
         "titre": "Small attack surface",
@@ -111,7 +117,7 @@
     }
   ],
   "code": {
-    "texte": "The repository is public by choice: how a site is designed, secured and maintained says as much as what it displays. Every change is tracked, tested and analysed before it goes live.",
+    "texte": "Every change is tracked, tested and analysed before it goes live. The repository history shows how the site is designed, secured and maintained, mistakes and fixes included.",
     "liens": [
       {
         "libelle": "The repository on GitHub",

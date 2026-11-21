@@ -11,9 +11,13 @@
     "parcours": "Background",
     "meContacter": "Get in touch",
     "projets": "Projects",
-    "projetsIntro": "Alongside client work, I design and maintain open source projects, published with their code, tests and roadmap. The two main ones:",
+    "projetsIntro": "Other projects follow the same rules, published with their code, tests and roadmap:",
     "voirDev": "All dev projects",
-    "voirPortfolio": "Case studies"
+    "voirPortfolio": "Case studies",
+    "site": "This site",
+    "auteur": "Author",
+    "voirMesures": "See the protections",
+    "lireCode": "Read the source code"
   },
   "portfolio": {
     "titre": "Portfolio",
